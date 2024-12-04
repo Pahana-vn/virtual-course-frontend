@@ -19,3 +19,13 @@ export const fetchStudentDashboardData = async (accountId) => {
         throw error;
     }
 };
+
+export const fetchStudentCourses = async (accountId) => {
+    try {
+        const response = await api.get(`/courses/student-courses/${accountId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching student courses:", error);
+        throw error;
+    }
+};

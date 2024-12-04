@@ -122,7 +122,7 @@ import StudentProfile from "./components/student/studentProfile/index.jsx";
 import StudentQA from "./components/student/studentQA/index.jsx";
 import StudentQuiz from "./components/student/studentQuiz/index.jsx";
 import StudentQuizDetails from "./components/student/studentQuiz/studentQuizDetails.jsx";
-import StudentReferral from "./components/student/studentReferral/index.jsx";
+import StudentStudy from "./components/student/studentStudy/index.jsx";
 import StudentReviews from "./components/student/studentReviews/index.jsx";
 import StudentTicket from "./components/student/studentTicket/index.jsx";
 import StudentWishlist from "./components/student/studentWishlist/index.jsx";
@@ -183,7 +183,7 @@ const Approuter = () => {
 
         <Route path="/setting-student-payment" element={<StudentPayment />} />
         <Route path="/setting-student-privacy" element={<StudentPrivacy />} />
-        <Route path="/setting-student-referral" element={<StudentReferral />} />
+        <Route path="/setting-student-referral" element={<StudentStudy />} />
         <Route path="/setting-student-security" element={<StudentSecurity />} />
 
         <Route
@@ -420,7 +420,7 @@ const Approuter = () => {
           element={<StudentOrderHistory />}
         />
         <Route path="/student/student-qa" element={<StudentQA />} />
-        <Route path="/student/student-referral" element={<StudentReferral />} />
+        <Route path="/student/student-study" element={<StudentStudy />} />
         <Route path="/student/student-messages" element={<StudentMessages />} />
         <Route path="/student/students-profile" element={<StudentProfile />} />
         <Route path="/student/students-grid" element={<StudentsGrid />} />

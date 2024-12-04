@@ -49,9 +49,9 @@ export default function StudentSidebar() {
                 </Link>
               </li>
 
-              <li className={`nav-item ${location.pathname === '/student/student-referral' ? 'active' : ''}`}>
+              <li className={`nav-item ${location.pathname === '/student/student-study' ? 'active' : ''}`}>
 
-                <Link to="/student/student-referral" className="nav-link">
+                <Link to="/student/student-study" className="nav-link">
                   <i className="bx bxs-user-plus" />
                   Study
                 </Link>

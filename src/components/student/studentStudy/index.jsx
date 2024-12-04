@@ -133,7 +133,7 @@ const StudentStudy = () => {
                 ></div>
               </div>
               <div className="student-percent">
-                <p>{course.progress}35% Completed</p>
+                <p>{course.progress}% Completed</p>
               </div>
               <div className="start-leason hoverBlue d-flex align-items-center">
                 <Link
@@ -264,5 +264,3 @@ const StudentStudy = () => {
 };
 
 export default StudentStudy;
-
-//commit moi
