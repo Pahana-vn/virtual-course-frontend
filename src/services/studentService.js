@@ -29,3 +29,13 @@ export const fetchStudentCourses = async (accountId) => {
         throw error;
     }
 };
+
+export const addCourseToWishlist = async (studentId, courseId) => {
+    try {
+        const response = await api.post(`/students/${studentId}/wishlist`, { id: courseId });
+        return response.data;
+    } catch (error) {
+        console.error("Error adding course to wishlist:", error.response ? error.response.data : error);
+        throw error;
+    }
+};

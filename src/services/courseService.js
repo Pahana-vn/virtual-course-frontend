@@ -10,12 +10,22 @@ export const fetchCourses = async () => {
     }
 };
 
-export const createCourse = async (courseData) => {
+export const fetchCourseDetails = async (courseId) => {
     try {
-        const response = await api.post("/courses", courseData);
+        const response = await api.get(`/courses/${courseId}`);
         return response.data;
     } catch (error) {
-        console.error("Error creating course:", error);
+        console.error("Error fetching course details:", error);
         throw error;
     }
 };
+
+// export const createCourse = async (courseData) => {
+//     try {
+//         const response = await api.post("/courses", courseData);
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error creating course:", error);
+//         throw error;
+//     }
+// };
