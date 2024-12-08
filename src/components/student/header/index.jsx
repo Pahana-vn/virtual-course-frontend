@@ -6,8 +6,6 @@ import useOnClickOutside from "../../../hooks/useOnClickOutside";
 import DarkMode from "../../common/darkMode";
 import {
   Cart,
-  Course14,
-  Course15,
   Course4,
   logo,
   Messages,
@@ -155,7 +153,7 @@ export default function StudentHeader({ activeMenu }) {
                 <img src={logo} className="img-fluid" alt="Logo" />
               </Link>
             </div>
-            
+
             <div className="main-menu-wrapper">
               <div className="menu-header">
                 <Link to="/home" className="menu-logo">
@@ -273,56 +271,7 @@ export default function StudentHeader({ activeMenu }) {
                           </div>
                         </div>
                       </li>
-                      <li>
-                        <div className="media">
-                          <div className="d-flex media-wide">
-                            <div className="avatar">
-                              <Link to="/course-details">
-                                <img alt="" src={Course14} />
-                              </Link>
-                            </div>
-                            <div className="media-body">
-                              <h6>
-                                <Link to="/course-details">Build Responsive Real...</Link>
-                              </h6>
-                              <p>Jenis R.</p>
-                              <h5>
-                                $200 <span>$99.00</span>
-                              </h5>
-                            </div>
-                          </div>
-                          <div className="remove-btn">
-                            <Link to="#" className="btn">
-                              Remove
-                            </Link>
-                          </div>
-                        </div>
-                      </li>
-                      <li>
-                        <div className="media">
-                          <div className="d-flex media-wide">
-                            <div className="avatar">
-                              <Link to="/course-details">
-                                <img alt="" src={Course15} />
-                              </Link>
-                            </div>
-                            <div className="media-body">
-                              <h6>
-                                <Link to="/course-details">C# Developers Double ...</Link>
-                              </h6>
-                              <p>Jesse Stevens</p>
-                              <h5>
-                                $200 <span>$99.00</span>
-                              </h5>
-                            </div>
-                          </div>
-                          <div className="remove-btn">
-                            <Link to="#" className="btn">
-                              Remove
-                            </Link>
-                          </div>
-                        </div>
-                      </li>
+
                     </ul>
                     <div className="total-item">
                       <h6>Subtotal : $ 600</h6>
@@ -363,56 +312,7 @@ export default function StudentHeader({ activeMenu }) {
                           </div>
                         </div>
                       </li>
-                      <li>
-                        <div className="media">
-                          <div className="d-flex media-wide">
-                            <div className="avatar">
-                              <Link to="/course-details">
-                                <img alt="" src={Course14} />
-                              </Link>
-                            </div>
-                            <div className="media-body">
-                              <h6>
-                                <Link to="/course-details">Build Responsive Real...</Link>
-                              </h6>
-                              <p>Jenis R.</p>
-                              <h5>
-                                $200 <span>$99.00</span>
-                              </h5>
-                              <div className="remove-btn">
-                                <Link to="#" className="btn">
-                                  Add to cart
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                      <li>
-                        <div className="media">
-                          <div className="d-flex media-wide">
-                            <div className="avatar">
-                              <Link to="/course-details">
-                                <img alt="" src={Course15} />
-                              </Link>
-                            </div>
-                            <div className="media-body">
-                              <h6>
-                                <Link to="/course-details">C# Developers Double ...</Link>
-                              </h6>
-                              <p>Jesse Stevens</p>
-                              <h5>
-                                $200 <span>$99.00</span>
-                              </h5>
-                              <div className="remove-btn">
-                                <Link to="#" className="btn">
-                                  Remove
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
+
                     </ul>
                   </div>
                 </div>

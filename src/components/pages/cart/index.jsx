@@ -1,14 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { fetchCartItems, removeCourseFromCart } from "../../../services/studentService";
 import Footer from "../../footer";
-import { Course10, Course11, Course12, Icon1, Icon2 } from "../../imagepath";
+import { Course10, Icon1, Icon2 } from "../../imagepath";
 import PageHeader from "../header";
 
 const Cart = () => {
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Giả lập studentId = 1 khi chưa có đăng nhập
+  const studentId = 1; // Thay đổi sau khi có tính năng đăng nhập
+
+  // Lấy giỏ hàng từ API khi trang được tải
+  useEffect(() => {
+    const getCartItems = async () => {
+      try {
+        const response = await fetchCartItems(studentId);
+        if (response && Array.isArray(response)) {
+          setCartItems(response); // Cập nhật trạng thái giỏ hàng nếu dữ liệu hợp lệ
+        } else {
+          console.error("Invalid data format received");
+        }
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getCartItems();
+  }, [studentId]);
+
+  // Tính tổng giá trị giỏ hàng
+  const calculateTotal = () => {
+    return cartItems.reduce(
+      (total, item) => total + (item.course.basePrice || 0) * item.quantity,
+      0
+    );
+  };
+
+  // Hàm xóa khóa học khỏi giỏ hàng
+  const handleRemoveFromCart = async (cartItemId) => {
+    try {
+      await removeCourseFromCart(studentId, cartItemId);
+      // Sau khi xóa thành công, cập nhật lại danh sách giỏ hàng
+      setCartItems(cartItems.filter(item => item.id !== cartItemId));
+    } catch (error) {
+      console.error("Error removing course from cart:", error);
+    }
+  };
+
   return (
     <>
       <div className="main-wrapper">
-        <PageHeader activeMenu="Cart"/>
+        <PageHeader activeMenu="Cart" />
 
         <div className="breadcrumb-bar">
           <div className="container">
@@ -41,199 +87,67 @@ const Cart = () => {
                 <div className="row">
                   <div className="col-lg-12">
                     <div className="cart-head">
-                      <h4>Your cart (03 items)</h4>
+                      <h4>Your cart ({cartItems.length} items)</h4>
                     </div>
                     <div className="cart-group">
                       <div className="row">
-                        <div className="col-lg-12 col-md-12 d-flex">
-                          <div className="course-box course-design list-course d-flex">
-                            <div className="product">
-                              <div className="product-img">
-                                <Link to="/course-details">
-                                  <img
-                                    className="img-fluid"
-                                    alt=""
-                                    src={Course10}
-                                  />
-                                </Link>
-                                <div className="price">
-                                  <h3 className="free-color">FREE</h3>
-                                </div>
-                              </div>
-                              <div className="product-content">
-                                <div className="head-course-title">
-                                  <h3 className="title">
-                                    <Link to="/course-details">
-                                      Information About UI/UX Design Degree
+                        {loading ? (
+                          <div>Loading...</div>
+                        ) : cartItems.length === 0 ? (
+                          <div>Your cart is empty.</div> // Hiển thị khi giỏ hàng trống
+                        ) : (
+                          cartItems.map((item) => (
+                            <div key={item.id} className="col-lg-12 col-md-12 d-flex">
+                              <div className="course-box course-design list-course d-flex">
+                                <div className="product">
+                                  <div className="product-img">
+                                    <Link to={`/course-details/${item.course.id}`}>
+                                      <img
+                                        className="img-fluid"
+                                        alt=""
+                                        src={item.course.imageCover || Course10} // Sử dụng ảnh mặc định nếu không có ảnh
+                                      />
                                     </Link>
-                                  </h3>
-                                </div>
-                                <div className="course-info d-flex align-items-center border-bottom-0 pb-0">
-                                  <div className="rating-img d-flex align-items-center">
-                                    <img
-                                      src={Icon1}
-                                      alt=""
-                                    />
-                                    <p>12+ Lesson</p>
+                                    <div className="price">
+                                      <h3 className="free-color">
+                                        {item.course.basePrice
+                                          ? `$${item.course.basePrice}`
+                                          : "FREE"}
+                                      </h3>
+                                    </div>
                                   </div>
-                                  <div className="course-view d-flex align-items-center">
-                                    <img
-                                      src={Icon2}
-                                      alt=""
-                                    />
-                                    <p>9hr 30min</p>
+                                  <div className="product-content">
+                                    <div className="head-course-title">
+                                      <h3 className="title">
+                                        <Link to={`/course-details/${item.course.id}`}>
+                                          {item.course.titleCourse}
+                                        </Link>
+                                      </h3>
+                                    </div>
+                                    <div className="course-info d-flex align-items-center border-bottom-0 pb-0">
+                                      <div className="rating-img d-flex align-items-center">
+                                        <img src={Icon1} alt="" />
+                                        <p>{item.course.duration} Lessons</p>
+                                      </div>
+                                      <div className="course-view d-flex align-items-center">
+                                        <img src={Icon2} alt="" />
+                                        <p>{item.course.duration}hrs</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="cart-remove">
+                                    <button
+                                      className="btn btn-danger"
+                                      onClick={() => handleRemoveFromCart(item.id)}
+                                    >
+                                      Remove
+                                    </button>
                                   </div>
                                 </div>
-                                <div className="rating">
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star me-1" />
-                                  <span className="d-inline-block average-rating">
-                                    <span>4.0</span> (15)
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="cart-remove">
-                                <Link
-                                  to="#"
-                                  className="btn btn-primary"
-                                >
-                                  Remove
-                                </Link>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                        <div className="col-lg-12 col-md-12 d-flex">
-                          <div className="course-box course-design list-course d-flex ">
-                            <div className="product">
-                              <div className="product-img">
-                                <Link to="/course-details">
-                                  <img
-                                    className="img-fluid"
-                                    alt=""
-                                    src={Course11}
-                                  />
-                                </Link>
-                                <div className="price">
-                                  <h3>
-                                    $300 <span>$99.00</span>
-                                  </h3>
-                                </div>
-                              </div>
-                              <div className="product-content">
-                                <div className="head-course-title">
-                                  <h3 className="title">
-                                    <Link to="/course-details">
-                                      Wordpress for Beginners - Master Wordpress
-                                      Quickly
-                                    </Link>
-                                  </h3>
-                                </div>
-                                <div className="course-info d-flex align-items-center border-bottom-0 pb-0">
-                                  <div className="rating-img d-flex align-items-center">
-                                    <img
-                                      src={Icon1}
-                                      alt=""
-                                    />
-                                    <p>10+ Lesson</p>
-                                  </div>
-                                  <div className="course-view d-flex align-items-center">
-                                    <img
-                                      src={Icon2}
-                                      alt=""
-                                    />
-                                    <p>7hr 20min</p>
-                                  </div>
-                                </div>
-                                <div className="rating">
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star me-1" />
-                                  <span className="d-inline-block average-rating">
-                                    <span>4.2</span> (15)
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="cart-remove">
-                                <Link
-                                  to="#"
-                                  className="btn btn-primary"
-                                >
-                                  Remove
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-lg-12 col-md-12 d-flex">
-                          <div className="course-box course-design list-course d-flex mb-0">
-                            <div className="product">
-                              <div className="product-img">
-                                <Link to="/course-details">
-                                  <img
-                                    className="img-fluid"
-                                    alt=""
-                                    src={Course12}
-                                  />
-                                </Link>
-                                <div className="price">
-                                  <h3>
-                                    $300 <span>$99.00</span>
-                                  </h3>
-                                </div>
-                              </div>
-                              <div className="product-content">
-                                <div className="head-course-title">
-                                  <h3 className="title">
-                                    <Link to="/course-details">
-                                      Sketch from A to Z (2024): Become an app
-                                      designer
-                                    </Link>
-                                  </h3>
-                                </div>
-                                <div className="course-info d-flex align-items-center border-bottom-0 pb-0">
-                                  <div className="rating-img d-flex align-items-center">
-                                    <img
-                                      src={Icon1}
-                                      alt=""
-                                    />
-                                    <p>12+ Lesson</p>
-                                  </div>
-                                  <div className="course-view d-flex align-items-center">
-                                    <img
-                                      src={Icon2}
-                                      alt=""
-                                    />
-                                    <p>9hr 30min</p>
-                                  </div>
-                                </div>
-                                <div className="rating">
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star filled me-1" />
-                                  <i className="fas fa-star me-1" />
-                                  <span className="d-inline-block average-rating">
-                                    <span>4.0</span> (15)
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="cart-remove">
-                                <Link
-                                  to="#"
-                                  className="btn btn-primary"
-                                >
-                                  Remove
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                          ))
+                        )}
                       </div>
                     </div>
                     <div className="cart-total">
@@ -241,7 +155,7 @@ const Cart = () => {
                         <div className="col-lg-12 col-md-12">
                           <div className="cart-subtotal">
                             <p>
-                              Subtotal <span>$600.00</span>
+                              Subtotal <span>${calculateTotal().toFixed(2)}</span>
                             </p>
                           </div>
                         </div>
@@ -254,10 +168,7 @@ const Cart = () => {
                         </div>
                         <div className="col-lg-6 col-md-6">
                           <div className="condinue-shop">
-                            <Link
-                              to="/course-list"
-                              className="btn btn-primary"
-                            >
+                            <Link to="/course-list" className="btn btn-primary">
                               Continue Shopping
                             </Link>
                           </div>
@@ -271,7 +182,7 @@ const Cart = () => {
           </div>
         </section>
 
-        <Footer/>
+        <Footer />
       </div>
     </>
   );

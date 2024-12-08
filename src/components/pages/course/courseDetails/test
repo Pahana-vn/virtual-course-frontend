@@ -1,12 +1,41 @@
-// import Collapse from 'react-bootstrap/Collapse';
 import FeatherIcon from "feather-icons-react";
+import PropTypes from 'prop-types';
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
+import { addCourseToWishlist } from "../../../../services/studentService";
 import { Chapter, Chart, Cloud, Icon1, Icon2, Import, Key, Mobile, People, Play, Teacher, Timer2, User1, Users, Video, Video2 } from "../../../imagepath";
 
-const DetailsContent = () => {
 
+const DetailsContent = ({ course }) => {
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+
+  // Giả lập studentId = 1 khi chưa có đăng nhập
+  const studentId = 1; // Đây là giả lập, sau này thay thế bằng ID từ login context hoặc state
+
+  // Xử lý thêm vào wishlist
+  const handleAddToWishlist = async () => {
+    try {
+      setLoading(true);
+      await addCourseToWishlist(studentId, course.id);
+      alert("Added to wishlist successfully!");
+    } catch (error) {
+      // Kiểm tra nếu có lỗi response từ backend và kiểm tra mã lỗi
+      if (error.response) {
+        if (error.response.status === 400) {
+          alert("This course is already in your wishlist!");
+        } else {
+          alert("Error: " + (error.response.data || "Failed to add to wishlist"));
+        }
+      } else {
+        // Khi không có response từ server (Ví dụ: lỗi mạng)
+        alert("Network error, please try again later.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <>
@@ -280,8 +309,9 @@ const DetailsContent = () => {
                 </div>
               </div>
               {/* /Comment */}
+
             </div>
-            
+
             <div className="col-lg-4">
               <div className="sidebar-sec">
                 {/* Video */}
@@ -300,10 +330,7 @@ const DetailsContent = () => {
                       </Link>
                       <div className="video-details">
                         <div className="course-fee">
-                          <h2>FREE</h2>
-                          <p>
-                            <span>$99.00</span> 50% off
-                          </p>
+                          <h2>{course.price ? `$${course.price}` : 'FREE'}</h2>
                         </div>
                         <div className="row gx-2">
 
@@ -318,20 +345,16 @@ const DetailsContent = () => {
                           </div>
 
                           <div className="col-md-6 addHeart">
-                            <Link
-                              to="/course-wishlist"
-                              className=" btn btn-wish w-100"
+                            <button
+                              className="btn btn-wish w-100"
+                              onClick={handleAddToWishlist}
+                              disabled={loading} // Disabled khi đang xử lý
                             >
-                              <i className="feather icon-heart me-2" />
-                              Add to Wishlist
-                            </Link>
+                              {loading ? "Adding..." : "Add to Wishlist"}
+                            </button>
                           </div>
-
                         </div>
-                        <Link
-                          to="/checkout"
-                          className="btn btn-enroll w-100"
-                        >
+                        <Link to="/checkout" className="btn btn-enroll w-100">
                           Enroll Now
                         </Link>
                       </div>
@@ -339,6 +362,7 @@ const DetailsContent = () => {
                   </div>
                 </div>
                 {/* /Video */}
+
                 {/* Include */}
                 <div className="card include-sec">
                   <div className="card-body">
@@ -451,11 +475,22 @@ const DetailsContent = () => {
                 {/* /Features */}
               </div>
             </div>
+
           </div>
         </div>
       </section>
     </>
   );
+};
+
+DetailsContent.propTypes = {
+  course: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    description: PropTypes.string,
+    price: PropTypes.number,
+    learn: PropTypes.arrayOf(PropTypes.string),
+    requirements: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
 };
 
 export default DetailsContent;

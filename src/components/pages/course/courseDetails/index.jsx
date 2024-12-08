@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { fetchCourseDetails } from "../../../../services/courseService"; // Giả sử bạn có một API để lấy chi tiết khóa học
 import Footer from "../../../footer";
 import { Icon1, People, Timer, User1 } from "../../../imagepath";
-import CourseHeader from "../header";
+import CourseHeader from "../../../student/header";
 import DetailsContent from "./detailsContent";
 
 const CourseDetails = () => {

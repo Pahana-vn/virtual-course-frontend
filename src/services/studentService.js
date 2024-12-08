@@ -39,3 +39,43 @@ export const addCourseToWishlist = async (studentId, courseId) => {
         throw error;
     }
 };
+
+export const addCourseToCart = async (studentId, courseData) => {
+    try {
+        const response = await api.post(`/students/${studentId}/cart`, courseData);
+        return response.data;
+    } catch (error) {
+        console.error("Error adding to cart:", error.response ? error.response.data : error);
+        throw error;
+    }
+};
+
+export const fetchCartItems = async (studentId) => {
+    try {
+        const response = await api.get(`/students/${studentId}/cart-items`);
+        if (response.data && Array.isArray(response.data)) {
+            return response.data;
+        } else {
+            throw new Error("Invalid cart data");
+        }
+    } catch (error) {
+        console.error("Error fetching cart items:", error);
+        throw error;
+    }
+};
+
+export const removeCourseFromCart = async (studentId, cartItemId) => {
+    try {
+        const response = await api.delete(`/students/${studentId}/cart-items/${cartItemId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error removing course from cart:", error);
+        throw error;
+    }
+};
+
+
+
+
+
+
