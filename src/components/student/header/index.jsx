@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Home, LogOut, Moon, Star, User } from "react-feather";
 import { Link } from "react-router-dom";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
+import { fetchCartItems } from "../../../services/studentService";
 import DarkMode from "../../common/darkMode";
 import {
   Cart,
@@ -17,6 +18,49 @@ import {
 } from "../../imagepath";
 // eslint-disable-next-line react/prop-types
 export default function StudentHeader({ activeMenu }) {
+
+  const [cartCount, setCartCount] = useState(0); // State to store the cart count
+  const studentId = 1; // Temporary student ID since login is not available yet
+
+  useEffect(() => {
+    // Function to get cart items and count them
+    const getCartCount = async () => {
+      try {
+        const response = await fetchCartItems(studentId);
+        if (response && Array.isArray(response)) {
+          setCartCount(response.length); // Count the number of items in the cart
+        } else {
+          console.error("Invalid data format received");
+        }
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      }
+    };
+
+    getCartCount();
+  }, []);
+
+  const cartNavStyle = {
+    position: 'relative',
+  };
+
+  const cartCountBadgeStyle = {
+    position: 'absolute',
+    top: '4px',
+    right: '10px',
+    backgroundColor: 'red',
+    color: 'white',
+    borderRadius: '50%',
+    width: '20px',
+    height: '20px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: '12px',
+    fontWeight: 'bold',
+  };
+
+
   const [navbar, setNavbar] = useState(false);
 
   const [showCart, setShowCart] = useState(false);
@@ -129,7 +173,6 @@ export default function StudentHeader({ activeMenu }) {
     }
   };
   window.addEventListener("scroll", changeHeaderBackground);
-
   return (
     <header className="header header-page">
       <div className="header-fixed">
@@ -229,57 +272,21 @@ export default function StudentHeader({ activeMenu }) {
             <ul className="nav header-navbar-rht">
               <DarkMode />
               <li className="nav-item">
-                <Link to="/course-message">
+                <Link to="/student/student-messages">
                   <img src={Messages} alt="img" />
                 </Link>
               </li>
-              <li className="nav-item cart-nav">
-                <Link to="#" className="dropdown-toggle" data-bs-toggle="dropdown">
-                  <img src={Cart} alt="img" />
-                </Link>
-                <div className="wishes-list dropdown-menu dropdown-end dropdown-menu-right modalPosition">
-                  <div className="wish-header">
-                    <Link to="#">View Cart</Link>
-                    <Link to="#" className="float-end">
-                      Checkout
-                    </Link>
-                  </div>
-                  <div className="wish-content">
-                    <ul>
-                      <li>
-                        <div className="media">
-                          <div className="d-flex media-wide">
-                            <div className="avatar">
-                              <Link to="/course-details">
-                                <img alt="" src={Course4} />
-                              </Link>
-                            </div>
-                            <div className="media-body">
-                              <h6>
-                                <Link to="/course-details">Learn Angular...</Link>
-                              </h6>
-                              <p>By Dave Franco</p>
-                              <h5>
-                                $200 <span>$99.00</span>
-                              </h5>
-                            </div>
-                          </div>
-                          <div className="remove-btn">
-                            <Link to="#" className="btn">
-                              Remove
-                            </Link>
-                          </div>
-                        </div>
-                      </li>
 
-                    </ul>
-                    <div className="total-item">
-                      <h6>Subtotal : $ 600</h6>
-                      <h5>Total : $ 600</h5>
-                    </div>
-                  </div>
-                </div>
+              <li className="nav-item cart-nav" style={cartNavStyle}>
+                <Link to={`/cart?studentId=1`} className="dropdown-toggle">
+                  <img src={Cart} alt="img" />
+                  {cartCount > 0 && (
+                    <span style={cartCountBadgeStyle}>{cartCount}</span>
+                  )}
+                </Link>
               </li>
+
+
               <li className="nav-item wish-nav">
                 <Link to="#" className="dropdown-toggle" data-bs-toggle="dropdown">
                   <img src={Wish} alt="img" />

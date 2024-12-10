@@ -20,6 +20,16 @@ export const fetchCourseDetails = async (courseId) => {
     }
 };
 
+export const fetchCourseById = async (courseId) => {
+    try {
+        const response = await api.get(`/courses/${courseId}`); // Assuming this is the correct endpoint
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching course with ID ${courseId}:`, error);
+        throw error;
+    }
+};
+
 // export const createCourse = async (courseData) => {
 //     try {
 //         const response = await api.post("/courses", courseData);

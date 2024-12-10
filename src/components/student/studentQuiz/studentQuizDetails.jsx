@@ -1,8 +1,8 @@
-import React from 'react'
-import Footer from '../../footer'
-import StudentHeader from '../header'
-import InstructorSidebar from '../../instructor/sidebar'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Footer from '../../footer';
+import StudentSidebar from "../../student/sidebar";
+import StudentHeader from '../header';
 
 const StudentQuizDetails = () => {
   return (
@@ -40,7 +40,7 @@ const StudentQuizDetails = () => {
           <div className="container">
             <div className="row">
               {/* sidebar */}
-              <InstructorSidebar />
+              <StudentSidebar />
               {/* /Sidebar */}
               {/* Student Quiz Details */}
               <div className="col-xl-9 col-lg-9">

@@ -34,7 +34,7 @@ const GridInnerPage = () => {
           <div className="course-box course-design d-flex">
             <div className="product">
               <div className="product-img">
-              <Link to={`/course-details/${course.id}`}>
+                <Link to={`/course-details/${course.id}`}>
                   <img
                     className="img-fluid"
                     alt={course.titleCourse}
@@ -98,9 +98,23 @@ const GridInnerPage = () => {
                   </span>
                 </div>
                 <div className="all-btn all-category d-flex align-items-center">
-                  <Link to={`/checkout/${course.id}`} className="btn btn-primary">
+
+                  {/* <Link to={`/checkout/${course.id}`} className="btn btn-primary">
+                    BUY NOW
+                  </Link> */}
+
+                  <Link
+                    to={`/checkout/${course.id}`} // Use course.id in the URL
+                    className="btn btn-primary"
+                  >
                     BUY NOW
                   </Link>
+
+
+
+
+
+
                 </div>
               </div>
             </div>

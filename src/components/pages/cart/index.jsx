@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import PageHeader from "../../../components/student/header";
 import { fetchCartItems, removeCourseFromCart } from "../../../services/studentService";
 import Footer from "../../footer";
 import { Course10, Icon1, Icon2 } from "../../imagepath";
-import PageHeader from "../header";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -94,7 +94,7 @@ const Cart = () => {
                         {loading ? (
                           <div>Loading...</div>
                         ) : cartItems.length === 0 ? (
-                          <div>Your cart is empty.</div> // Hiển thị khi giỏ hàng trống
+                          <div>Your cart is empty.</div>
                         ) : (
                           cartItems.map((item) => (
                             <div key={item.id} className="col-lg-12 col-md-12 d-flex">
@@ -105,7 +105,7 @@ const Cart = () => {
                                       <img
                                         className="img-fluid"
                                         alt=""
-                                        src={item.course.imageCover || Course10} // Sử dụng ảnh mặc định nếu không có ảnh
+                                        src={item.course.imageCover || Course10}
                                       />
                                     </Link>
                                     <div className="price">
@@ -161,14 +161,28 @@ const Cart = () => {
                         </div>
                         <div className="col-lg-6 col-md-6">
                           <div className="check-outs">
-                            <Link to="/checkout" className="btn btn-primary">
+
+                            {/* <Link to="/checkout" className="btn btn-primary">
+                              Checkout
+                            </Link> */}
+
+                            <Link
+                              to={{
+                                pathname: `/checkout`,
+                                state: { cartItems: cartItems }, // Pass all cart items as state
+                              }}
+                              className="btn btn-primary"
+                            >
                               Checkout
                             </Link>
+
+
+
                           </div>
                         </div>
                         <div className="col-lg-6 col-md-6">
                           <div className="condinue-shop">
-                            <Link to="/course-list" className="btn btn-primary">
+                            <Link to="/course-grid" className="btn btn-primary">
                               Continue Shopping
                             </Link>
                           </div>

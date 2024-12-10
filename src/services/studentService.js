@@ -73,9 +73,3 @@ export const removeCourseFromCart = async (studentId, cartItemId) => {
         throw error;
     }
 };
-
-
-
-
-
-

@@ -103,6 +103,8 @@ import InstructorSettingNotifications from "./components/instructor/settings/ins
 import InstructorSettings from "./components/instructor/settings/instructorSettings";
 import InstructorSettingWithdraw from "./components/instructor/settings/instructorSettingWithdraw.jsx";
 import NewPassword from "./components/pages/newPassword";
+import Failure from "./components/pages/payment/Failure.jsx";
+import Success from "./components/pages/payment/Success.jsx";
 import CourseMessage from "./components/student/courseMessage";
 import CourseStudent from "./components/student/courseStudent";
 import CourseWishlist from "./components/student/courseWishlist";
@@ -165,6 +167,9 @@ const Approuter = () => {
         <Route path="/job-category" element={<JobCategory />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout/:courseId" element={<Checkout />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<Failure />} />
         <Route path="/login" element={<Login />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/register" element={<Register />} />
