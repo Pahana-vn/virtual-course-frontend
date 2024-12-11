@@ -18,9 +18,7 @@ const StudentCourses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8080/api/courses/student-courses/1"
-        );
+        const response = await fetch("http://localhost:8080/api/courses/student-courses/1");
         if (!response.ok) {
           throw new Error("Failed to fetch courses");
         }
@@ -167,6 +165,7 @@ const StudentCourses = () => {
                             Enrolled Courses ({courses.enrolled.length})
                           </Link>
                         </li>
+                        {/* Nếu không cần active và completed, có thể xóa 2 tab sau */}
                         <li className="nav-item">
                           <Link
                             className={`nav-link ${activeTab === "active" ? "active" : ""

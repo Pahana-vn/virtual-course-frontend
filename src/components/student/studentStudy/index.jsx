@@ -126,11 +126,14 @@ const StudentStudy = () => {
                 <div
                   className="progress-bar bg-success progress-bar-striped active-stip"
                   role="progressbar"
-                  style={{ width: `${course.progress}%` }}
-                  aria-valuenow={course.progress}
+                  style={{ width: `${course.progress || 0}%` }}
+                  aria-valuenow={course.progress || 0}
                   aria-valuemin="0"
                   aria-valuemax="100"
                 ></div>
+              </div>
+              <div className="student-percent">
+                <p>{course.progress || 0}% Completed</p>
               </div>
               <div className="student-percent">
                 <p>{course.progress}% Completed</p>

@@ -30,12 +30,3 @@ export const fetchCourseById = async (courseId) => {
     }
 };
 
-// export const createCourse = async (courseData) => {
-//     try {
-//         const response = await api.post("/courses", courseData);
-//         return response.data;
-//     } catch (error) {
-//         console.error("Error creating course:", error);
-//         throw error;
-//     }
-// };
