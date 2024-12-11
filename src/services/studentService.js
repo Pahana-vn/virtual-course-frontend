@@ -20,9 +20,9 @@ export const fetchStudentDashboardData = async (accountId) => {
     }
 };
 
-export const fetchStudentCourses = async (accountId) => {
+export const fetchStudentCourses = async (studentId) => {
     try {
-        const response = await api.get(`/courses/student-courses/${accountId}`);
+        const response = await api.get(`/courses/student-courses/${studentId}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching student courses:", error);

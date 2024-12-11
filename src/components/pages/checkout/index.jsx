@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchCourseById } from "../../../services/courseService";
-import { createPaypalPayment, createPaypalPaymentForCart } from "../../../services/paymentService";
+import { createPaypalPayment, createPaypalPaymentForCart, createVnpayPayment, createVnpayPaymentForCart } from "../../../services/paymentService";
 import { fetchCartItems } from "../../../services/studentService";
 import Footer from "../../footer";
 import PageHeader from "../../student/header/index";
@@ -53,11 +53,9 @@ const Checkout = () => {
     if (paymentMethod === "PAYPAL") {
       try {
         if (courseId) {
-          // Thanh toán 1 khóa học
           const approvalUrl = await createPaypalPayment(courseId);
           window.location.href = approvalUrl;
         } else {
-          // Thanh toán nhiều khóa học trong cart
           if (cartItems.length === 0) {
             alert("No courses in cart.");
             return;
@@ -71,9 +69,26 @@ const Checkout = () => {
         alert("Error creating PayPal payment");
       }
     } else if (paymentMethod === "VNPAY") {
-      alert("VNPAY payment is not implemented yet.");
+      try {
+        if (courseId) {
+          const paymentUrl = await createVnpayPayment(courseId);
+          window.location.href = paymentUrl;
+        } else {
+          if (cartItems.length === 0) {
+            alert("No courses in cart.");
+            return;
+          }
+          const courseIds = cartItems.map(item => item.course.id);
+          const paymentUrl = await createVnpayPaymentForCart(courseIds);
+          window.location.href = paymentUrl;
+        }
+      } catch (error) {
+        console.error("Error creating VNPay payment:", error);
+        alert("Error creating VNPay payment");
+      }
     }
   };
+
 
   return (
     <div className="main-wrapper">
@@ -190,16 +205,6 @@ const Checkout = () => {
                               <span className="checkmark" /> PayPal
                             </label>
                           </div>
-                          {paymentMethod === "VNPAY" && (
-                            <div className="input-block">
-                              <label className="form-control-label">Card Number</label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="XXXX XXXX XXXX XXXX"
-                              />
-                            </div>
-                          )}
                         </div>
                         <div className="payment-btn">
                           <button className="btn btn-primary" type="submit">
@@ -219,7 +224,7 @@ const Checkout = () => {
                 <div className="student-widget select-plan-group">
                   <div className="student-widget-group">
                     <div className="plan-header">
-                      <h4>Course Details</h4>
+                      <h4>Order Information</h4>
                     </div>
                     <div className="course-plan">
                       {loading ? (

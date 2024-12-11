@@ -69,8 +69,8 @@ const StudentStudy = () => {
   useEffect(() => {
     const fetchCoursesForStudent = async () => {
       try {
-        // API call to fetch courses for student with ID 3
-        const response = await fetchStudentCourses(3); // ID 3 for student
+        // API call to fetch courses for student with ID 1
+        const response = await fetchStudentCourses(1); // ID 1 for student
         setCourses({
           active: response.active || [],
           completed: response.completed || [],

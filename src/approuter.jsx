@@ -105,6 +105,7 @@ import InstructorSettingWithdraw from "./components/instructor/settings/instruct
 import NewPassword from "./components/pages/newPassword";
 import Failure from "./components/pages/payment/Failure.jsx";
 import Success from "./components/pages/payment/Success.jsx";
+import SuccessVnpay from "./components/pages/payment/SuccessVnpay.jsx";
 import CourseMessage from "./components/student/courseMessage";
 import CourseStudent from "./components/student/courseStudent";
 import CourseWishlist from "./components/student/courseWishlist";
@@ -169,7 +170,8 @@ const Approuter = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/checkout/:courseId" element={<Checkout />} />
         <Route path="/success" element={<Success />} />
-        <Route path="/cancel" element={<Failure />} />
+        <Route path="/success-vnpay" element={<SuccessVnpay />} />
+        <Route path="/fail" element={<Failure />} />
         <Route path="/login" element={<Login />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/register" element={<Register />} />

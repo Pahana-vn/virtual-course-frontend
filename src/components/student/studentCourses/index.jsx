@@ -19,7 +19,7 @@ const StudentCourses = () => {
     const fetchCourses = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/courses/student-courses/3"
+          "http://localhost:8080/api/courses/student-courses/1"
         );
         if (!response.ok) {
           throw new Error("Failed to fetch courses");

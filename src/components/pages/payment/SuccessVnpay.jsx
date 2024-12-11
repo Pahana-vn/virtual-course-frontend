@@ -1,30 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { executePaypalPayment } from "../../../services/paymentService";
 import Footer from "../../footer";
 import PageHeader from "../../student/header";
 
-const Success = () => {
+const SuccessVnpay = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [status, setStatus] = useState("loading"); // loading, success, fail
-    const [paymentData, setPaymentData] = useState(null);
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
-        const paymentId = queryParams.get("paymentId");
-        const payerId = queryParams.get("PayerID");
+        const txnRef = queryParams.get("vnp_TxnRef");
+        const transactionStatus = queryParams.get("vnp_TransactionStatus");
 
-        if (paymentId && payerId) {
-            executePaypalPayment(paymentId, payerId)
-                .then((data) => {
-                    setPaymentData(data);
-                    setStatus("success");
-                })
-                .catch((error) => {
-                    console.error("Error executing payment:", error);
-                    setStatus("fail");
-                });
+        if (txnRef && transactionStatus === "00") {
+            setStatus("success");
         } else {
             setStatus("fail");
         }
@@ -38,17 +28,15 @@ const Success = () => {
         <div style={styles.pageWrapper}>
             <PageHeader activeMenu="Success" />
             <div style={styles.contentWrapper}>
-                {status === "loading" && <p>Processing your payment, please wait...</p>}
+                {status === "loading" && (
+                    <div style={styles.messageContainer}>
+                        <p>Processing your payment, please wait...</p>
+                    </div>
+                )}
                 {status === "success" && (
                     <div style={styles.messageContainer}>
                         <h2 style={styles.successTitle}>Payment Successful!</h2>
-                        {paymentData && (
-                            <div style={styles.paymentInfo}>
-                                <p>Payment ID: {paymentData.paypalPaymentId}</p>
-                                <p>Status: {paymentData.status}</p>
-                                <p>Amount: ${paymentData.amount}</p>
-                            </div>
-                        )}
+                        <p>Your transaction was completed successfully.</p>
                         <button style={styles.button} onClick={handleGoHome}>
                             Go to Home
                         </button>
@@ -57,7 +45,7 @@ const Success = () => {
                 {status === "fail" && (
                     <div style={styles.messageContainer}>
                         <h2 style={styles.failTitle}>Payment Failed</h2>
-                        <p>There was a problem completing your payment.</p>
+                        <p>There was an issue completing your transaction. Please try again.</p>
                         <button style={styles.button} onClick={handleGoHome}>
                             Go to Home
                         </button>
@@ -102,17 +90,12 @@ const styles = {
         color: "#dc3545",
         marginBottom: "20px",
     },
-    paymentInfo: {
-        marginTop: "20px",
-        fontSize: "1rem",
-        color: "#333",
-    },
     button: {
         display: "inline-block",
         padding: "10px 15px",
         fontSize: "1rem",
         color: "#fff",
-        backgroundColor: "#007bff",
+        backgroundColor: "red",
         border: "none",
         borderRadius: "5px",
         cursor: "pointer",
@@ -121,4 +104,4 @@ const styles = {
     },
 };
 
-export default Success;
+export default SuccessVnpay;

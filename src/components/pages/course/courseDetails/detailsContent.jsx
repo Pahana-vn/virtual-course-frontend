@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
-import { addCourseToCart, addCourseToWishlist, fetchStudentCourses } from "../../../../services/studentService";
+import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../../services/studentService";
 import { Video } from "../../../imagepath";
 
 const DetailsContent = ({ course }) => {
@@ -14,10 +14,11 @@ const DetailsContent = ({ course }) => {
   useEffect(() => {
     const getCartCourses = async () => {
       try {
-        const courses = await fetchStudentCourses(studentId);
+        // Thay vì fetchStudentCourses, dùng fetchCartItems
+        const courses = await fetchCartItems(studentId);
         setCartCourses(courses);
       } catch (error) {
-        console.error("Error fetching student courses: ", error);
+        console.error("Error fetching cart items: ", error);
       }
     };
 
@@ -25,7 +26,7 @@ const DetailsContent = ({ course }) => {
   }, [studentId]);
 
   const isCourseInCart = (courseId) => {
-    return cartCourses.some(course => course.id === courseId);
+    return cartCourses.some(item => item.course && item.course.id === courseId);
   };
 
   const handleAddToCart = async () => {
