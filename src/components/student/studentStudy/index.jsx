@@ -135,9 +135,7 @@ const StudentStudy = () => {
               <div className="student-percent">
                 <p>{course.progress || 0}% Completed</p>
               </div>
-              <div className="student-percent">
-                <p>{course.progress}% Completed</p>
-              </div>
+
               <div className="start-leason hoverBlue d-flex align-items-center">
                 <Link
                   to={`/course-lesson/${course.id}`}

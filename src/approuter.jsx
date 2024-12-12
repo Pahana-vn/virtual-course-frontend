@@ -158,7 +158,7 @@ const Approuter = () => {
         <Route path="/course-details/:courseId" element={<CourseDetails />} />
         <Route path="/course-details1" element={<CourseDetails1 />} />
         <Route path="/course-details2" element={<CourseDetails2 />} />
-        <Route path="/course-lesson" element={<CourseLesson />} />
+        <Route path="/course-lesson/:courseId" element={<CourseLesson />} />
         <Route path="/come-soon" element={<ComingSoon />} />
         <Route path="/error-404" element={<Error404 />} />
         <Route path="/error-500" element={<Error500 />} />

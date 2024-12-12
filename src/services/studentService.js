@@ -20,15 +20,27 @@ export const fetchStudentDashboardData = async (accountId) => {
     }
 };
 
+// export const fetchStudentCourses = async (studentId) => {
+//     try {
+//         const response = await api.get(`/courses/student-courses/${studentId}`);
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error fetching student courses:", error);
+//         throw error;
+//     }
+// };
+
 export const fetchStudentCourses = async (studentId) => {
     try {
-        const response = await api.get(`/courses/student-courses/${studentId}`);
+        // Đổi đường dẫn sang endpoint mới đã tạo
+        const response = await api.get(`/students/student-courses-status/${studentId}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching student courses:", error);
         throw error;
     }
 };
+
 
 export const addCourseToWishlist = async (studentId, courseId) => {
     try {

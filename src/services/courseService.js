@@ -12,10 +12,10 @@ export const fetchCourses = async () => {
 
 export const fetchCourseDetails = async (courseId) => {
     try {
-        const response = await api.get(`/courses/${courseId}`);
+        const response = await api.get(`/courses/${courseId}/details`);
         return response.data;
     } catch (error) {
-        console.error("Error fetching course details:", error);
+        console.error(`Error fetching course details for ID ${courseId}:`, error);
         throw error;
     }
 };
@@ -29,4 +29,6 @@ export const fetchCourseById = async (courseId) => {
         throw error;
     }
 };
+
+
 
