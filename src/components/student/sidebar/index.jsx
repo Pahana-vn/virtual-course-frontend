@@ -81,8 +81,8 @@ export default function StudentSidebar() {
                   Enrolled Courses
                 </Link>
               </li>
-              <li className={`nav-item ${location.pathname === '/student/student-wishlist' || location.pathname === '/student/student-quiz-details' ? 'active' : ''}`}>
-
+              <li className={`nav-item ${location.pathname === '/student/student-wishlist' ? 'active' : ''}`}>
+                {/* || location.pathname === '/student/student-quiz-details' */}
                 <Link to="/student/student-wishlist" className="nav-link">
                   <i className="bx bxs-heart" />
                   Wishlist
@@ -95,13 +95,14 @@ export default function StudentSidebar() {
                   Reviews
                 </Link>
               </li>
-              <li className={`nav-item ${location.pathname === '/student/student-quiz' ? 'active' : ''}`}>
+              <li className={`nav-item ${location.pathname === '/student/student-quiz' || location.pathname === '/student/student-quiz-details' ? 'active' : ''}`}>
 
                 <Link to="/student/student-quiz" className="nav-link">
                   <i className="bx bxs-shapes" />
                   My Quiz Attempts
                 </Link>
               </li>
+
               <li className={`nav-item ${location.pathname === '/student/student-order-history' ? 'active' : ''}`}>
                 <Link to="/student/student-order-history" className="nav-link">
                   <i className="bx bxs-cart" />

@@ -13,17 +13,14 @@ const CourseLesson = () => {
   const [course, setCourse] = useState(null);
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [openSections, setOpenSections] = useState({});
-  const studentId = 1; // Giả sử studentId = 1 (có thể thay bằng logic lấy studentId thật)
+  const studentId = 1; // Giả sử studentId = 1
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        // Lấy dữ liệu chi tiết khoá học
         const data = await fetchCourseDetails(courseId);
         setCourse(data);
 
-        // Nếu khoá học có sections và section đầu tiên có lectures
-        // thì chọn bài giảng đầu tiên làm mặc định
         if (data.sections && data.sections.length > 0 && data.sections[0].lectures.length > 0) {
           setSelectedLecture(data.sections[0].lectures[0]);
         }
@@ -34,7 +31,6 @@ const CourseLesson = () => {
     fetchDetails();
   }, [courseId]);
 
-  // Hàm toggle mở/đóng danh sách lectures trong 1 section
   const toggleSection = (sectionId) => {
     setOpenSections(prevState => ({
       ...prevState,
@@ -42,23 +38,18 @@ const CourseLesson = () => {
     }));
   };
 
-  // Khi người dùng click chọn 1 bài giảng
   const handleLectureClick = (lecture) => {
     setSelectedLecture(lecture);
   };
 
-  // Sự kiện gọi khi video kết thúc
   const onVideoEnd = async () => {
     if (!selectedLecture) return;
     try {
-      // Gọi API đánh dấu lecture đã hoàn thành
       await completeLecture(studentId, selectedLecture.id);
 
-      // Cập nhật lại dữ liệu khoá học sau khi đánh dấu hoàn thành
       const updatedData = await fetchCourseDetails(courseId);
       setCourse(updatedData);
 
-      // Lấy lại lecture hiện tại dựa trên ID
       const currentLectureId = selectedLecture.id;
       let updatedLecture = null;
       updatedData.sections.forEach(section => {
@@ -66,14 +57,12 @@ const CourseLesson = () => {
         if (found) updatedLecture = found;
       });
 
-      // Cập nhật state selectedLecture nếu tìm thấy
       if (updatedLecture) setSelectedLecture(updatedLecture);
     } catch (error) {
       console.error("Error completing lecture:", error);
     }
   };
 
-  // Render YouTube Player
   const renderYouTubePlayer = (videoUrl) => {
     const videoId = extractYouTubeId(videoUrl);
     if (!videoId) return <p>Invalid video URL</p>;
@@ -90,24 +79,22 @@ const CourseLesson = () => {
       <YouTube
         videoId={videoId}
         opts={opts}
-        onEnd={onVideoEnd} // Gọi onVideoEnd khi video kết thúc
+        onEnd={onVideoEnd}
       />
     );
   };
 
-  // Nếu chưa có dữ liệu khoá học thì hiển thị Loading...
   if (!course) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="main-wrapper">
-      {/* Header */}
       <PageHeader />
       <section className="page-content course-sec course-lesson">
         <div className="container">
           <div className="row">
-            {/* Sidebar với danh sách section và lectures */}
+            {/* Sidebar */}
             <div className="col-lg-4">
               <div className="lesson-group">
                 {course.sections.map((section) => (
@@ -182,7 +169,7 @@ const CourseLesson = () => {
             </div>
             {/* /Sidebar */}
 
-            {/* Khu vực hiển thị video và nội dung bài giảng */}
+            {/* Content Area */}
             <div className="col-lg-8">
               <div className="lesson-widget-group">
                 {selectedLecture ? (
@@ -196,6 +183,23 @@ const CourseLesson = () => {
                       </div>
                     ) : (
                       <p style={{ color: '#999' }}>This lecture is locked.</p>
+                    )}
+
+                    {/* Hiển thị Article nếu có */}
+                    {selectedLecture.articles && selectedLecture.articles.length > 0 && (
+                      <div className="lecture-articles" style={{ marginTop: '20px' }}>
+                        <h5 style={{ fontWeight: 'bold', marginBottom: '15px' }}>References:</h5>
+                        {selectedLecture.articles.map((article) => (
+                          <div key={article.id} className="article-item" style={{ marginBottom: '10px' }}>
+                            <p>{article.content}</p>
+                            {article.fileUrl && (
+                              <a href={article.fileUrl} target="_blank" rel="noopener noreferrer">
+                                View document
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </>
                 ) : (
@@ -212,7 +216,6 @@ const CourseLesson = () => {
   );
 };
 
-// Hàm trích xuất videoId từ URL YouTube
 const extractYouTubeId = (url) => {
   const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\s/]{11})/;
   const match = url.match(regex);
