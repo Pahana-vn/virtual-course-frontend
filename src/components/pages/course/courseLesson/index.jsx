@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Collapse from 'react-bootstrap/Collapse';
 import { Link, useParams } from "react-router-dom";
 import YouTube from 'react-youtube';
-import { fetchCourseDetails } from "../../../../services/courseService";
+import { fetchCourseDetailsForStudent } from "../../../../services/courseService";
 import { completeLecture } from "../../../../services/progressService";
 import Footer from "../../../footer";
 import { Lock, Play } from "../../../imagepath";
@@ -18,7 +18,7 @@ const CourseLesson = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const data = await fetchCourseDetails(courseId);
+        const data = await fetchCourseDetailsForStudent(courseId, studentId);
         setCourse(data);
 
         if (data.sections && data.sections.length > 0 && data.sections[0].lectures.length > 0) {
@@ -29,7 +29,7 @@ const CourseLesson = () => {
       }
     };
     fetchDetails();
-  }, [courseId]);
+  }, [courseId, studentId]);
 
   const toggleSection = (sectionId) => {
     setOpenSections(prevState => ({
@@ -47,7 +47,8 @@ const CourseLesson = () => {
     try {
       await completeLecture(studentId, selectedLecture.id);
 
-      const updatedData = await fetchCourseDetails(courseId);
+      // Phải truyền cả studentId
+      const updatedData = await fetchCourseDetailsForStudent(courseId, studentId);
       setCourse(updatedData);
 
       const currentLectureId = selectedLecture.id;
@@ -62,6 +63,7 @@ const CourseLesson = () => {
       console.error("Error completing lecture:", error);
     }
   };
+
 
   const renderYouTubePlayer = (videoUrl) => {
     const videoId = extractYouTubeId(videoUrl);
@@ -165,6 +167,35 @@ const CourseLesson = () => {
                     </Collapse>
                   </div>
                 ))}
+                {/* Hiển thị bài test cuối khóa hoặc thông báo */}
+                <div style={{ marginTop: '20px' }}>
+                  {course.finalTestId ? (
+                    course.allLecturesCompleted ? (
+                      <div>
+                        <h4 style={{ color: 'green', fontWeight: 'bold' }}>
+                          Take The Test
+                        </h4>
+                        <Link to={`/student-final-test/${course.finalTestId}`} className="btn btn-primary">
+                          {course.finalTestTitle || "Final Test"}
+                        </Link>
+                      </div>
+                    ) : (
+                      <div style={{ color: 'gray', fontWeight: 'bold' }}>
+                        You need to complete all lectures before taking the final test.
+                        <button
+                          disabled
+                          className="btn btn-secondary"
+                          style={{ marginTop: '10px', cursor: 'not-allowed' }}
+                        >
+                          Take the Test
+                        </button>
+                      </div>
+                    )
+                  ) : (
+                    <p>The course does not have a final test.</p>
+                  )}
+                </div>
+
               </div>
             </div>
             {/* /Sidebar */}
@@ -194,7 +225,8 @@ const CourseLesson = () => {
                             <p>{article.content}</p>
                             {article.fileUrl && (
                               <a href={article.fileUrl} target="_blank" rel="noopener noreferrer">
-                                View document
+                                {/* <b>Click to View Document</b> */}
+                                <button type="button" className="btn btn-outline-secondary">Click to View Document</button>
                               </a>
                             )}
                           </div>
@@ -206,7 +238,9 @@ const CourseLesson = () => {
                   <p style={{ color: '#999' }}>Please select a lecture to view.</p>
                 )}
               </div>
+
             </div>
+
             {/* /Content */}
           </div>
         </div>

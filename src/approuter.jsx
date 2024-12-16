@@ -118,6 +118,7 @@ import StudentSetting from "./components/student/setting/studentSetting.jsx";
 import StudentSocialProfile from "./components/student/setting/studentSocialProfile.jsx";
 import StudentCourses from "./components/student/studentCourses/index.jsx";
 import StudentDashboard from "./components/student/studentDashboard/index.jsx";
+import StudentFinalTest from "./components/student/studentFinalTest/StudentFinalTest.jsx";
 import StudentLearningSchedule from "./components/student/studentLearningSchedule/index.jsx";
 import StudentMessages from "./components/student/studentMessages/index.jsx";
 import StudentOrderHistory from "./components/student/studentOrderHistory/index.jsx";
@@ -159,6 +160,7 @@ const Approuter = () => {
         <Route path="/course-details1" element={<CourseDetails1 />} />
         <Route path="/course-details2" element={<CourseDetails2 />} />
         <Route path="/course-lesson/:courseId" element={<CourseLesson />} />
+        <Route path="/student-final-test/:testId" element={<StudentFinalTest />} />
         <Route path="/come-soon" element={<ComingSoon />} />
         <Route path="/error-404" element={<Error404 />} />
         <Route path="/error-500" element={<Error500 />} />
@@ -429,7 +431,7 @@ const Approuter = () => {
         <Route path="/student/student-qa" element={<StudentQA />} />
         <Route path="/student/student-study" element={<StudentStudy />} />
         <Route path="/student/student-messages" element={<StudentMessages />} />
-        <Route path="/student/students-profile" element={<StudentProfile />} />
+        {/* <Route path="/student/students-profile" element={<StudentProfile />} /> */}
         <Route path="/student/students-grid" element={<StudentsGrid />} />
         <Route path="/student/students-grid2" element={<StudentsGrid2 />} />
         <Route path="/student/students-list" element={<StudentsList />} />
