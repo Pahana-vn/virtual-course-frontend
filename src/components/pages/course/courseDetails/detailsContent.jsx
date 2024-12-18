@@ -101,7 +101,7 @@ const DetailsContent = ({ course }) => {
                       </Link>
                       <div className="video-details">
                         <div className="course-fee">
-                          <h2>{course.price ? `$${course.price}` : 'FREE'}</h2>
+                          <h2>{course.price ? `$${course.price}` : 'Loading...'}</h2>
                         </div>
                         <div className="row gx-2">
                           <div className="col-md-6 addHeart">

@@ -110,11 +110,6 @@ const GridInnerPage = () => {
                     BUY NOW
                   </Link>
 
-
-
-
-
-
                 </div>
               </div>
             </div>

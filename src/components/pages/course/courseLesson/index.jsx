@@ -1,5 +1,8 @@
+// components/student/CourseLesson.js
+
 import React, { useEffect, useState } from "react";
 import Collapse from 'react-bootstrap/Collapse';
+import { FaCheckCircle } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import YouTube from 'react-youtube';
 import { fetchCourseDetailsForStudent } from "../../../../services/courseService";
@@ -13,7 +16,7 @@ const CourseLesson = () => {
   const [course, setCourse] = useState(null);
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [openSections, setOpenSections] = useState({});
-  const studentId = 1; // Giả sử studentId = 1
+  const studentId = 1; // Lấy từ authentication context nếu có
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -39,7 +42,33 @@ const CourseLesson = () => {
   };
 
   const handleLectureClick = (lecture) => {
-    setSelectedLecture(lecture);
+    if (lecture.completed) {
+      setSelectedLecture(lecture);
+    } else {
+      // Kiểm tra xem có thể truy cập bài giảng này không
+      const canAccess = canAccessLecture(lecture);
+      if (canAccess) {
+        setSelectedLecture(lecture);
+      } else {
+        alert("Vui lòng hoàn thành các bài giảng trước đó trước khi truy cập bài giảng này.");
+      }
+    }
+  };
+
+  const canAccessLecture = (lecture) => {
+    // Logic để kiểm tra xem học sinh đã hoàn thành các bài giảng trước đó chưa
+    // Ví dụ: Kiểm tra thứ tự bài giảng
+    for (const section of course.sections) {
+      for (const l of section.lectures) {
+        if (l.id === lecture.id) {
+          return true; // Có thể truy cập bài giảng này
+        }
+        if (!l.completed) {
+          return false; // Không thể truy cập nếu bài giảng trước chưa hoàn thành
+        }
+      }
+    }
+    return false; // Mặc định không thể truy cập
   };
 
   const onVideoEnd = async () => {
@@ -47,7 +76,7 @@ const CourseLesson = () => {
     try {
       await completeLecture(studentId, selectedLecture.id);
 
-      // Phải truyền cả studentId
+      // Lấy lại dữ liệu cập nhật
       const updatedData = await fetchCourseDetailsForStudent(courseId, studentId);
       setCourse(updatedData);
 
@@ -63,7 +92,6 @@ const CourseLesson = () => {
       console.error("Error completing lecture:", error);
     }
   };
-
 
   const renderYouTubePlayer = (videoUrl) => {
     const videoId = extractYouTubeId(videoUrl);
@@ -134,7 +162,10 @@ const CourseLesson = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
-                                cursor: 'pointer'
+                                cursor: lecture.completed || canAccessLecture(lecture) ? 'pointer' : 'not-allowed',
+                                backgroundColor: lecture.completed ? '#f0f8ff' : '#ffe6e6',
+                                padding: '5px',
+                                borderRadius: '5px'
                               }}
                               onClick={() => handleLectureClick(lecture)}
                             >
@@ -153,7 +184,10 @@ const CourseLesson = () => {
                               >
                                 {lecture.titleLecture}
                               </p>
-                              <div style={{ flexShrink: 0 }}>
+                              <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                                {lecture.completed && (
+                                  <FaCheckCircle style={{ color: 'green', marginRight: '5px' }} />
+                                )}
                                 {lecture.lectureVideo ? (
                                   <img src={Play} alt="Play" style={{ width: '20px', height: '20px' }} />
                                 ) : (
@@ -172,10 +206,10 @@ const CourseLesson = () => {
                   {course.finalTestId ? (
                     course.allLecturesCompleted ? (
                       <div>
-                        <h4 style={{ color: 'green', fontWeight: 'bold' }}>
+                        <h4 style={{ color: 'black', fontWeight: 'bold' }}>
                           Take The Test
                         </h4>
-                        <Link to={`/student-final-test/${course.finalTestId}`} className="btn btn-primary">
+                        <Link to={`/student-final-test/${course.finalTestId}`} className="btn btn-dark">
                           {course.finalTestTitle || "Final Test"}
                         </Link>
                       </div>
@@ -225,7 +259,6 @@ const CourseLesson = () => {
                             <p>{article.content}</p>
                             {article.fileUrl && (
                               <a href={article.fileUrl} target="_blank" rel="noopener noreferrer">
-                                {/* <b>Click to View Document</b> */}
                                 <button type="button" className="btn btn-outline-secondary">Click to View Document</button>
                               </a>
                             )}

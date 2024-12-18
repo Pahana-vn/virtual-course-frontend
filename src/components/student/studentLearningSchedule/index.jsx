@@ -211,14 +211,14 @@ const StudentLearningSchedule = () => {
                 <Modal.Footer>
                     {selectedEvent && (
                         <Button variant="danger" onClick={() => deleteEvent(selectedEvent.id)}>
-                            <FaTrashAlt /> Delete Event
+                            <FaTrashAlt /> Delete
                         </Button>
                     )}
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
                         Close
                     </Button>
                     <Button variant="primary" onClick={addEvent}>
-                        Save Event
+                        Save
                     </Button>
                 </Modal.Footer>
             </Modal>

@@ -1,3 +1,5 @@
+// components/student/StudentStudy.js
+
 import React, { useEffect, useState } from "react";
 import { Search } from "react-feather";
 import { useSelector } from "react-redux";
@@ -100,8 +102,20 @@ const StudentStudy = () => {
               </Link>
             </div>
             <div className="product-content">
-              <h3 className="title">
-                <Link to={`/course-details/${course.id}`}>
+              <h3
+                className="title"
+                style={{
+                  fontSize: "20px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+                title={course.titleCourse} // Hiển thị đầy đủ khi hover
+              >
+                <Link
+                  to={`/course-details/${course.id}`}
+                  style={{ textDecoration: "none", color: "#000" }}
+                >
                   {course.titleCourse}
                 </Link>
               </h3>
@@ -222,10 +236,12 @@ const StudentStudy = () => {
                           </div>
                         </div>
 
+                        {/* Enrolled Courses */}
                         <div className="row">
                           <h3>Enrolled Courses</h3>
                           {renderCourses(courses.enrolled)}
                         </div>
+
                       </div>
                     </div>
                   </div>
