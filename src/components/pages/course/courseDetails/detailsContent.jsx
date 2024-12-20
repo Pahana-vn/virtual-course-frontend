@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../../services/studentService";
 import { Video } from "../../../imagepath";
 
@@ -12,17 +14,17 @@ const DetailsContent = ({ course }) => {
   const studentId = 1;
 
   useEffect(() => {
-    const getCartCourses = async () => {
+    const getCartAndWishlistData = async () => {
       try {
-        // Thay vì fetchStudentCourses, dùng fetchCartItems
         const courses = await fetchCartItems(studentId);
         setCartCourses(courses);
       } catch (error) {
         console.error("Error fetching cart items: ", error);
+        toast.error("Unable to get cart information.");
       }
     };
 
-    getCartCourses();
+    getCartAndWishlistData();
   }, [studentId]);
 
   const isCourseInCart = (courseId) => {
@@ -32,7 +34,7 @@ const DetailsContent = ({ course }) => {
   const handleAddToCart = async () => {
     console.log("Course ID: ", course.id);
     if (isCourseInCart(course.id)) {
-      alert("This course is already in your cart!");
+      toast.info("This course is already in your cart!");
       return;
     }
 
@@ -46,9 +48,12 @@ const DetailsContent = ({ course }) => {
       console.log("Course data to send: ", courseData);
 
       await addCourseToCart(studentId, courseData);
-      alert("Added to cart successfully!");
+      toast.success("Added to cart successfully!");
     } catch (error) {
-      alert((error.response ? error.response.data : error.message));
+      const errorMessage = error.response && error.response.data
+        ? error.response.data
+        : error.message;
+      toast.error(`Lỗi: ${errorMessage}`);
     } finally {
       setCartLoading(false);
     }
@@ -58,16 +63,16 @@ const DetailsContent = ({ course }) => {
     try {
       setLoading(true);
       await addCourseToWishlist(studentId, course.id);
-      alert("Added to wishlist successfully!");
+      toast.success("Added to favorites successfully!");
     } catch (error) {
       if (error.response) {
         if (error.response.status === 400) {
-          alert("This course is already in your wishlist!");
+          toast.info("This course is already in your wishlist!");
         } else {
-          alert("Error: " + (error.response.data || "Failed to add to wishlist"));
+          toast.error(`ErrorError: ${error.response.data || "Cannot add to favorites"}`);
         }
       } else {
-        alert("Network error, please try again later.");
+        toast.error("Network error, please try again later.");
       }
     } finally {
       setLoading(false);
@@ -80,7 +85,28 @@ const DetailsContent = ({ course }) => {
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
-              {/* Course details and content can go here */}
+              <h1>{course.titleCourse}</h1>
+              <p>{course.description}</p>
+              {course.learn && course.learn.length > 0 && (
+                <div>
+                  <h3>What You Will Learn</h3>
+                  <ul>
+                    {course.learn.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {course.requirements && course.requirements.length > 0 && (
+                <div>
+                  <h3>Requirements</h3>
+                  <ul>
+                    {course.requirements.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="col-lg-4">
@@ -97,11 +123,11 @@ const DetailsContent = ({ course }) => {
                         <div className="play-icon">
                           <i className="fa-solid fa-play" />
                         </div>
-                        <img className="" src={Video} alt="" />
+                        <img className="" src={Video} alt="Video Preview" />
                       </Link>
                       <div className="video-details">
                         <div className="course-fee">
-                          <h2>{course.price ? `$${course.price}` : 'Loading...'}</h2>
+                          <h2>{course.price ? `$${course.price}` : 'Loading..'}</h2>
                         </div>
                         <div className="row gx-2">
                           <div className="col-md-6 addHeart">
@@ -110,7 +136,7 @@ const DetailsContent = ({ course }) => {
                               onClick={handleAddToCart}
                               disabled={cartLoading}
                             >
-                              {cartLoading ? "Adding to Cart..." : "Add Cart"}
+                              {cartLoading ? "Adding to cart..." : "Add to cart"}
                             </button>
                           </div>
 
@@ -120,13 +146,13 @@ const DetailsContent = ({ course }) => {
                               onClick={handleAddToWishlist}
                               disabled={loading}
                             >
-                              {loading ? "Adding..." : "Add to Wishlist"}
+                              {loading ? "Adding..." : "Add to Favorites"}
                             </button>
                           </div>
                         </div>
 
                         <Link to="/checkout" className="btn btn-enroll w-100">
-                          Enroll Now
+                          Buy now
                         </Link>
                       </div>
                     </div>

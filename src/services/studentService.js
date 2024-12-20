@@ -41,7 +41,6 @@ export const fetchStudentCourses = async (studentId) => {
     }
 };
 
-
 export const addCourseToWishlist = async (studentId, courseId) => {
     try {
         const response = await api.post(`/students/${studentId}/wishlist`, { id: courseId });
@@ -82,6 +81,27 @@ export const removeCourseFromCart = async (studentId, cartItemId) => {
         return response.data;
     } catch (error) {
         console.error("Error removing course from cart:", error);
+        throw error;
+    }
+};
+
+export const fetchWishlist = async (studentId) => {
+    try {
+        const response = await api.get(`/favorite/${studentId}`);
+        return response.data; // Giả sử backend trả về danh sách CourseDTO
+    } catch (error) {
+        console.error("Error fetching wishlist:", error);
+        throw error;
+    }
+};
+
+// Remove Course from Wishlist
+export const removeCourseFromWishlist = async (studentId, courseId) => {
+    try {
+        const response = await api.delete(`/students/${studentId}/wishlist/${courseId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error removing course from wishlist:", error);
         throw error;
     }
 };

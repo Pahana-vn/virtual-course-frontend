@@ -34,6 +34,3 @@ export const fetchCourseDetailsForStudent = async (courseId, studentId) => {
     const response = await api.get(`/courses/${courseId}/details-for-student?studentId=${studentId}`);
     return response.data;
 };
-
-
-
