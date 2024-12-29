@@ -13,6 +13,7 @@
 
 # misc
 .DS_Store
+.env.REACT_APP_YOUTUBE_DATA_API_V3
 .env.local
 .env.development.local
 .env.test.local
