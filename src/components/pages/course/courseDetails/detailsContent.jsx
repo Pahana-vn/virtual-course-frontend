@@ -221,7 +221,6 @@ const DetailsContent = () => {
                         </li>
                       </ul>
                     </div>
-
                   </div>
                   <div className="course-card">
                     <h6 className="cou-title">
@@ -314,7 +313,6 @@ const DetailsContent = () => {
                         </li>
                       </ul>
                     </div>
-
                   </div>
                   <div className="course-card">
                     <h6 className="cou-title mb-0">
@@ -327,7 +325,6 @@ const DetailsContent = () => {
                         Type, Color &amp; Icon Introduction
                       </Link>
                     </h6>
-
                     <div
                       id="coursefour"
                       className="card-collapse collapse"
@@ -407,7 +404,6 @@ const DetailsContent = () => {
                         </li>
                       </ul>
                     </div>
-
                   </div>
                 </div>
               </div>

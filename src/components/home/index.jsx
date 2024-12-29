@@ -22,10 +22,7 @@ import {
   Icon10,
   Icon12,
   Icon13,
-  Icon14,
   Icon15,
-  Icon16,
-  Icon17,
   Icon18,
   Icon2,
   Icon7,
@@ -143,7 +140,6 @@ export const Home = () => {
                               value={options.value}
                               defaultValue={options[0]}
                               placeholder="Category"
-
                               styles={style}
                             ></Select>
                           </span>

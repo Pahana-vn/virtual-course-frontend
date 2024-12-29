@@ -1,18 +1,24 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Home, LogOut, Moon, Star } from "react-feather";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import useAvatar from "../../../hooks/useAvatar";
+import { selectCurrentUser } from "../../common/redux/slices/authSlice";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
-import {
-  logo,
-  ProfileAvatar,
-  User15,
-  User17,
-} from "../../imagepath";
+import { logo } from "../../imagepath";
 import DarkMode from "../../common/darkMode";
 // eslint-disable-next-line react/prop-types
+
 export function InstructorHeader({ activeMenu }) {
-  console.log(activeMenu === "Dashboard", "activeMenu");
+ 
+  const user = useSelector(selectCurrentUser);
+  const id = useSelector((state) => state.auth.user.id);
+
+  const { data } = useAvatar({ id, role: "ROLE_INSTRUCTOR" });
+  const avatarUrl = data?.url || "default-avatar.png";
+
   const [navbar, setNavbar] = useState(false);
 
   const [showCart, setShowCart] = useState(false);
@@ -138,11 +144,7 @@ export function InstructorHeader({ activeMenu }) {
         >
           <div className="container ">
             <div className="navbar-header">
-              <Link
-                id="mobile_btn"
-                to="#"
-                onClick={openMobileMenu}
-              >
+              <Link id="mobile_btn" to="#" onClick={openMobileMenu}>
                 <span className="bar-icon">
                   <span></span>
                   <span></span>
@@ -208,7 +210,6 @@ export function InstructorHeader({ activeMenu }) {
                       mobileSubMenu2 ? "submenu submenuShow" : "submenu"
                     }
                   >
-
                     <li
                       className={
                         activeMenu === "List" || activeMenu === "Grid"
@@ -218,10 +219,7 @@ export function InstructorHeader({ activeMenu }) {
                     >
                       <Link to="/instructor/instructor-list">
                         Instructor
-                        <i
-                          className=""
-                          onClick={openMobileSubMenu22}
-                        ></i>
+                        <i className="" onClick={openMobileSubMenu22}></i>
                       </Link>
                       <ul
                         className={
@@ -229,45 +227,73 @@ export function InstructorHeader({ activeMenu }) {
                         }
                       >
                         <li className={activeMenu === "List" ? "active" : ""}>
-                          <Link to="/instructor/instructor-list" onClick={hideMobileMenu}>
+                          <Link
+                            to="/instructor/instructor-list"
+                            onClick={hideMobileMenu}
+                          >
                             List
                           </Link>
                         </li>
                         <li className={activeMenu === "Grid" ? "active" : ""}>
-                          <Link to="/instructor/instructor-grid" onClick={hideMobileMenu}>
+                          <Link
+                            to="/instructor/instructor-grid"
+                            onClick={hideMobileMenu}
+                          >
                             Grid
                           </Link>
                         </li>
                       </ul>
                     </li>
                     <li className={activeMenu === "Dashboard" ? "active" : ""}>
-                      <Link to="/instructor/instructor-dashboard" onClick={hideMobileMenu}>
+                      <Link
+                        to="/instructor/instructor-dashboard"
+                        onClick={hideMobileMenu}
+                      >
                         Dashboard
                       </Link>
                     </li>
                     <li className={activeMenu === "My Profile" ? "active" : ""}>
-                      <Link to="/instructor/instructor-profiles" onClick={hideMobileMenu}>
+                      <Link
+                        to="/instructor/instructor-profiles"
+                        onClick={hideMobileMenu}
+                      >
                         My Profile
                       </Link>
                     </li>
-                   
+
                     <li className={activeMenu === "My Course" ? "active" : ""}>
-                      <Link to="/instructor/instructor-enrolled-course" onClick={hideMobileMenu}>
+                      <Link
+                        to="/instructor/instructor-enrolled-course"
+                        onClick={hideMobileMenu}
+                      >
                         My Course
                       </Link>
                     </li>
                     <li className={activeMenu === "Wishlist" ? "active" : ""}>
-                      <Link to="/instructor/instructor-wishlist" onClick={hideMobileMenu}>
+                      <Link
+                        to="/instructor/instructor-wishlist"
+                        onClick={hideMobileMenu}
+                      >
                         Wishlist
                       </Link>
                     </li>
                     <li className={activeMenu === "Reviews" ? "active" : ""}>
-                      <Link to="/instructor/instructor-reviews" onClick={hideMobileMenu}>
+                      <Link
+                        to="/instructor/instructor-reviews"
+                        onClick={hideMobileMenu}
+                      >
                         Reviews
                       </Link>
                     </li>
-                    <li className={activeMenu === "My Quiz Attempts" ? "active" : ""}>
-                      <Link to="/instructor/instructor-quiz" onClick={hideMobileMenu}>
+                    <li
+                      className={
+                        activeMenu === "My Quiz Attempts" ? "active" : ""
+                      }
+                    >
+                      <Link
+                        to="/instructor/instructor-quiz"
+                        onClick={hideMobileMenu}
+                      >
                         My Quiz Attempts
                       </Link>
                     </li>
@@ -279,14 +305,19 @@ export function InstructorHeader({ activeMenu }) {
                         Orders
                       </Link>
                     </li>
-                    <li className={activeMenu === "Question & Answer" ? "active" : ""}>
-                      <Link to="/instructor/instructor-qa" onClick={hideMobileMenu}>
+                    <li
+                      className={
+                        activeMenu === "Question & Answer" ? "active" : ""
+                      }
+                    >
+                      <Link
+                        to="/instructor/instructor-qa"
+                        onClick={hideMobileMenu}
+                      >
                         Question & Answer
                       </Link>
                     </li>
-                    <li
-                      className={activeMenu === "Referrals" ? "active" : ""}
-                    >
+                    <li className={activeMenu === "Referrals" ? "active" : ""}>
                       <Link
                         to="/instructor/instructor-referral"
                         onClick={hideMobileMenu}
@@ -294,9 +325,7 @@ export function InstructorHeader({ activeMenu }) {
                         Referrals
                       </Link>
                     </li>
-                    <li
-                      className={activeMenu === "Message" ? "active" : ""}
-                    >
+                    <li className={activeMenu === "Message" ? "active" : ""}>
                       <Link
                         to="/instructor/instructor-chat"
                         onClick={hideMobileMenu}
@@ -305,8 +334,10 @@ export function InstructorHeader({ activeMenu }) {
                       </Link>
                     </li>
                     <li
-                    className={activeMenu === "Support Ticket" ? "active" : ""}
-                  >
+                      className={
+                        activeMenu === "Support Ticket" ? "active" : ""
+                      }
+                    >
                       <Link
                         to="/instructor/instructor-ticket"
                         onClick={hideMobileMenu}
@@ -314,7 +345,9 @@ export function InstructorHeader({ activeMenu }) {
                         Support Ticket
                       </Link>
                     </li>
-                    <li className={activeMenu === "Notifications" ? "active" : ""}>
+                    <li
+                      className={activeMenu === "Notifications" ? "active" : ""}
+                    >
                       <Link
                         to="/instructor/instructor-notifications"
                         onClick={hideMobileMenu}
@@ -322,9 +355,7 @@ export function InstructorHeader({ activeMenu }) {
                         Notifications
                       </Link>
                     </li>
-                    <li
-                      className={activeMenu === "Settings" ? "active" : ""}
-                    >
+                    <li className={activeMenu === "Settings" ? "active" : ""}>
                       <Link
                         to="/instructor/instructor-settings"
                         onClick={hideMobileMenu}
@@ -358,10 +389,7 @@ export function InstructorHeader({ activeMenu }) {
                     >
                       <Link to="/student/students-list">
                         Student
-                        <i
-                          className=""
-                          onClick={openMobileSubMenu32}
-                        ></i>
+                        <i className="" onClick={openMobileSubMenu32}></i>
                       </Link>
                       <ul
                         className={
@@ -369,19 +397,28 @@ export function InstructorHeader({ activeMenu }) {
                         }
                       >
                         <li className={activeMenu === "List" ? "active" : ""}>
-                          <Link to="/student/students-list" onClick={hideMobileMenu}>
+                          <Link
+                            to="/student/students-list"
+                            onClick={hideMobileMenu}
+                          >
                             List
                           </Link>
                         </li>
                         <li className={activeMenu === "Grid1" ? "active" : ""}>
-                          <Link to="/student/students-grid" onClick={hideMobileMenu}>
+                          <Link
+                            to="/student/students-grid"
+                            onClick={hideMobileMenu}
+                          >
                             Grid
                           </Link>
                         </li>
                       </ul>
                     </li>
                     <li className={activeMenu === "Dashboard" ? "active" : ""}>
-                      <Link to="/student/student-dashboard" onClick={hideMobileMenu}>
+                      <Link
+                        to="/student/student-dashboard"
+                        onClick={hideMobileMenu}
+                      >
                         Student Dashboard
                       </Link>
                     </li>
@@ -394,7 +431,9 @@ export function InstructorHeader({ activeMenu }) {
                       </Link>
                     </li>
                     <li
-                      className={activeMenu === "Enrolled Courses" ? "active" : ""}
+                      className={
+                        activeMenu === "Enrolled Courses" ? "active" : ""
+                      }
                     >
                       <Link
                         to="/student/student-courses"
@@ -403,32 +442,29 @@ export function InstructorHeader({ activeMenu }) {
                         Enrolled Courses
                       </Link>
                     </li>
-                    <li
-                      className={activeMenu === "Wishlist" ? "active" : ""}
-                    >
+                    <li className={activeMenu === "Wishlist" ? "active" : ""}>
                       <Link
                         to="/student/student-wishlist"
                         onClick={hideMobileMenu}
                       >
-                      Wishlist
+                        Wishlist
                       </Link>
                     </li>
-                    <li
-                      className={activeMenu === "Reviews" ? "active" : ""}
-                    >
+                    <li className={activeMenu === "Reviews" ? "active" : ""}>
                       <Link
                         to="/student/student-reviews"
                         onClick={hideMobileMenu}
                       >
-                      Reviews
+                        Reviews
                       </Link>
                     </li>
-                    <li className={activeMenu === "My Quiz Attempts" ? "active" : ""}>
-                      <Link
-                        to="/student/student-quiz"
-                        onClick={hideMobileMenu}
-                      >
-                       My Quiz Attempts
+                    <li
+                      className={
+                        activeMenu === "My Quiz Attempts" ? "active" : ""
+                      }
+                    >
+                      <Link to="/student/student-quiz" onClick={hideMobileMenu}>
+                        My Quiz Attempts
                       </Link>
                     </li>
 
@@ -437,20 +473,19 @@ export function InstructorHeader({ activeMenu }) {
                         to="/student/student-order-history"
                         onClick={hideMobileMenu}
                       >
-                       Orders
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Question & Answer" ? "active" : ""}>
-                      <Link
-                        to="/student/student-qa"
-                        onClick={hideMobileMenu}
-                      >
-                        Question & Answer
+                        Orders
                       </Link>
                     </li>
                     <li
-                      className={activeMenu === "Referrals" ? "active" : ""}
+                      className={
+                        activeMenu === "Question & Answer" ? "active" : ""
+                      }
                     >
+                      <Link to="/student/student-qa" onClick={hideMobileMenu}>
+                        Question & Answer
+                      </Link>
+                    </li>
+                    <li className={activeMenu === "Referrals" ? "active" : ""}>
                       <Link
                         to="/student/student-referral"
                         onClick={hideMobileMenu}
@@ -466,7 +501,11 @@ export function InstructorHeader({ activeMenu }) {
                         Messages
                       </Link>
                     </li>
-                    <li className={activeMenu === "Support Ticket" ? "active" : ""}>
+                    <li
+                      className={
+                        activeMenu === "Support Ticket" ? "active" : ""
+                      }
+                    >
                       <Link
                         to="/student/student-tickets"
                         onClick={hideMobileMenu}
@@ -482,7 +521,6 @@ export function InstructorHeader({ activeMenu }) {
                         Settings
                       </Link>
                     </li>
-                   
                   </ul>
                 </li>
                 <li className="has-submenu">
@@ -516,10 +554,7 @@ export function InstructorHeader({ activeMenu }) {
                     <li className="has-submenu">
                       <Link to="/course-list">
                         Course{" "}
-                        <i
-                          className=""
-                          onClick={openMobileSubMenu42}
-                        ></i>
+                        <i className="" onClick={openMobileSubMenu42}></i>
                       </Link>
                       <ul
                         className={
@@ -542,10 +577,7 @@ export function InstructorHeader({ activeMenu }) {
                           </Link>
                         </li>
                         <li>
-                          <Link
-                            to="/course-details"
-                            onClick={hideMobileMenu}
-                          >
+                          <Link to="/course-details" onClick={hideMobileMenu}>
                             Course Details
                           </Link>
                         </li>
@@ -554,10 +586,7 @@ export function InstructorHeader({ activeMenu }) {
                     <li className="has-submenu">
                       <Link to="/come-soon">
                         Error
-                        <i
-                          className=""
-                          onClick={openMobileSubMenu43}
-                        ></i>
+                        <i className="" onClick={openMobileSubMenu43}></i>
                       </Link>
                       <ul
                         className={
@@ -679,7 +708,7 @@ export function InstructorHeader({ activeMenu }) {
               </ul>
             </div>
             <ul className="nav header-navbar-rht">
-            <DarkMode />
+              <DarkMode />
               <li className="nav-item user-nav">
                 <Link
                   to="#"
@@ -690,7 +719,7 @@ export function InstructorHeader({ activeMenu }) {
                   onClick={profileClick}
                 >
                   <span className="user-img">
-                    <img src={User17} alt="" />
+                    <img src={avatarUrl} alt="" />
                     <span className="status online"></span>
                   </span>
                 </Link>
@@ -706,13 +735,13 @@ export function InstructorHeader({ activeMenu }) {
                   <div className="user-header">
                     <div className="avatar avatar-sm">
                       <img
-                        src={User17}
+                        src={avatarUrl}
                         alt="User Image"
                         className="avatar-img rounded-circle"
                       />
                     </div>
                     <div className="user-text">
-                      <h6>Eugene Andre</h6>
+                      <h6>{user.fullname}</h6>
                       <p className="text-muted text mb-0">Instructor</p>
                     </div>
                   </div>
@@ -720,18 +749,25 @@ export function InstructorHeader({ activeMenu }) {
                     className="dropdown-item"
                     to="/instructor/instructor-dashboard"
                   >
-                    <Home size={14} color={"#FF875A"} className="feather-home me-1" />{" "}
+                    <Home
+                      size={14}
+                      color={"#FF875A"}
+                      className="feather-home me-1"
+                    />{" "}
                     Dashboard
                   </Link>
                   <Link
                     className="dropdown-item text"
                     to="/instructor/instructor-settings"
                   >
-                    <Star size={14} color={"#FF875A"} className="feather-star me-1" />{" "}
+                    <Star
+                      size={14}
+                      color={"#FF875A"}
+                      className="feather-star me-1"
+                    />{" "}
                     Edit Profile
                   </Link>
-                  
-                  <Link className="dropdown-item text" to="/home">
+                  <Link className="dropdown-item text" to="/logout">
                     <LogOut
                       size={14}
                       color={"#FF875A"}
@@ -751,3 +787,11 @@ export function InstructorHeader({ activeMenu }) {
     </header>
   );
 }
+InstructorHeader.propTypes = {
+  id: PropTypes.number,
+  activeMenu: PropTypes.string,
+};
+
+InstructorHeader.defaultProps = {
+  activeMenu: null,
+};

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import {
   setExpandMenu,
-} from "../common/redux/sidebarSlice";
+} from "./redux/slices/sidebarSlice";
 const DarkMode = () => {
   const dispatch = useDispatch();
 

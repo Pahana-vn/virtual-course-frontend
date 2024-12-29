@@ -9,13 +9,13 @@ import Home from "./components/home";
 const AppContainer = function () {
   return (
     // <Router basename={`${config.publicPath}`}>
-    <Router basename="/home">
+    <Router basename="/">
       <>
         <Route render={(props) => <Header {...props} />} />
-
-        {/* home */}
-        <Route exact path="/home" component={Home} />
-
+        
+          {/* home */}
+          <Route exact path="/home" component={Home} />
+        
 
         <Route render={(props) => <Footer {...props} />} />
       </>

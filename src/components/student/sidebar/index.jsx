@@ -25,7 +25,6 @@ export default function StudentSidebar() {
                   <Link to="/student/student-profile">Rolands Richard</Link>
                 </h4>
                 <p>Student</p>
-
               </div>
             </div>
           </div>

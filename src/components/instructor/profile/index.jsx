@@ -1,4 +1,6 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../common/redux/slices/authSlice";
 import { InstructorHeader } from "../../instructor/header";
 import Footer from "../../footer";
 import {
@@ -19,6 +21,8 @@ import {
 import { Link } from "react-router-dom";
 
 export default function InstructorProfile() {
+  const user = useSelector(selectCurrentUser);
+  console.log(user)
   return (
     <div className="main-wrapper">
       <InstructorHeader activeMenu={"Profile"} />

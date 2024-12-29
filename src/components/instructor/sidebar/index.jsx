@@ -1,13 +1,18 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import StickyBox from "react-sticky-box";
-import { User17 } from "../../imagepath";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-
+import { selectCurrentUser } from "../../common/redux/slices/authSlice";
+import useAvatar from "../../../hooks/useAvatar";
 // eslint-disable-next-line react/prop-types
 export default function InstructorSidebar() {
   const location = useLocation();
-
+  const user = useSelector(selectCurrentUser);
+  const id = useSelector((state) => state.auth.user.id);
+  const { data } = useAvatar({ id: id, role: "ROLE_INSTRUCTOR" });
+  const avatar = data?.url;
   return (
     <div className="col-xl-3 col-lg-3 theiaStickySidebar">
       <StickyBox offsetTop={20} offsetBottom={20}>
@@ -16,17 +21,17 @@ export default function InstructorSidebar() {
             <div className="profile-bg">
               <div className="profile-img">
                 <Link to="/instructor/instructor-profile">
-                  <img src={User17} alt="Img" />
+                  <img src={avatar || "https://via.placeholder.com/150"} alt={`${user.fullname}'s avatar`} />
                 </Link>
               </div>
             </div>
             <div className="profile-group">
               <div className="profile-name text-center">
                 <h4>
-                  <Link to="/instructor/instructor-profile">Eugene Andre</Link>
+                  <Link to="/instructor/instructor-profile">{user.fullname || "Instructor Name"}</Link>
                 </h4>
                 <p>Instructor</p>
-                <Link to="/add-course" className="add-course btn-primary">
+                <Link to="/instructor/add-course" className="add-course btn-primary">
                   Add New Course
                 </Link>
               </div>
@@ -51,7 +56,7 @@ export default function InstructorSidebar() {
                   My Profile
                 </Link>
               </li>
-              <li className={`nav-item ${location.pathname === '/instructor/instructor-enrolled-course' ? 'active' : ''}`}>
+              {/* <li className={`nav-item ${location.pathname === '/instructor/instructor-enrolled-course' ? 'active' : ''}`}>
                 <Link
                   to="/instructor/instructor-enrolled-course"
                   className="nav-link"
@@ -66,7 +71,7 @@ export default function InstructorSidebar() {
                   <i className="bx bxs-heart" />
                   Wishlist
                 </Link>
-              </li>
+              </li> */}
               <li className={`nav-item ${location.pathname === '/instructor/instructor-reviews' ? 'active' : ''}`}>
 
                 <Link to="/instructor/instructor-reviews" className="nav-link">
@@ -74,12 +79,12 @@ export default function InstructorSidebar() {
                   Reviews
                 </Link>
               </li>
-              <li className={`nav-item ${location.pathname === '/instructor/instructor-quiz' || location.pathname === '/instructor/instructor-quiz-details' ? 'active' : ''}`}>
+              {/* <li className={`nav-item ${location.pathname === '/instructor/instructor-quiz' || location.pathname === '/instructor/instructor-quiz-details' ? 'active' : ''}`}>
               <Link to="/instructor/instructor-quiz" className="nav-link">
                   <i className="bx bxs-shapes" />
                   My Quiz Attempts
                 </Link>
-              </li>
+              </li> */}
               <li className={`nav-item ${location.pathname === '/instructor/instructor-orders' ? 'active' : ''}`}>
                 <Link to="/instructor/instructor-orders" className="nav-link">
                   <i className="bx bxs-cart" />
@@ -93,12 +98,12 @@ export default function InstructorSidebar() {
                   Question &amp; Answer
                 </Link>
               </li>
-              <li className={`nav-item ${location.pathname === '/instructor/instructor-referral' ? 'active' : ''}`}>
+              {/* <li className={`nav-item ${location.pathname === '/instructor/instructor-referral' ? 'active' : ''}`}>
                 <Link to="/instructor/instructor-referral" className="nav-link">
                   <i className="bx bxs-user-plus" />
                   Referrals
                 </Link>
-              </li>
+              </li> */}
               <li className={`nav-item ${location.pathname === '/instructor/instructor-chat' ? 'active' : ''}`}>
 
                 <Link to="/instructor/instructor-chat" className="nav-link">
@@ -184,3 +189,10 @@ export default function InstructorSidebar() {
     </div>
   );
 }
+// Định nghĩa propTypes
+InstructorSidebar.propTypes = {
+  accountStatistics: PropTypes.shape({
+    instructorName: PropTypes.string, // instructorName phải là chuỗi
+    // Bạn có thể thêm các thuộc tính khác nếu cần
+  }), // accountStatistics phải là một đối tượng với các thuộc tính đúng kiểu
+};
