@@ -3,7 +3,7 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
     endpoints: builder => ({
         instructors: builder.query({
             query: ({id}) => ({
-                url: `/instructor/${id}`
+                url: `/instructors/${id}`
             }),
             serializeQueryArgs: ({ endpointName }) => {
                 return endpointName
@@ -18,7 +18,7 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
         }),
         instructorStatistics: builder.query({
             query: ({id}) => ({
-                url: `/instructor/${id}/statistics`,
+                url: `/instructors/${id}/statistics`,
             }),
             serializeQueryArgs: ({ endpointName }) => {
                 return endpointName
@@ -33,7 +33,7 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
         }),
         instructorCourses: builder.query({
             query: ({id}) => ({
-                url: `/instructor/${id}/courses`,
+                url: `/instructors/${id}/courses`,
             }),
             serializeQueryArgs: ({ endpointName }) => {
                 return endpointName
@@ -49,7 +49,7 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
          // Thêm endpoint để lấy avatar
         instructorAvatar: builder.query({
             query: ({ id }) => ({
-                url: `/instructor/${id}/avatar`,
+                url: `/instructors/${id}/avatar`,
             }),
             serializeQueryArgs: ({ endpointName }) => {
                 return endpointName;
@@ -64,7 +64,7 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
         }),
         createCourse: builder.mutation({
             query: ({courseData}) => ({
-                url: "/instructor/courses",
+                url: "/instructors/courses",
                 method: 'POST',
                 body: courseData,
             }),

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch  } from "react-redux";
 import { Home, LogOut, Moon, Star } from "react-feather";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -9,15 +9,20 @@ import { selectCurrentUser } from "../../common/redux/slices/authSlice";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
 import { logo } from "../../imagepath";
 import DarkMode from "../../common/darkMode";
+import { logOut } from "../../common/redux/slices/authSlice";
 // eslint-disable-next-line react/prop-types
 
 export function InstructorHeader({ activeMenu }) {
- 
+  const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
   const id = useSelector((state) => state.auth.user.id);
 
   const { data } = useAvatar({ id, role: "ROLE_INSTRUCTOR" });
   const avatarUrl = data?.url || "default-avatar.png";
+
+  const handleLogout = () => {
+    dispatch(logOut());
+  };
 
   const [navbar, setNavbar] = useState(false);
 
@@ -767,7 +772,7 @@ export function InstructorHeader({ activeMenu }) {
                     />{" "}
                     Edit Profile
                   </Link>
-                  <Link className="dropdown-item text" to="/logout">
+                  <Link className="dropdown-item text" to="/logout" onClick={handleLogout}>
                     <LogOut
                       size={14}
                       color={"#FF875A"}

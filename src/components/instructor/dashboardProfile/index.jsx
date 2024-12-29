@@ -21,7 +21,7 @@ const DashboardProfile = () => {
       } 
       try {
         const [response] = await Promise.all([
-          fetch(`http://localhost:8080/api/instructor/profile?username=${encodeURIComponent(username)}`)
+          fetch(`http://localhost:8080/api/instructors/profile?username=${encodeURIComponent(username)}`)
         ]);
         if (!response.ok) {
           throw new Error("Failed to fetch data");

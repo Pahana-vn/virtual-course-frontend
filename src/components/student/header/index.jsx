@@ -1,7 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState } from "react";
+import { useSelector, useDispatch  } from "react-redux";
 import { Home, LogOut, Moon, Star, User } from "react-feather";
 import { Link } from "react-router-dom";
+import useAvatar from "../../../hooks/useAvatar";
+import { selectCurrentUser } from "../../common/redux/slices/authSlice";
+import { logOut } from "../../common/redux/slices/authSlice";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
 import DarkMode from "../../common/darkMode";
 import {
@@ -13,12 +17,23 @@ import {
   Messages,
   Notification,
   User1,
-  User16,
   User2,
   User3, Wish
 } from "../../imagepath";
 // eslint-disable-next-line react/prop-types
 export default function StudentHeader({ activeMenu }) {
+  const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser);
+  const id = useSelector((state) => state.auth.user.id);
+  console.log(id)
+  const { data } = useAvatar({ id, role: "ROLE_STUDENT" });
+  console.log(data)
+
+  const avatarUrl = data?.url || "default-avatar.png";
+
+  const handleLogout = () => {
+    dispatch(logOut());
+  };
   const [navbar, setNavbar] = useState(false);
 
   const [showCart, setShowCart] = useState(false);
@@ -546,7 +561,7 @@ export default function StudentHeader({ activeMenu }) {
                   onClick={profileClick}
                 >
                   <span className="user-img">
-                    <img src={User16} alt="" />
+                    <img src={avatarUrl} alt="" />
                     <span className="status online"></span>
                   </span>
                 </Link>
@@ -562,13 +577,13 @@ export default function StudentHeader({ activeMenu }) {
                   <div className="user-header">
                     <div className="avatar avatar-sm">
                       <img
-                        src={User16}
+                        src={avatarUrl}
                         alt="User Image"
                         className="avatar-img rounded-circle"
                       />
                     </div>
                     <div className="user-text">
-                      <h6>Rolands R</h6>
+                      <h6>{user.fullname}</h6>
                       <p className="text-muted text mb-0">Student</p>
                     </div>
                   </div>
@@ -605,7 +620,7 @@ export default function StudentHeader({ activeMenu }) {
                       />
                     </div>
                   </div>
-                  <Link className="dropdown-item text" to="/home">
+                  <Link className="dropdown-item text" to="/logout" onClick={handleLogout}>
                     <LogOut
                       size={14}
                       color={"#FF875A"}

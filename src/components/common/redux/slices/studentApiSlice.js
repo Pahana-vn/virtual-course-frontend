@@ -3,7 +3,7 @@ export const studentApiSlice = baseApiSlice.injectEndpoints({
     endpoints: builder => ({
         students: builder.query({
             query: ({id}) => ({
-                url: `/student/${id}`
+                url: `/students/${id}`
             }),
             serializeQueryArgs: ({ endpointName }) => {
                 return endpointName
@@ -19,7 +19,7 @@ export const studentApiSlice = baseApiSlice.injectEndpoints({
          // Thêm endpoint để lấy avatar
         studentAvatar: builder.query({
             query: ({ id }) => ({
-                url: `/student/${id}/avatar`,
+                url: `/students/${id}/avatar`,
             }),
             serializeQueryArgs: ({ endpointName }) => {
                 return endpointName;

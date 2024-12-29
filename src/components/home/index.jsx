@@ -24,6 +24,9 @@ import {
   Icon13,
   Icon15,
   Icon18,
+  Icon16,
+  Icon14,
+  Icon17,
   Icon2,
   Icon7,
   Icon8,
@@ -32,12 +35,16 @@ import {
   PencilIcon,
   Share
 } from "../imagepath";
-import Header from "../student/header/index";
+import Header from "../header";
+import {InstructorHeader} from "../instructor/header";
+import StudentHeader from "../student/header";
 import Blog from "./slider/blog";
 import Companies from "./slider/companies";
 import Testimonial from "./slider/testimonial";
 import TopCategory from "./slider/topCategory";
 import TrendingCourse from "./slider/trendingCourse";
+import { selectCurrentRoles } from "../common/redux/slices/authSlice";
+
 
 const options = [
   { label: "Category", value: "Category" },
@@ -50,6 +57,7 @@ const options = [
 export const Home = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const role = useSelector(selectCurrentRoles);
   const mobileSidebar = useSelector((state) => state.sidebarSlice.expandMenu);
 
 
@@ -72,6 +80,16 @@ export const Home = () => {
     AOS.init({ duration: 1000, once: true });
     console.log(mobileSidebar, "gg");
   }, [mobileSidebar]);
+
+  const renderHeader = () => {
+    if (role?.includes("ROLE_INSTRUCTOR")) {
+      return <InstructorHeader />;
+    }
+    if (role?.includes("ROLE_STUDENT")) {
+      return <StudentHeader />;
+    }
+    return <Header />;
+  };
 
   if (loading) return <p>Loading...</p>;
   if (courses.length === 0) return <p>No courses available</p>;
@@ -109,7 +127,7 @@ export const Home = () => {
   return (
     <>
       <div className="main-wrapper">
-        <Header />
+      {renderHeader()}
         {/* banner */}
         <section
           className="home-slide d-flex align-items-center"
