@@ -125,12 +125,6 @@
     background-color: #ff7875;
 }
 
-/* Style cho tổng tiền */
-.wishes-list.dropdown-menu .total-item {
-    padding-top: 10px;
-    border-top: 1px solid #ddd;
-    text-align: right;
-}
 
 /* Style cho phần tử avatar trong notifications */
 .notifications .notification-list .notification-message .avatar img {

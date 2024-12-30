@@ -377,7 +377,7 @@ export default function StudentHeader() {
                                     <h6>
                                       <Link to={`/course-details/${item.course.id}`}>{item.course.titleCourse}</Link>
                                     </h6>
-                                    <p>By {item.course.author}</p>
+                                    <p>By {item.course.instructorFirstName}</p>
                                     <h5>
                                       ${item.course.basePrice} <span>${item.course.discountPrice || item.course.basePrice}</span>
                                     </h5>
@@ -395,11 +395,12 @@ export default function StudentHeader() {
                           <li className="text-center">Your cart is empty.</li>
                         )}
                       </ul>
-                      <div className="total-item">
-                        <h6>Subtotal : $ {calculateSubtotal()}</h6>
-                        <h5>Total : $ {calculateTotal()}</h5>
-                      </div>
                     </div>
+
+                    <div className="wish-header flex-row-reverse">
+                      <h5 >Total : $ {calculateTotal()}</h5>
+                    </div>
+
                   </div>
                 </li>
 
@@ -438,7 +439,7 @@ export default function StudentHeader() {
                                     <h6>
                                       <Link to={`/course-details/${course.id}`}>{course.titleCourse}</Link>
                                     </h6>
-                                    <p>By {course.author}</p>
+                                    <p>By {course.instructorFirstName}</p>
                                     <h5>
                                       ${course.basePrice} <span>${course.discountPrice || course.basePrice}</span>
                                     </h5>
