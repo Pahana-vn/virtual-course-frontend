@@ -1,38 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import PageHeader from "../../../components/student/header";
+import { Link, useLocation } from "react-router-dom";
 import { fetchCartItems, removeCourseFromCart } from "../../../services/studentService";
 import Footer from "../../footer";
 import { Course10, Icon1, Icon2 } from "../../imagepath";
+import PageHeader from "../../student/header/index";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [studentId, setStudentId] = useState(null);
 
-  // Giả lập studentId = 1 khi chưa có đăng nhập
-  const studentId = 1; // Thay đổi sau khi có tính năng đăng nhập
+  const location = useLocation();
 
-  // Lấy giỏ hàng từ API khi trang được tải
   useEffect(() => {
-    const getCartItems = async () => {
-      try {
-        const response = await fetchCartItems(studentId);
-        if (response && Array.isArray(response)) {
-          setCartItems(response); // Cập nhật trạng thái giỏ hàng nếu dữ liệu hợp lệ
-        } else {
-          console.error("Invalid data format received");
-        }
-      } catch (error) {
-        console.error("Error fetching cart items:", error);
-      } finally {
-        setLoading(false);
+    const params = new URLSearchParams(location.search);
+    const id = params.get("studentId");
+    if (id) {
+      setStudentId(id);
+    } else {
+      const storedStudentId = localStorage.getItem("studentId");
+      if (storedStudentId) {
+        setStudentId(storedStudentId);
       }
-    };
+    }
+  }, [location]);
 
-    getCartItems();
+  useEffect(() => {
+    if (studentId) {
+      const getCartItems = async () => {
+        try {
+          setLoading(true);
+          const response = await fetchCartItems(studentId);
+          if (Array.isArray(response)) {
+            setCartItems(response);
+          } else {
+            console.error("Invalid cart data format received");
+          }
+        } catch (error) {
+          console.error("Error fetching cart items:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      getCartItems();
+    }
   }, [studentId]);
 
-  // Tính tổng giá trị giỏ hàng
   const calculateTotal = () => {
     return cartItems.reduce(
       (total, item) => total + (item.course.basePrice || 0) * item.quantity,
@@ -40,12 +53,10 @@ const Cart = () => {
     );
   };
 
-  // Hàm xóa khóa học khỏi giỏ hàng
   const handleRemoveFromCart = async (cartItemId) => {
     try {
       await removeCourseFromCart(studentId, cartItemId);
-      // Sau khi xóa thành công, cập nhật lại danh sách giỏ hàng
-      setCartItems(cartItems.filter(item => item.id !== cartItemId));
+      setCartItems(cartItems.filter((item) => item.id !== cartItemId));
     } catch (error) {
       console.error("Error removing course from cart:", error);
     }
@@ -161,23 +172,15 @@ const Cart = () => {
                         </div>
                         <div className="col-lg-6 col-md-6">
                           <div className="check-outs">
-
-                            {/* <Link to="/checkout" className="btn btn-primary">
-                              Checkout
-                            </Link> */}
-
                             <Link
                               to={{
                                 pathname: `/checkout`,
-                                state: { cartItems: cartItems }, // Pass all cart items as state
+                                state: { cartItems: cartItems },
                               }}
                               className="btn btn-primary"
                             >
                               Checkout
                             </Link>
-
-
-
                           </div>
                         </div>
                         <div className="col-lg-6 col-md-6">

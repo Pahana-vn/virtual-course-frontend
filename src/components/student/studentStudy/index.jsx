@@ -27,6 +27,8 @@ const StudentStudy = () => {
     { label: "Node", value: "3" },
   ];
 
+  const studentId = localStorage.getItem("studentId");
+
   const style = {
     control: (baseStyles, state) => ({
       ...baseStyles,
@@ -71,13 +73,15 @@ const StudentStudy = () => {
   useEffect(() => {
     const fetchCoursesForStudent = async () => {
       try {
-        // API call to fetch courses for student with ID 1
-        const response = await fetchStudentCourses(1); // ID 1 for student
-        setCourses({
-          active: response.active || [],
-          completed: response.completed || [],
-          enrolled: response.enrolled || [],
-        });
+        const studentId = localStorage.getItem("studentId");
+        if (studentId) {
+          const response = await fetchStudentCourses(studentId);
+          setCourses({
+            active: response.active || [],
+            completed: response.completed || [],
+            enrolled: response.enrolled || [],
+          });
+        }
       } catch (error) {
         console.error("Error fetching student courses:", error);
       }
@@ -86,7 +90,6 @@ const StudentStudy = () => {
     fetchCoursesForStudent();
   }, []);
 
-  // Helper function to render course items with progress bar
   const renderCourses = (coursesList) => {
     return coursesList.map((course) => (
       <div key={course.id} className="col-xl-4 col-lg-4 col-md-6 d-flex">
@@ -151,10 +154,7 @@ const StudentStudy = () => {
               </div>
 
               <div className="start-leason hoverBlue d-flex align-items-center">
-                <Link
-                  to={`/course-lesson/${course.id}`}
-                  className="btn btn-primary"
-                >
+                <Link to={`/course-lesson/${course.id}?studentId=${studentId}`} className="btn btn-primary">
                   Start Lesson
                 </Link>
               </div>
@@ -238,7 +238,7 @@ const StudentStudy = () => {
 
                         {/* Enrolled Courses */}
                         <div className="row">
-                          <h3>Enrolled Courses</h3>
+                          <h3>Studying</h3>
                           {renderCourses(courses.enrolled)}
                         </div>
 

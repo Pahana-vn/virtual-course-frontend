@@ -12,7 +12,7 @@ const Checkout = () => {
   const [singleCourse, setSingleCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState("VNPAY"); // Default là VNPAY hoặc PAYPAL
-  const studentId = 1; // giả sử
+  const studentId = localStorage.getItem("studentId"); // Lấy studentId từ LocalStorage
 
   useEffect(() => {
     const loadCheckoutData = async () => {
@@ -88,7 +88,6 @@ const Checkout = () => {
       }
     }
   };
-
 
   return (
     <div className="main-wrapper">

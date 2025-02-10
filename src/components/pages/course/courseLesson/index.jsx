@@ -3,34 +3,38 @@
 import React, { useEffect, useState } from "react";
 import Collapse from 'react-bootstrap/Collapse';
 import { FaCheckCircle } from "react-icons/fa";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import YouTube from 'react-youtube';
 import { fetchCourseDetailsForStudent } from "../../../../services/courseService";
 import { completeLecture } from "../../../../services/progressService";
 import Footer from "../../../footer";
 import { Lock, Play } from "../../../imagepath";
-import PageHeader from "../../header";
+import PageHeader from "../../../student/header";
 
 const CourseLesson = () => {
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [openSections, setOpenSections] = useState({});
-  const studentId = 1; // Lấy từ authentication context nếu có
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const studentId = params.get("studentId") || localStorage.getItem("studentId");
+  if (!studentId) {
+    console.warn("⚠️ Không có studentId, vui lòng đăng nhập.");
+    return <p>Vui lòng đăng nhập để tiếp tục học.</p>;
+  }
 
   useEffect(() => {
     const fetchDetails = async () => {
+      if (!studentId) return; // ✅ Nếu không có studentId thì không gọi API
       try {
         const data = await fetchCourseDetailsForStudent(courseId, studentId);
         setCourse(data);
-
-        if (data.sections && data.sections.length > 0 && data.sections[0].lectures.length > 0) {
-          setSelectedLecture(data.sections[0].lectures[0]);
-        }
       } catch (error) {
-        console.error("Error fetching course details:", error);
+        console.error("❌ Lỗi khi lấy chi tiết khóa học:", error);
       }
     };
+
     fetchDetails();
   }, [courseId, studentId]);
 
@@ -74,6 +78,10 @@ const CourseLesson = () => {
   const onVideoEnd = async () => {
     if (!selectedLecture) return;
     try {
+      if (!studentId) {
+        console.warn("⚠️ Không có studentId, không thể đánh dấu hoàn thành bài giảng.");
+        return;
+      }
       await completeLecture(studentId, selectedLecture.id);
 
       // Lấy lại dữ liệu cập nhật

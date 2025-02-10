@@ -188,7 +188,7 @@ const Approuter = () => {
 
         <Route path="/setting-edit-profile" element={<StudentEditProfile />} />
 
-        <Route path="/view-invoice" element={<ViewInvoice />} />
+        <Route path="/view-invoice/:orderId" element={<ViewInvoice />} />
 
         <Route path="/setting-student-payment" element={<StudentPayment />} />
         <Route path="/setting-student-privacy" element={<StudentPrivacy />} />
@@ -418,16 +418,13 @@ const Approuter = () => {
         {/* router dash-board */}
         <Route path="/student/student-dashboard/:accountId" element={<StudentDashboard />} />
 
-        <Route path="/student/student-profile" element={<StudentProfile />} />
+        <Route path="/student/student-profile/:studentId" element={<StudentProfile />} />
         <Route path="/student/student-wishlist" element={<StudentWishlist />} />
         <Route path="/student/student-learning-schedule" element={<StudentLearningSchedule />} />
         <Route path="/student/student-reviews" element={<StudentReviews />} />
         <Route path="/student/student-quiz" element={<StudentQuiz />} />
         <Route path="/student/student-quiz-details" element={<StudentQuizDetails />} />
-        <Route
-          path="/student/student-order-history"
-          element={<StudentOrderHistory />}
-        />
+        <Route path="/student/student-order-history" element={<StudentOrderHistory />} />
         <Route path="/student/student-qa" element={<StudentQA />} />
         <Route path="/student/student-study" element={<StudentStudy />} />
         <Route path="/student/student-messages" element={<StudentMessages />} />

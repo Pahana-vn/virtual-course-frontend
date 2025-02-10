@@ -22,7 +22,7 @@ export const fetchCourseDetails = async (courseId) => {
 
 export const fetchCourseById = async (courseId) => {
     try {
-        const response = await api.get(`/courses/${courseId}`); // Assuming this is the correct endpoint
+        const response = await api.get(`/courses/${courseId}`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching course with ID ${courseId}:`, error);

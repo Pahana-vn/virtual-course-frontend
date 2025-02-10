@@ -20,6 +20,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-daterangepicker": "^3.1.0",
     "feather-icons-react": "^0.7.0",
+    "js-cookie": "^3.0.5",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-apexcharts": "^1.4.1",

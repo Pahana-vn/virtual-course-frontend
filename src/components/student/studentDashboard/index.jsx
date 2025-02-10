@@ -8,12 +8,22 @@ import StudentSidebar from "../sidebar";
 const StudentDashboard = () => {
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const accountId = 3; // Hard-code accountId = 3
+
+    // Lấy studentId từ localStorage
+    const studentId = localStorage.getItem("studentId");
 
     useEffect(() => {
+        // Nếu không có studentId trong localStorage, không thực hiện gọi API
+        if (!studentId) {
+            console.error("Student ID không tồn tại trong localStorage.");
+            setLoading(false);
+            return;
+        }
+
         const fetchData = async () => {
             try {
-                const data = await fetchStudentDashboardData(accountId);
+                // Gọi API để lấy dữ liệu dashboard của student
+                const data = await fetchStudentDashboardData(studentId);
                 setDashboardData(data);
                 setLoading(false);
             } catch (error) {
@@ -23,7 +33,7 @@ const StudentDashboard = () => {
         };
 
         fetchData();
-    }, [accountId]);
+    }, [studentId]);
 
     if (loading) {
         return <div>Loading...</div>;

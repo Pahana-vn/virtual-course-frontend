@@ -1,38 +1,33 @@
 import axios from "axios";
 
+// ✅ Hàm lấy token từ Cookie hoặc LocalStorage
+const getToken = () => {
+    const cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+        const [key, value] = cookie.split("=");
+        if (key === "token") {
+            return value;
+        }
+    }
+    return localStorage.getItem("token");
+};
+
+// ✅ Cấu hình Axios
 const api = axios.create({
     baseURL: "http://localhost:8080/api",
-    timeout: 10000,
-    headers: {
-        "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true, // ✅ Cho phép gửi Cookie giữa frontend & backend
 });
 
-api.interceptors.request.use(
-    (config) => {
-        // Ví dụ: Gửi token nếu cần authentication
-        const token = localStorage.getItem("token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        // Xử lý lỗi request
-        return Promise.reject(error);
+// ✅ Interceptor để tự động thêm token vào request
+api.interceptors.request.use((config) => {
+    const token = getToken();
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    } else {
+        console.warn("⚠️ Không tìm thấy token khi gọi API!");
     }
-);
-
-api.interceptors.response.use(
-    (response) => {
-        // Xử lý phản hồi nếu cần
-        return response;
-    },
-    (error) => {
-        // Xử lý lỗi response, ví dụ: thông báo lỗi
-        console.error("API Error:", error.response || error.message);
-        return Promise.reject(error);
-    }
-);
+    return config;
+}, (error) => Promise.reject(error));
 
 export default api;

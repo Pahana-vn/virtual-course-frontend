@@ -27,7 +27,6 @@ const GridInnerPage = () => {
   }
 
   return (
-
     <div className="row">
       {courses.map((course) => (
         <div key={course.id} className="col-lg-4 col-md-6 d-flex">
@@ -98,18 +97,12 @@ const GridInnerPage = () => {
                   </span>
                 </div>
                 <div className="all-btn all-category d-flex align-items-center">
-
-                  {/* <Link to={`/checkout/${course.id}`} className="btn btn-primary">
-                    BUY NOW
-                  </Link> */}
-
                   <Link
-                    to={`/checkout/${course.id}`} // Use course.id in the URL
+                    to={`/checkout/${course.id}`} // Pass courseId dynamically
                     className="btn btn-primary"
                   >
                     BUY NOW
                   </Link>
-
                 </div>
               </div>
             </div>
@@ -121,4 +114,3 @@ const GridInnerPage = () => {
 };
 
 export default GridInnerPage;
-

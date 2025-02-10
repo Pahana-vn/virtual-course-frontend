@@ -18,13 +18,19 @@ const StudentCourses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/courses/student-courses/1");
-        if (!response.ok) {
-          throw new Error("Failed to fetch courses");
+        const studentId = localStorage.getItem("studentId");
+        if (studentId) {
+          const response = await fetch(`http://localhost:8080/api/courses/student-courses/${studentId}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch courses");
+          }
+          const data = await response.json();
+          setCourses(data);
+          setLoading(false);
+        } else {
+          setError("Student ID not found in localStorage.");
+          setLoading(false);
         }
-        const data = await response.json();
-        setCourses(data);
-        setLoading(false);
       } catch (err) {
         setError(err.message);
         setLoading(false);

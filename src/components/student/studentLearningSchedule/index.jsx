@@ -5,7 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { FaTrashAlt } from "react-icons/fa"; // Import trash icon
+import { FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Footer from "../../footer";
 import StudentHeader from "../header";
@@ -23,7 +23,7 @@ const StudentLearningSchedule = () => {
         endDate: "",
     });
 
-    const [selectedEvent, setSelectedEvent] = useState(null); // Store selected event for editing/deleting
+    const [selectedEvent, setSelectedEvent] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
     const handleInputChange = (e) => {
@@ -66,8 +66,8 @@ const StudentLearningSchedule = () => {
     }));
 
     const handleDateClick = (info) => {
-        setSelectedEvent(null); // Clear previous selected event
-        const selectedDate = `${info.dateStr}T12:00`;  // Add a default time to the date (e.g., noon)
+        setSelectedEvent(null);
+        const selectedDate = `${info.dateStr}T12:00`;
         setNewEvent({
             title: "",
             description: "",
@@ -93,7 +93,7 @@ const StudentLearningSchedule = () => {
         const updatedSchedule = schedule.filter(event => event.id !== eventId);
         setSchedule(updatedSchedule);
         localStorage.setItem("schedule", JSON.stringify(updatedSchedule));
-        setShowModal(false); // Close the modal after deletion
+        setShowModal(false);
     };
 
     return (
@@ -138,7 +138,7 @@ const StudentLearningSchedule = () => {
                                             initialView="dayGridMonth"
                                             events={events}
                                             dateClick={handleDateClick}
-                                            eventClick={handleEventClick} // Handle event click for opening modal
+                                            eventClick={handleEventClick}
                                             headerToolbar={{
                                                 left: "prev,next today",
                                                 center: "title",
@@ -154,7 +154,6 @@ const StudentLearningSchedule = () => {
                 <Footer />
             </div>
 
-            {/* Modal Popup for Adding/Editing Event */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>{selectedEvent ? "Edit Event" : "Add New Event"}</Modal.Title>
