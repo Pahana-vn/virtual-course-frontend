@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { selectCurrentToken } from '../components/common/redux/slices/authSlice';
+import { selectCurrentToken } from '../redux/slices/authSlice';
 
 const baseURL = 'http://localhost:8080/api';
 

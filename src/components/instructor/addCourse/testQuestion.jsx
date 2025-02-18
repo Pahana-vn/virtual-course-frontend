@@ -10,7 +10,7 @@ import {
   addAnswerOption,
   updateAnswerOption,
   deleteAnswerOption,
-} from "../../common/redux/slices/courseSlice";
+} from "../../../redux/slices/course/courseSlice";
 import "./Curriculum.css";
 
 const TestQuestion = ({ nextTab4, prevTab3 }) => {
@@ -45,56 +45,67 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
     }
   };
 
-  const questionTypes = [
-    { type: 10, title: "10-Point Questions" },
-    { type: 8, title: "8-Point Questions" },
-    { type: 6, title: "6-Point Questions" },
-  ];
-
-  const handleAddQuestion = (type, title) => {
-    dispatch(addQuestion({ title, type, answerOptions: [] }));
+  const generateUniqueId = () => {
+    return `${Date.now()}${Math.floor(Math.random() * 1000)}`;
   };
 
-  const handleAddAnswerOption = (originalIndex, title) => {
-    const currentAnswerOptions = questions[originalIndex]?.answerOptions || [];
-    const newQuestionAnswer = {
+  const questionMarks = [
+    { mark: 10, content: "10-Point Questions" },
+    { mark: 8, content: "8-Point Questions" },
+    { mark: 6, content: "6-Point Questions" },
+  ];
+
+  const handleAddQuestion = (mark, title) => {
+    dispatch(addQuestion({ 
+      id: generateUniqueId(),
+      title,
+      mark,
+      answerOptions: [],
+    }));
+  };
+
+  const handleUpdateQuestion = (questionId, newTitle) => {
+    dispatch(updateQuestion({ id: questionId, title: newTitle }));
+  };
+
+  const handleDeleteQuestion = (questionId) => {
+    if (window.confirm("Are you sure you want to delete this question?")) {
+      dispatch(deleteQuestion({ id: questionId }));
+    }
+  };
+
+  const handleAddAnswerOption = (questionId, title) => {
+    const question = questions.find((q) => q.id === questionId);
+    const currentAnswerOptions = question?.answerOptions || [];
+    const newAnswerOption = {
+      id: generateUniqueId(),
       title: title || "Untitled Option",
       isCorrect: currentAnswerOptions.length === 0,
     };
     dispatch(
-      addAnswerOption({ questionIndex: originalIndex, answerOption: newQuestionAnswer })
+      addAnswerOption({ questionId, answerOption: newAnswerOption })
     );
   };
 
-  const handleUpdateQuestion = (originalIndex, newTitle) => {
-    dispatch(updateQuestion({ index: originalIndex, title: newTitle }));
-  };
-
-  const handleDeleteQuestion = (originalIndex) => {
-    if (window.confirm("Are you sure you want to delete this question?")) {
-      dispatch(deleteQuestion({ index: originalIndex }));
-    }
-  };
-
   const handleUpdateAnswerOption = (
-    originalIndex,
-    answerIndex,
+    questionId,
+    answerId,
     updatedAnswer
   ) => {
     dispatch(
       updateAnswerOption({
-        questionIndex: originalIndex,
-        answerOptionIndex: answerIndex,
+        questionId,
+        answerId,
         answerOption: updatedAnswer,
       })
     );
   };
 
-  const handleDeleteAnswerOption = (originalIndex, answerIndex) => {
+  const handleDeleteAnswerOption = (questionId, answerId) => {
     dispatch(
       deleteAnswerOption({
-        questionIndex: originalIndex,
-        answerOptionIndex: answerIndex,
+        questionId,
+        answerId,
       })
     );
   };
@@ -107,16 +118,16 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
             <h4>Test Questions</h4>
           </div>
           <div className="add-course-form">
-            {questionTypes.map((questionType) => (
-              <div key={questionType.type} className="quiz-grid">
+            {questionMarks.map((questionMark) => (
+              <div key={questionMark.mark} className="quiz-grid">
                 <div className="quiz-head">
-                  <h5>{questionType.title}</h5>
+                  <h5>{questionMark.content}</h5>
                   <button
                     className="btn"
                     onClick={() =>
                       handleOpenPopup(
-                        `Add Question for ${questionType.title}`,
-                        (title) => handleAddQuestion(questionType.type, title)
+                        `Add Question for ${questionMark.content}`,
+                        (title) => handleAddQuestion(questionMark.mark, title)
                       )
                     }
                   >
@@ -126,19 +137,17 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
 
                 <div className="quiz-content">
                   {questions
-                    .map((question, originalIndex) => ({ ...question, originalIndex }))
-                    .filter((question) => question.type === questionType.type)
-                    .map(({ title, answerOptions, originalIndex }, idx) => (
-                      <div key={originalIndex} className="quiz-item">
+                    .filter((question) => question.mark === questionMark.mark)
+                    .map((question) => (
+                      <div key={question.id} className="quiz-item">
                         <div className="faq-grid">
                           <div className="faq-header">
                             <Link
                               className="collapsed faq-collapse"
                               data-bs-toggle="collapse"
-                              to={`#collapse-quiz-${questionType.type}-${originalIndex}`}
+                              to={`#collapse-quiz-${questionMark.mark}-${question.id}`}
                             >
-                              <i className="fas fa-align-justify" /> Question{" "}
-                              {idx + 1}: {title}
+                              <i className="fas fa-align-justify" /> Question: {question.title}
                             </Link>
                             <div className="faq-right">
                               <button
@@ -147,7 +156,8 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                                   handleOpenPopup(
                                     "Edit Question Title",
                                     (newTitle) =>
-                                      handleUpdateQuestion(originalIndex, newTitle)
+                                      handleUpdateQuestion(question.id, newTitle),
+                                      question.title
                                   )
                                 }
                               >
@@ -155,7 +165,7 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                               </button>
                               <button
                                 className="btn btn-delete-quiz"
-                                onClick={() => handleDeleteQuestion(originalIndex)}
+                                onClick={() => handleDeleteQuestion(question.id)}
                               >
                                 <i className="far fa-trash-can" />
                               </button>
@@ -164,20 +174,20 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                         </div>
 
                         <div
-                          id={`collapse-quiz-${questionType.type}-${originalIndex}`}
+                          id={`collapse-quiz-${questionMark.mark}-${question.id}`}
                           className="collapse"
                         >
                           <div className="quiz-answers">
-                            {answerOptions.map((answer, answerIndex) => (
-                              <div key={answerIndex} className="quiz-answer">
+                            {question.answerOptions.map((answer) => (
+                              <div key={answer.id} className="quiz-answer">
                                 <div className="answer-row d-flex align-items-center">
                                   <input
                                     type="checkbox"
                                     checked={answer.isCorrect || false}
                                     onChange={(e) =>
                                       handleUpdateAnswerOption(
-                                        originalIndex,
-                                        answerIndex,
+                                        question.id,
+                                        answer.id,
                                         {
                                           ...answer,
                                           isCorrect: e.target.checked,
@@ -186,15 +196,15 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                                     }
                                   />
                                   <p className="m-0 flex-grow-1">
-                                    Answer {answerIndex + 1}:{" "}
+                                    Answer: 
                                     <strong>{answer.title}</strong>
                                   </p>
                                   <button
                                     className="btn btn-delete-article"
                                     onClick={() =>
                                       handleDeleteAnswerOption(
-                                        originalIndex,
-                                        answerIndex
+                                        question.id,
+                                        answer.id
                                       )
                                     }
                                   >
@@ -205,15 +215,15 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                             ))}
 
                             {/* Hiển thị lỗi nếu số đáp án < 2 */}
-                            {answerOptions.length < 2 && (
+                            {question.answerOptions.length < 2 && (
                               <p className="error-message text-danger">
                                 You must add at least 2 answers.
                               </p>
                             )}
 
                             {/* Hiển thị lỗi nếu không có đáp án đúng */}
-                            {answerOptions.length > 0 &&
-                              answerOptions.filter((answer) => answer.isCorrect)
+                            {question.answerOptions.length > 0 &&
+                              question.answerOptions.filter((answer) => answer.isCorrect)
                                 .length === 0 && (
                                 <p className="error-message text-danger">
                                   At least one answer must be marked as correct.
@@ -221,12 +231,12 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                               )}
 
                             {/* Hiển thị nút Add Answer nếu số đáp án < 5 */}
-                            {answerOptions.length < 5 && (
+                            {question.answerOptions.length < 5 && (
                               <button
                                 className="btn btn-success"
                                 onClick={() =>
                                   handleOpenPopup("Add Answer", (title) =>
-                                    handleAddAnswerOption(originalIndex, title)
+                                    handleAddAnswerOption(question.id, title)
                                   )
                                 }
                               >
@@ -235,7 +245,7 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                             )}
 
                             {/* Hiển thị lỗi nếu đã đủ 5 đáp án */}
-                            {answerOptions.length >= 5 && (
+                            {question.answerOptions.length >= 5 && (
                               <p className="error-message text-warning">
                                 You can only add up to 5 answers.
                               </p>

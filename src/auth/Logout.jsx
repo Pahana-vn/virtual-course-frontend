@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useLogoutMutation } from "../components/common/redux/slices/authApiSlice";
 import { Navigate } from "react-router-dom";
-import { logOut } from "../components/common/redux/slices/authSlice";
-import { resetApiState } from "../components/common/redux/slices/baseApiSlice";
+import { useLogoutMutation } from "../redux/slices/auth/authApiSlice";
+import { logOut } from "../redux/slices/auth/authSlice";
 function Logout() {
   const [logout,] = useLogoutMutation();
   const dispatch = useDispatch();
@@ -14,7 +13,7 @@ function Logout() {
       await logout();
       // logout from client
       dispatch(logOut());
-      dispatch(resetApiState());
+      // dispatch(resetApiState());
     } catch (error) {
       console.error("Logout failed", error);
     }

@@ -2,16 +2,15 @@ import React from "react";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import OwlCarousel from "react-owl-carousel";
-import { setCredentials } from "../../common/redux/slices/authSlice";
+import { setCredentials } from "../../../redux/slices/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { LoginImg, logo, NetIcon1, NetIcon2 } from "../../imagepath";
 import FeatherIcon from "feather-icons-react";
-import { useLoginMutation } from "../../common/redux/slices/authApiSlice";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import store from "../../common/redux/store";
+import { useLoginMutation } from "../../../redux/slices/auth/authApiSlice";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -46,9 +45,8 @@ const Login = () => {
     try {
       // Gọi API đăng nhập tại đây
       const userData = await login(credentials).unwrap();
-      console.log("User Data:", userData);
+      // console.log("User Data:", userData);
       dispatch(setCredentials(userData));
-      console.log("State after dispatch:", store.getState());
       navigate("/");
       
     } catch (error) {

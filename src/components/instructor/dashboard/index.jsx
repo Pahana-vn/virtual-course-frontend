@@ -1,50 +1,56 @@
 import React, { useState } from "react";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import Footer from "../../footer";
 import { InstructorHeader } from "../../instructor/header";
 import { Icon1, Icon2 } from "../../imagepath";
 import InstructorSidebar from "../sidebar";
 import { Link } from "react-router-dom";
-import { selectCurrentUser } from "../../common/redux/slices/authSlice";
-import { 
-  useInstructorStatisticsQuery, 
-  useInstructorCoursesQuery,
-} from "../../common/redux/slices/instructorApiSlice"
+import {
+  useGetCoursesByInstructorIdQuery,
+} from "../../../redux/slices/course/courseApiSlice";
+import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
+import { useInstructorStatisticsQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 
 export const Dashboard = () => {
-  const user = useSelector(selectCurrentUser);
   const [isClassAdded, setIsClassAdded] = useState([false]);
   const [currentPage, setCurrentPage] = useState(1);
-
-  const { data: instructorStatistics } = useInstructorStatisticsQuery({  id: user.id });
   
-  const { data: instructorCourses, error, isLoading } = useInstructorCoursesQuery({ id: user.id });
-  console.log(instructorStatistics)
+  const instructorId = useSelector(selectCurrentInstructor);
+
+  const { data: instructorStatistics } = useInstructorStatisticsQuery({ id: instructorId });
+  const {
+    data: instructorCourses,
+    error,
+    isLoading,
+  } = useGetCoursesByInstructorIdQuery({instructorId});
   if (isLoading) {
     return <div>Loading...</div>;
   }
   if (error) {
     return (
       <div>
-        Error: {error.data?.message || "Something went wrong!"} (Status: {error.status || "Unknown"})
+        Error: {error.data?.message || "Something went wrong!"} (Status:{" "}
+        {error.status || "Unknown"})
       </div>
     );
   }
 
   // Pagination state
   const itemsPerPage = 6;
-  const totalPages = instructorCourses && instructorCourses.length
-  ? Math.ceil(instructorCourses.length / itemsPerPage + 1)
-  : 1;
-  
+  const totalPages =
+    instructorCourses && instructorCourses.length
+      ? Math.ceil(instructorCourses.length / itemsPerPage + 1)
+      : 1;
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  const paginatedCourses = instructorCourses?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  ) || [];
+  const paginatedCourses =
+    instructorCourses?.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    ) || [];
 
   const toggleClass = (index) => {
     const updatedClasses = [...isClassAdded];
@@ -53,22 +59,21 @@ export const Dashboard = () => {
   };
   return (
     <div className="main-wrapper">
-      <InstructorHeader 
-      activeMenu={"Dashboard"}/>
+      <InstructorHeader activeMenu={"Dashboard"} />
       {/* Breadcrumb */}
       <div className="breadcrumb-bar breadcrumb-bar-info">
         <div className="container">
           <div className="row">
             <div className="col-md-12 col-12">
               <div className="breadcrumb-list">
-                <h2 className="breadcrumb-title">Dashboard</h2>
+                <h2 className="breadcrumb-title">Instructor Dashboard</h2>
                 <nav aria-label="breadcrumb" className="page-breadcrumb">
                   <ol className="breadcrumb">
                     <li className="breadcrumb-item">
                       <Link to="/home">Home</Link>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      Dashboard
+                    Instructor Dashboard
                     </li>
                   </ol>
                 </nav>
@@ -100,16 +105,16 @@ export const Dashboard = () => {
                 <div className="col-lg-4 col-md-6 d-flex">
                   <div className="card dash-info flex-fill">
                     <div className="card-body">
-                      <h5>Active Courses</h5>
-                      <h2>{instructorStatistics.totalCourses - 1}</h2>
+                      <h5>Published Courses</h5>
+                      <h2>{instructorStatistics.totalPublishedCourses}</h2>
                     </div>
                   </div>
                 </div>
                 <div className="col-lg-4 col-md-6 d-flex">
                   <div className="card dash-info flex-fill">
                     <div className="card-body">
-                      <h5>Completed Courses</h5>
-                      <h2>{instructorStatistics.totalCourses - 3}</h2>
+                      <h5>Pending Courses</h5>
+                      <h2>{instructorStatistics.totalPendingCourses}</h2>
                     </div>
                   </div>
                 </div>
@@ -143,34 +148,47 @@ export const Dashboard = () => {
                         <th>Courses</th>
                         <th>Enrolled</th>
                         <th>Status</th>
+                        <th>Functions</th>
                       </tr>
                     </thead>
                     <tbody>
-                    {instructorCourses.length > 0 ? (
-                      instructorCourses.map((course, index) => (
-                        <tr key={index}>
-                          <td>
-                            <div className="table-course-detail">
-                              <Link to="#" className="course-table-img">
-                                <span>
-                                  <img
-                                    src={course.imageCover || "default-image-url"} // Đường dẫn ảnh, thay thế bằng ảnh mặc định nếu không có
-                                    alt={course.titleCourse}
-                                  />
-                                </span>
-                                {course.titleCourse}
-                              </Link>
-                            </div>
-                          </td>
-                          <td>{course.students || 0}</td> {/* Số lượng học viên */}
-                          <td>{course.status || "N/A"}</td> {/* Trạng thái khóa học */}
+                      {instructorCourses.length > 0 ? (
+                        instructorCourses.map((course, index) => (
+                          <tr key={index}>
+                            <td>
+                              <div className="table-course-detail">
+                                <Link to={`/course/${course.id}/course-details`} className="course-table-img">
+                                  <span>
+                                    <img
+                                      src={
+                                        course.imageCover || "default-image-url"
+                                      } // Đường dẫn ảnh, thay thế bằng ảnh mặc định nếu không có
+                                      alt={course.titleCourse}
+                                    />
+                                  </span>
+                                </Link>
+                                  <Link to={`/course/${course.id}/course-details`} className="course-title">
+                                    {course.titleCourse}
+                                  </Link>
+                              </div>
+                            </td>
+                            <td>{course.students || 0}</td>
+                            <td>{course.status || "N/A"}</td>
+                            <td>
+                            <Link
+                                    to={`/instructor/course-test/${course.id}`}
+                                    className="btn btn-primary"
+                                  >
+                                    Manage Tests
+                                  </Link>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="3">No courses found</td>
                         </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="3">No courses found</td>
-                      </tr>
-                    )}
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -178,42 +196,56 @@ export const Dashboard = () => {
               <div className="dashboard-title">
                 <h4>Recently Enrolled Courses</h4>
               </div>
-                {/* Course Grid */}
+              {/* Course Grid */}
               <div className="row">
                 {paginatedCourses.length > 0 ? (
-                  paginatedCourses
-                  .map((course, index) => (
+                  paginatedCourses.map((course, index) => (
                     <div className="col-xxl-4 col-md-6 d-flex" key={index}>
                       <div className="course-box flex-fill">
                         <div className="product">
                           <div className="product-img">
-                            <Link to={`/course-details/${course.id}`}>
+                            <Link to={`/course/${course.id}/course-details`}>
                               <img
                                 className="img-fluid"
                                 alt={course.titleCourse}
-                                src={course.imageCover || "default-course-image.jpg"}
+                                src={
+                                  course.imageCover ||
+                                  "default-course-image.jpg"
+                                }
                               />
                             </Link>
                             <div className="price">
                               <h3>
-                                ${Math.round(course.basePrice * 0.8 * 100) / 100} <span>${course.basePrice}</span>
+                                $
+                                {Math.round(course.basePrice * 0.8 * 100) / 100}{" "}
+                                <span>${course.basePrice}</span>
                               </h3>
                             </div>
                           </div>
                           <div className="product-content">
                             <div className="course-group d-flex">
                               <div className="course-group-img d-flex">
-                                <Link to={`/instructor-profile/${course.instructorId}`}>
+                                <Link
+                                  to={`/instructor-profile/${course.instructorId}`} 
+                                >
                                   <img
-                                    src={course.instructorInfo.photo || "default-avatar.jpg"}
-                                    alt={course.instructorInfo.firstName + course.instructorInfo.lastName}
+                                    src={
+                                      course.instructorInfo.photo ||
+                                      "default-avatar.jpg"
+                                    }
+                                    alt={
+                                      course.instructorInfo.firstName +
+                                      course.instructorInfo.lastName
+                                    }
                                     className="img-fluid"
                                   />
                                 </Link>
                                 <div className="course-name">
                                   <h4>
-                                    <Link to={`/instructor-profile/${course.instructorId}`}>
-                                    {`${course.instructorInfo.firstName} ${course.instructorInfo.lastName}`}
+                                    <Link
+                                      to={`/instructor-profile/${course.instructorId}`}
+                                    >
+                                      {`${course.instructorInfo.firstName} ${course.instructorInfo.lastName}`}
                                     </Link>
                                   </h4>
                                   <p>Instructor</p>
@@ -230,7 +262,9 @@ export const Dashboard = () => {
                               </div>
                             </div>
                             <h3 className="title instructor-text">
-                              <Link to={`/course-details/${course.id}`}>{course.titleCourse}</Link>
+                              <Link to={`/course/${course.id}/course-details`}>
+                                {course.titleCourse}
+                              </Link>
                             </h3>
                             <div className="course-info d-flex align-items-center">
                               <div className="rating-img d-flex align-items-center">
@@ -254,7 +288,8 @@ export const Dashboard = () => {
                                   />
                                 ))}
                               <span className="d-inline-block average-rating">
-                                <span>{course.rating}</span> ({course.reviewCount})
+                                <span>{course.rating}</span> (
+                                {course.reviewCount})
                               </span>
                             </div>
                           </div>
@@ -271,28 +306,34 @@ export const Dashboard = () => {
               <div className="dash-pagination">
                 <div className="row align-items-center">
                   <div className="col-6">
-                    <p>Page {currentPage} of {totalPages}</p>
+                    <p>
+                      Page {currentPage} of {totalPages}
+                    </p>
                   </div>
                   <div className="col-6">
                     <ul className="pagination">
-                    {[...Array(totalPages)].map((_, index) => (
-                      <li
-                        key={index}
-                        className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
-                      >
-                        <button
-                          onClick={() => handlePageChange(index + 1)}
-                          className="page-link"
+                      {[...Array(totalPages)].map((_, index) => (
+                        <li
+                          key={index}
+                          className={`page-item ${
+                            currentPage === index + 1 ? "active" : ""
+                          }`}
                         >
-                          {index + 1}
-                        </button>
-                      </li>
-                    ))}
+                          <button
+                            onClick={() => handlePageChange(index + 1)}
+                            className="page-link"
+                          >
+                            {index + 1}
+                          </button>
+                        </li>
+                      ))}
                       <li>
                         <button
                           onClick={() =>
                             handlePageChange(
-                              currentPage < totalPages ? currentPage + 1 : totalPages
+                              currentPage < totalPages
+                                ? currentPage + 1
+                                : totalPages
                             )
                           }
                           disabled={currentPage === totalPages}
@@ -313,6 +354,5 @@ export const Dashboard = () => {
       {/* /Page Content */}
       <Footer />
     </div>
-
   );
 };

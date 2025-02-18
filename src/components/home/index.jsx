@@ -43,7 +43,7 @@ import Companies from "./slider/companies";
 import Testimonial from "./slider/testimonial";
 import TopCategory from "./slider/topCategory";
 import TrendingCourse from "./slider/trendingCourse";
-import { selectCurrentRoles } from "../common/redux/slices/authSlice";
+import { selectCurrentRoles } from "../../redux/slices/auth/authSlice";
 
 
 const options = [
@@ -65,7 +65,7 @@ export const Home = () => {
     const loadCourses = async () => {
       try {
         const data = await fetchCourses();
-        console.log("Courses data:", data); // Xem cấu trúc dữ liệu ở đây
+        // console.log("Courses data:", data); // Xem cấu trúc dữ liệu ở đây
         setCourses(data);
       } catch (error) {
         console.error("Failed to load courses:", error);
@@ -78,7 +78,7 @@ export const Home = () => {
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
-    console.log(mobileSidebar, "gg");
+    // console.log(mobileSidebar, "gg");
   }, [mobileSidebar]);
 
   const renderHeader = () => {
@@ -352,7 +352,7 @@ export const Home = () => {
                     <div className="course-box d-flex">
                       <div className="product">
                         <div className="product-img">
-                          <Link to={`/course-details/${course.id}`}>
+                          <Link to={`/course/${course.id}/course-details`}>
                             <img
                               className="img-fluid"
                               alt={course.titleCourse || "Course"}
@@ -391,7 +391,7 @@ export const Home = () => {
                             </div>
                           </div>
                           <h3 className="title instructor-text">
-                            <Link to={`/course-details/${course.id}`}>
+                            <Link to={`/course/${course.id}/course-details`}>
                               {course.titleCourse || "Untitled Course"}
                             </Link>
                           </h3>
