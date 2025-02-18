@@ -1,0 +1,216 @@
+/* StudentHeader.css */
+
+/* Đảm bảo tất cả các phần tử sử dụng box-sizing border-box */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Style cho nav-item cart-nav và wish-nav */
+.nav-item.cart-nav,
+.nav-item.wish-nav {
+    position: relative;
+}
+
+/* Style cho hình ảnh Cart và Wishlist */
+.navbar-nav .nav-item.cart-nav img,
+.navbar-nav .nav-item.wish-nav img {
+    width: 24px;
+    /* Kích thước phù hợp */
+    height: 24px;
+    object-fit: contain;
+    /* Đảm bảo hình ảnh không bị cắt */
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Style cho badge số lượng */
+.cart-count-badge {
+    position: absolute;
+    top: 1px;
+    /* Điều chỉnh vị trí theo thiết kế */
+    right: 9px;
+    background-color: #ff4d4f;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 1001;
+    /* Đảm bảo hiển thị trên icon */
+}
+
+/* Style cho dropdown menu */
+.wishes-list.dropdown-menu {
+    position: absolute;
+    top: 50%;
+    /* Vị trí ngay dưới phần tử cha */
+    right: 0;
+    z-index: 1050;
+    /* Đảm bảo dropdown hiển thị trên cùng */
+    display: none;
+    /* Mặc định ẩn */
+    min-width: 200px;
+    /* Đặt kích thước phù hợp */
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Hiển thị dropdown khi có class 'show' */
+.wishes-list.dropdown-menu.show {
+    display: block;
+}
+
+/* Style cho nội dung dropdown */
+.wishes-list.dropdown-menu .wish-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.wishes-list.dropdown-menu .wish-content {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.wishes-list.dropdown-menu .wish-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.wishes-list.dropdown-menu .wish-content li {
+    margin-bottom: 10px;
+}
+
+.wishes-list.dropdown-menu .wish-content li .media {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wishes-list.dropdown-menu .wish-content li .media .avatar img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.wishes-list.dropdown-menu .wish-content li .media .media-body {
+    flex: 1;
+    margin-left: 10px;
+}
+
+.wishes-list.dropdown-menu .wish-content li .media .remove-btn .btn {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.wishes-list.dropdown-menu .wish-content li .media .remove-btn .btn:hover {
+    background-color: #ff7875;
+}
+
+
+/* Style cho phần tử avatar trong notifications */
+.notifications .notification-list .notification-message .avatar img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Style cho button trong notifications */
+.notifications .notification-list .notification-message .btn {
+    background-color: #1890ff;
+    color: #fff;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-right: 5px;
+}
+
+.notifications .notification-list .notification-message .btn:hover {
+    background-color: #40a9ff;
+}
+
+/* Style cho user profile dropdown */
+.users.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1050;
+    display: none;
+    min-width: 200px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.users.dropdown-menu.show {
+    display: block;
+}
+
+.users.dropdown-menu .user-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.users.dropdown-menu .user-header .avatar img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.users.dropdown-menu .user-header .user-text {
+    margin-left: 10px;
+}
+
+.users.dropdown-menu .dropdown-item.text {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    color: #333;
+    text-decoration: none;
+}
+
+.users.dropdown-menu .dropdown-item.text:hover {
+    background-color: #f5f5f5;
+}
+
+.users.dropdown-menu .dropdown-item.text .headerIcon {
+    margin-right: 8px;
+}
+
+.users.dropdown-menu .dropdown-item.text.night-mode {
+    justify-content: space-between;
+}
+
+.users.dropdown-menu .dropdown-item.text.night-mode .headerIcon {
+    margin-right: 8px;
+}
+
+.users.dropdown-menu .dropdown-item.text.night-mode input {
+    margin-left: 10px;
+}

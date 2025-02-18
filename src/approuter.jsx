@@ -103,6 +103,9 @@ import InstructorSettingNotifications from "./components/instructor/settings/ins
 import InstructorSettings from "./components/instructor/settings/instructorSettings";
 import InstructorSettingWithdraw from "./components/instructor/settings/instructorSettingWithdraw.jsx";
 import NewPassword from "./components/pages/newPassword";
+import Failure from "./components/pages/payment/Failure.jsx";
+import Success from "./components/pages/payment/Success.jsx";
+import SuccessVnpay from "./components/pages/payment/SuccessVnpay.jsx";
 import CourseMessage from "./components/student/courseMessage";
 import CourseStudent from "./components/student/courseStudent";
 import CourseWishlist from "./components/student/courseWishlist";
@@ -115,6 +118,7 @@ import StudentSetting from "./components/student/setting/studentSetting.jsx";
 import StudentSocialProfile from "./components/student/setting/studentSocialProfile.jsx";
 import StudentCourses from "./components/student/studentCourses/index.jsx";
 import StudentDashboard from "./components/student/studentDashboard/index.jsx";
+import StudentFinalTest from "./components/student/studentFinalTest/StudentFinalTest.jsx";
 import StudentLearningSchedule from "./components/student/studentLearningSchedule/index.jsx";
 import StudentMessages from "./components/student/studentMessages/index.jsx";
 import StudentOrderHistory from "./components/student/studentOrderHistory/index.jsx";
@@ -122,8 +126,9 @@ import StudentProfile from "./components/student/studentProfile/index.jsx";
 import StudentQA from "./components/student/studentQA/index.jsx";
 import StudentQuiz from "./components/student/studentQuiz/index.jsx";
 import StudentQuizDetails from "./components/student/studentQuiz/studentQuizDetails.jsx";
-import StudentReferral from "./components/student/studentReferral/index.jsx";
 import StudentReviews from "./components/student/studentReviews/index.jsx";
+import StudentStudy from "./components/student/studentStudy/index.jsx";
+import StudentTestResult from "./components/student/studentTestResult/StudentTestResult.jsx";
 import StudentTicket from "./components/student/studentTicket/index.jsx";
 import StudentWishlist from "./components/student/studentWishlist/index.jsx";
 
@@ -152,10 +157,12 @@ const Approuter = () => {
         <Route path="/add-course" element={<AddCourse />} />
         <Route path="/course-list" element={<CourseList />} />
         <Route path="/course-grid" element={<CourseGrid />} />
-        <Route path="/course-details" element={<CourseDetails />} />
+        <Route path="/course-details/:courseId" element={<CourseDetails />} />
         <Route path="/course-details1" element={<CourseDetails1 />} />
         <Route path="/course-details2" element={<CourseDetails2 />} />
-        <Route path="/course-lesson" element={<CourseLesson />} />
+        <Route path="/course-lesson/:courseId" element={<CourseLesson />} />
+        <Route path="/student-final-test/:testId" element={<StudentFinalTest />} />
+        <Route path="/student/test-result/:testId" element={<StudentTestResult />} />
         <Route path="/come-soon" element={<ComingSoon />} />
         <Route path="/error-404" element={<Error404 />} />
         <Route path="/error-500" element={<Error500 />} />
@@ -165,6 +172,10 @@ const Approuter = () => {
         <Route path="/job-category" element={<JobCategory />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout/:courseId" element={<Checkout />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/success-vnpay" element={<SuccessVnpay />} />
+        <Route path="/fail" element={<Failure />} />
         <Route path="/login" element={<Login />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/register" element={<Register />} />
@@ -179,11 +190,11 @@ const Approuter = () => {
 
         <Route path="/setting-edit-profile" element={<StudentEditProfile />} />
 
-        <Route path="/view-invoice" element={<ViewInvoice />} />
+        <Route path="/view-invoice/:orderId" element={<ViewInvoice />} />
 
         <Route path="/setting-student-payment" element={<StudentPayment />} />
         <Route path="/setting-student-privacy" element={<StudentPrivacy />} />
-        <Route path="/setting-student-referral" element={<StudentReferral />} />
+        <Route path="/setting-student-referral" element={<StudentStudy />} />
         <Route path="/setting-student-security" element={<StudentSecurity />} />
 
         <Route
@@ -409,20 +420,17 @@ const Approuter = () => {
         {/* router dash-board */}
         <Route path="/student/student-dashboard/:accountId" element={<StudentDashboard />} />
 
-        <Route path="/student/student-profile" element={<StudentProfile />} />
+        <Route path="/student/student-profile/:studentId" element={<StudentProfile />} />
         <Route path="/student/student-wishlist" element={<StudentWishlist />} />
         <Route path="/student/student-learning-schedule" element={<StudentLearningSchedule />} />
         <Route path="/student/student-reviews" element={<StudentReviews />} />
         <Route path="/student/student-quiz" element={<StudentQuiz />} />
-        <Route path="/student/student-quiz-details" element={<StudentQuizDetails />} />
-        <Route
-          path="/student/student-order-history"
-          element={<StudentOrderHistory />}
-        />
+        <Route path="/student/student-quiz-details/:quizId" element={<StudentQuizDetails />} />
+        <Route path="/student/student-order-history" element={<StudentOrderHistory />} />
         <Route path="/student/student-qa" element={<StudentQA />} />
-        <Route path="/student/student-referral" element={<StudentReferral />} />
+        <Route path="/student/student-study" element={<StudentStudy />} />
         <Route path="/student/student-messages" element={<StudentMessages />} />
-        <Route path="/student/students-profile" element={<StudentProfile />} />
+        {/* <Route path="/student/students-profile" element={<StudentProfile />} /> */}
         <Route path="/student/students-grid" element={<StudentsGrid />} />
         <Route path="/student/students-grid2" element={<StudentsGrid2 />} />
         <Route path="/student/students-list" element={<StudentsList />} />

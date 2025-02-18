@@ -4,6 +4,7 @@ import Footer from "../../footer";
 import { Icon01, Icon2, User2, course02 } from "../../imagepath";
 import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
+import { fetchWishlist } from "../../../services/studentService"; // Import service
 
 const StudentWishlist = () => {
   const [wishlist, setWishlist] = useState([]); // Dữ liệu wishlist
@@ -12,23 +13,24 @@ const StudentWishlist = () => {
 
   // Fetch dữ liệu từ API
   useEffect(() => {
-    const fetchWishlist = async () => {
+    const fetchStudentWishlist = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/favorite/1"); // Replace '1' với student ID thật
-        if (!response.ok) {
-          throw new Error("Failed to fetch wishlist");
+        const studentId = localStorage.getItem("studentId"); // Lấy studentId từ localStorage
+        if (studentId) {
+          const data = await fetchWishlist(studentId); // Gọi service để lấy wishlist
+          setWishlist(data);
+          setLoading(false);
+        } else {
+          setError("Student ID not found in localStorage.");
+          setLoading(false);
         }
-        const data = await response.json();
-
-        setWishlist(data);
-        setLoading(false);
       } catch (err) {
         setError(err.message);
         setLoading(false);
       }
     };
 
-    fetchWishlist();
+    fetchStudentWishlist();
   }, []);
 
   // Render danh sách wishlist
@@ -75,7 +77,6 @@ const StudentWishlist = () => {
                     <p>Instructor</p>
                   </div>
                 </div>
-                {/* Icon heart luôn màu đỏ */}
                 <div className="course-share d-flex align-items-center justify-content-center">
                   <i className="fa-solid fa-heart color-active" />
                 </div>
@@ -111,7 +112,6 @@ const StudentWishlist = () => {
     ));
   };
 
-  // Kiểm tra trạng thái loading hoặc error
   if (loading) {
     return <p>Loading wishlist...</p>;
   }

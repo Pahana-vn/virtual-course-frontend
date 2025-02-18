@@ -357,7 +357,7 @@ export const Home = () => {
                             <div className="course-group-img d-flex">
                               {/* Nếu API không có instructor, hiển thị mặc định */}
                               <img
-                                src="https://imgcdn.stablediffusionweb.com/2024/9/15/8d3d6426-872a-4c1a-8516-aecffa9b710e.jpg"
+                                src={course.instructorPhoto || "default-instructor.jpg"}
                                 alt="Unknown Instructor"
                                 className="img-fluid"
                               />
