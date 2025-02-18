@@ -1,6 +1,10 @@
 import axios from "axios";
 
-// ✅ Hàm lấy token từ Cookie hoặc LocalStorage
+const api = axios.create({
+    baseURL: "http://localhost:8080/api",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+});
 const getToken = () => {
     const cookies = document.cookie.split("; ");
     for (let cookie of cookies) {
@@ -12,20 +16,12 @@ const getToken = () => {
     return localStorage.getItem("token");
 };
 
-// ✅ Cấu hình Axios
-const api = axios.create({
-    baseURL: "http://localhost:8080/api",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true, // ✅ Cho phép gửi Cookie giữa frontend & backend
-});
-
-// ✅ Interceptor để tự động thêm token vào request
 api.interceptors.request.use((config) => {
     const token = getToken();
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     } else {
-        console.warn("⚠️ Không tìm thấy token khi gọi API!");
+        console.warn("Token not found when calling API!");
     }
     return config;
 }, (error) => Promise.reject(error));

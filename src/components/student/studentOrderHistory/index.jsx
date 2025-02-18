@@ -59,7 +59,10 @@ const StudentOrderHistory = () => {
                   </div>
 
                   {orders.length === 0 ? (
-                    <p>No orders found.</p>
+                    <div className="checkout-form pb-0">
+                      <div className="row"><p>No orders found.</p></div>
+                    </div>
+
                   ) : (
                     <div className="table-responsive custom-table">
                       <table className="table">

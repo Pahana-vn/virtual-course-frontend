@@ -350,7 +350,7 @@ export default function StudentHeader() {
                             <p className="text-muted mb-0"></p>
                           </div>
                         </div>
-                        <Link className="dropdown-item text" to="/home" onClick={() => setShowProfile(false)}>
+                        <Link className="dropdown-item text" to={`/student/student-dashboard/${localStorage.getItem("studentId")}`} onClick={() => setShowProfile(false)}>
                           <Home size={14} color={"#FF875A"} className="headerIcon me-2" />
                           Dashboard
                         </Link>

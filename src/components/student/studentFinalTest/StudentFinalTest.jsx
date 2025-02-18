@@ -1,25 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { FaClock } from 'react-icons/fa';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../untils/api";
 import Footer from "../../footer";
 import StudentHeader from "../header";
 
 const StudentFinalTest = () => {
     const { testId } = useParams();
-    const studentId = 1;
+    const studentId = localStorage.getItem('studentId');
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
-    const [timeLeft, setTimeLeft] = useState(40 * 60); // 40 phút
+    const [timeLeft, setTimeLeft] = useState(40 * 60);
+    const navigate = useNavigate();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
+
     useEffect(() => {
+        if (!testId) return;
+
         const fetchQuestions = async () => {
-            const response = await api.get(`/tests/${testId}/questions`);
-            setQuestions(response.data);
+            try {
+                const response = await api.get(`/questions/test/${testId}`);
+                setQuestions(response.data);
+            } catch (error) {
+                console.error("❌ Lỗi khi lấy danh sách câu hỏi:", error);
+            }
         };
+
         fetchQuestions();
     }, [testId]);
+
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -33,15 +43,11 @@ const StudentFinalTest = () => {
             const prevSelected = prev[qId] || [];
             let newSelected;
             if (type === 'SINGLE') {
-                // Câu chọn 1 đáp án
                 newSelected = [optId];
             } else {
-                // Câu chọn nhiều đáp án (MULTIPLE)
                 if (checked) {
-                    // Thêm đáp án được chọn
                     newSelected = [...prevSelected, optId];
                 } else {
-                    // Bỏ đáp án khỏi danh sách
                     newSelected = prevSelected.filter(id => id !== optId);
                 }
             }
@@ -51,15 +57,24 @@ const StudentFinalTest = () => {
 
     const handleSubmit = async () => {
         const submission = {
-            studentId: studentId,
+            studentId: parseInt(studentId),
             testId: parseInt(testId),
             answers: Object.keys(answers).map(qId => ({
                 questionId: parseInt(qId),
-                selectedOptionIds: answers[qId]
+                selectedOptionIds: answers[qId] || [] // 🔹 Đảm bảo gửi mảng rỗng nếu không có chọn
             }))
         };
-        await api.post("/tests/submit", submission);
-        window.location.href = "/student/student-quiz";
+
+        console.log("🔎 Data gửi lên:", JSON.stringify(submission, null, 2)); // ✅ Debug JSON trước khi gửi
+
+        try {
+            const response = await api.post("/tests/submit", submission);
+            console.log("✅ Bài kiểm tra đã nộp thành công:", response.data);
+            navigate(`/student/test-result/${testId}`);
+        } catch (error) {
+            console.error("❌ Lỗi khi nộp bài:", error.response?.data || error);
+            alert("❌ Lỗi khi nộp bài kiểm tra! Hãy kiểm tra lại backend.");
+        }
     };
 
     const minutes = Math.floor(timeLeft / 60);

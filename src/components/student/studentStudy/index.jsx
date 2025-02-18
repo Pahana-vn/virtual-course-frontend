@@ -136,7 +136,7 @@ const StudentStudy = () => {
                   </span>
                 </div>
                 <div className="edit-rate">
-                  <Link to="#">Edit rating</Link>
+                  <Link to="#">Deadline</Link>
                 </div>
               </div>
               <div className="progress-stip">

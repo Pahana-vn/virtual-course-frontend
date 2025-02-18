@@ -2,33 +2,31 @@ import api from "../untils/api";
 
 export const fetchStudentByStudentId = async (studentId) => {
     try {
-        const response = await api.get(`/students/${studentId}`); // API mới lấy theo studentId
+        const response = await api.get(`/students/${studentId}`);
         return response.data;
     } catch (error) {
-        console.error("❌ Lỗi khi lấy Student theo Student ID:", error);
+        console.error("Error when getting Student by Student ID:", error);
         throw error;
     }
 };
 
-// ✅ Lấy thông tin Dashboard của Student
 export const fetchStudentDashboardData = async (studentId) => {
     try {
         const response = await api.get(`/students/${studentId}/dashboard`);
         return response.data;
     } catch (error) {
-        console.error("❌ Lỗi khi lấy Dashboard:", error);
+        console.error("Error when getting Dashboard:", error);
         throw error;
     }
 };
 
 
-// ✅ Lấy danh sách khóa học của Student
 export const fetchStudentCourses = async (studentId) => {
     try {
         const response = await api.get(`/students/student-courses-status/${studentId}`);
         return response.data;
     } catch (error) {
-        console.error("❌ Lỗi khi lấy danh sách khóa học:", error);
+        console.error("Error while getting course list:", error);
         throw error;
     }
 };
@@ -38,95 +36,105 @@ export const fetchWishlist = async (studentId) => {
         const response = await api.get(`/favorite/${studentId}`);
         return response.data;
     } catch (error) {
-        console.error("❌ Lỗi khi lấy Wishlist:", error);
+        console.error("Error while getting Wishlist:", error);
         throw error;
     }
 };
 
-// ✅ Thêm khóa học vào Wishlist
 export const addCourseToWishlist = async (studentId, courseId) => {
     try {
         const wishlist = await fetchWishlist(studentId);
         const isCourseInWishlist = wishlist.some(course => course.id === courseId);
 
         if (isCourseInWishlist) {
-            console.log("❌ Khóa học đã có trong wishlist.");
-            return { success: false, message: "Khóa học đã có trong wishlist." };
+            return { success: false, message: "The course is already in the wishlist." };
         }
 
         const response = await api.post(`/students/${studentId}/wishlist`, { id: courseId });
-        return response.data;
+        return { success: true, data: response.data };
     } catch (error) {
-        console.error("❌ Lỗi khi thêm vào Wishlist:", error.response ? error.response.data : error);
+        console.error("Error adding to Wishlist:", error.response ? error.response.data : error);
         throw error;
     }
 };
 
-// ✅ Thêm khóa học vào Cart
 export const addCourseToCart = async (studentId, courseData) => {
-    console.log("📌 Gửi request thêm vào Cart:", studentId, courseData);
+    console.log("Send request to add to Cart:", studentId, courseData);
     try {
         const response = await api.post(`/students/${studentId}/cart`, courseData);
         return response.data;
     } catch (error) {
-        console.error("❌ Lỗi khi thêm vào Cart:", error.response ? error.response.data : error);
+        console.error("Error adding to Cart:", error.response ? error.response.data : error);
         throw error;
     }
 };
 
-// ✅ Lấy danh sách khóa học trong Cart
 export const fetchCartItems = async (studentId) => {
     try {
         const response = await api.get(`/students/${studentId}/cart-items`);
-        return response.data; // Ensure the response contains the expected data
+        return response.data;
     } catch (error) {
-        console.error("❌ Error fetching cart items:", error);
+        console.error("Error fetching cart items:", error);
         throw error;
     }
 };
 
-// ✅ Xóa khóa học khỏi Cart
 export const removeCourseFromCart = async (studentId, cartItemId) => {
     try {
         const response = await api.delete(`/students/${studentId}/cart-items/${cartItemId}`);
         return response.data;
     } catch (error) {
-        console.error("❌ Lỗi khi xóa khỏi Cart:", error);
+        console.error("Error while removing from Cart:", error);
         throw error;
     }
 };
 
-// ✅ Xóa khóa học khỏi Wishlist
 export const removeCourseFromWishlist = async (studentId, courseId) => {
     try {
         const response = await api.delete(`/students/${studentId}/wishlist/${courseId}`);
         return response.data;
     } catch (error) {
-        console.error("❌ Lỗi khi xóa khỏi Wishlist:", error);
+        console.error("Error while removing from Wishlist:", error);
         throw error;
     }
 };
 
-// ✅ Lấy danh sách đơn hàng của sinh viên
 export const fetchStudentOrders = async (studentId) => {
     try {
         const response = await api.get(`/transactions/history/${studentId}`);
         return response.data;
     } catch (error) {
-        console.error("❌ Lỗi khi lấy danh sách đơn hàng:", error);
+        console.error("Error when getting order list:", error);
         throw error;
     }
 };
 
-// ✅ Lấy thông tin hóa đơn theo orderId
 export const fetchInvoiceDetails = async (transactionId) => {
     try {
-        const response = await api.get(`/transactions/history/details/${transactionId}`);  // ✅ API ĐÚNG
+        const response = await api.get(`/transactions/history/details/${transactionId}`);
         return response.data;
     } catch (error) {
-        console.error("❌ Lỗi khi lấy chi tiết hóa đơn:", error);
+        console.error("Error getting invoice details:", error);
         throw error;
     }
 };
 
+export const fetchStudentQuizResults = async (studentId) => {
+    try {
+        const response = await api.get(`/students/${studentId}/quiz-results`);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Lỗi khi lấy danh sách bài kiểm tra:", error);
+        throw error;
+    }
+};
 
+export const fetchStudentQuizDetails = async (quizId) => {
+    try {
+        const response = await api.get(`/students/quiz-details/${quizId}`);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Lỗi khi lấy chi tiết bài kiểm tra:", error);
+        throw error;
+    }
+};

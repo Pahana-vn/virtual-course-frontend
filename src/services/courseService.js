@@ -12,7 +12,7 @@ export const fetchCourses = async () => {
 
 export const fetchCourseDetails = async (courseId) => {
     try {
-        const response = await api.get(`/courses/${courseId}/details`);
+        const response = await api.get(`/courses/${courseId}/course-details`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching course details for ID ${courseId}:`, error);

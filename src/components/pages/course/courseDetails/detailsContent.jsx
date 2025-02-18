@@ -6,17 +6,17 @@ import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../.
 import { Video } from "../../../imagepath";
 
 const DetailsContent = ({ course }) => {
-  // Lấy studentId từ LocalStorage
   const [studentId, setStudentId] = useState(() => {
     const storedId = localStorage.getItem("studentId");
     if (!storedId) {
-      console.warn("⚠️ Không tìm thấy studentId trong LocalStorage!");
+      console.warn("StudentId not found in LocalStorage!");
     }
     return storedId;
   });
 
   const [cartCourses, setCartCourses] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [setWishlist] = useState([]);
   const [cartLoading, setCartLoading] = useState(false);
 
   useEffect(() => {
@@ -32,16 +32,16 @@ const DetailsContent = ({ course }) => {
   useEffect(() => {
     const getCartItems = async () => {
       if (!studentId) {
-        console.warn("⚠️ Không tìm thấy studentId, bỏ qua API call");
+        console.warn("StudentId not found, API call skipped");
         return;
       }
 
       try {
-        console.log(`📌 Gửi request lấy giỏ hàng cho studentId: ${studentId}`);
+        console.log(`Send request to get shopping cart for studentId: ${studentId}`);
         const courses = await fetchCartItems(studentId);
         setCartCourses(courses);
       } catch (error) {
-        console.error("❌ Lỗi khi lấy danh sách giỏ hàng:", error);
+        console.error("Error getting shopping cart list:", error);
       }
     };
 
@@ -56,12 +56,12 @@ const DetailsContent = ({ course }) => {
 
   const handleAddToCart = async () => {
     if (!studentId) {
-      toast.error("Bạn cần đăng nhập để thêm vào giỏ hàng.");
+      toast.error("You need to login to add to cart.");
       return;
     }
 
     if (isCourseInCart(course.id)) {
-      toast.info("Khóa học này đã có trong giỏ hàng!");
+      toast.info("This course is already in your cart!");
       return;
     }
 
@@ -69,18 +69,32 @@ const DetailsContent = ({ course }) => {
       setCartLoading(true);
       const courseData = { id: course.id };
       await addCourseToCart(studentId, courseData);
-      toast.success("Thêm vào giỏ hàng thành công!");
+      toast.success("Add to cart successfully!");
       setCartCourses([...cartCourses, { course: { id: course.id } }]);
     } catch (error) {
-      toast.error("Thêm vào giỏ hàng thất bại.");
+      toast.error("Add to cart failed.");
     } finally {
       setCartLoading(false);
     }
   };
 
+  useEffect(() => {
+    const getWishlist = async () => {
+      if (!studentId) return;
+      try {
+        const wishlistData = await addCourseToWishlist(studentId);
+        setWishlist(wishlistData);
+      } catch (error) {
+        console.error("Error when getting wishlist:", error);
+      }
+    };
+
+    getWishlist();
+  }, [studentId]);
+
   const handleAddToWishlist = async () => {
     if (!studentId) {
-      toast.error("Bạn cần đăng nhập để thêm vào danh sách yêu thích.");
+      toast.error("You need to login to add to favorites list.");
       return;
     }
 
@@ -88,13 +102,13 @@ const DetailsContent = ({ course }) => {
       setLoading(true);
       const result = await addCourseToWishlist(studentId, course.id);
 
-      if (result && !result.success) {
+      if (!result.success) {
         toast.info(result.message);
       } else {
-        toast.success("Đã thêm vào danh sách yêu thích!");
+        toast.success("Add to wishlist successfully!");
       }
     } catch (error) {
-      toast.error("Thêm vào danh sách yêu thích thất bại.");
+      toast.error("Add to favorites failed.");
     } finally {
       setLoading(false);
     }
@@ -111,7 +125,7 @@ const DetailsContent = ({ course }) => {
 
               {course.learn && course.learn.length > 0 && (
                 <div>
-                  <h3>Bạn sẽ học được</h3>
+                  <h3>You will learn</h3>
                   <ul>
                     {course.learn.map((item, index) => (
                       <li key={index}>{item}</li>
@@ -146,24 +160,24 @@ const DetailsContent = ({ course }) => {
 
                       <div className="video-details">
                         <div className="course-fee">
-                          <h2>{course.price ? `$${course.price}` : "Đang cập nhật.."}</h2>
+                          <h2>{course.basePrice ? `$${course.basePrice}` : "Updating.."}</h2>
                         </div>
                         <div className="row gx-2">
                           <div className="col-md-6 addHeart">
                             <button className="btn btn-wish w-100" onClick={handleAddToCart} disabled={cartLoading}>
-                              {cartLoading ? "Đang thêm vào giỏ hàng..." : "Thêm vào giỏ hàng"}
+                              {cartLoading ? "Adding to cart..." : "Add to cart"}
                             </button>
                           </div>
 
                           <div className="col-md-6 addHeart">
                             <button className="btn btn-wish w-100" onClick={handleAddToWishlist} disabled={loading}>
-                              {loading ? "Đang thêm..." : "Thêm vào yêu thích"}
+                              {loading ? "Adding..." : "Add to favorites"}
                             </button>
                           </div>
                         </div>
 
                         <Link to="/checkout" className="btn btn-enroll w-100">
-                          Mua ngay
+                          Buy now
                         </Link>
                       </div>
                     </div>
@@ -183,7 +197,7 @@ DetailsContent.propTypes = {
     id: PropTypes.number.isRequired,
     titleCourse: PropTypes.string,
     description: PropTypes.string,
-    price: PropTypes.number,
+    basePrice: PropTypes.number,
     learn: PropTypes.arrayOf(PropTypes.string),
     requirements: PropTypes.arrayOf(PropTypes.string),
     urlVideo: PropTypes.string,

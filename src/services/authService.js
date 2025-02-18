@@ -11,7 +11,7 @@ export const login = async (email, password) => {
             localStorage.setItem("accountId", accountId);
             if (studentId) {
                 localStorage.setItem("studentId", studentId);
-                window.dispatchEvent(new Event("storage")); // 🔹 Cập nhật `storage`
+                window.dispatchEvent(new Event("storage"));
             }
         }
 
@@ -21,8 +21,6 @@ export const login = async (email, password) => {
         throw error;
     }
 };
-
-
 
 export const register = async (username, email, password, role = "STUDENT") => {
     const payload = {
@@ -38,10 +36,11 @@ export const register = async (username, email, password, role = "STUDENT") => {
 
 export const logout = async () => {
     try {
-        await api.post("/auth/logout"); // Gọi API logout
-        localStorage.removeItem("token"); // Xóa token từ LocalStorage
-        localStorage.removeItem("user");  // Xóa user data
-        window.location.reload(); // Reload lại trang để cập nhật UI
+        await api.post("/auth/logout");
+        localStorage.removeItem("token");
+        localStorage.removeItem("accountId");
+        localStorage.removeItem("studentId");
+        window.location.reload();
     } catch (error) {
         console.error("Error logging out:", error);
     }
