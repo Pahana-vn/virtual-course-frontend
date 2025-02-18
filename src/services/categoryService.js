@@ -1,4 +1,4 @@
-import api from "../untils/api";
+import api from "../utils/api";
 
 export const fetchCategories = async () => {
     try {

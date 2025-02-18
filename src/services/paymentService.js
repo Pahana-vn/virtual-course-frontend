@@ -1,4 +1,4 @@
-import api from "../untils/api";
+import api from "../utils/api";
 
 //Paypal
 export const executePaypalPayment = async (paymentId, payerId) => {

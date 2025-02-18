@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaClock } from 'react-icons/fa';
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../../untils/api";
+import api from "../../../utils/api";
 import Footer from "../../footer";
 import StudentHeader from "../header";
 
