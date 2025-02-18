@@ -120,8 +120,8 @@ const StudentQuizDetails = () => {
                                 <th>No</th>
                                 <th>Type</th>
                                 <th>Question</th>
-                                <th>Given Answer</th>
-                                <th>Correct Answer</th>
+                                <th style={{ minWidth: '200px', maxWidth: '300px', overflowX: 'auto' }}>Given Answer</th>
+                                <th style={{ minWidth: '200px', maxWidth: '300px', overflowX: 'auto' }}>Correct Answer</th>
                                 <th>Result</th>
                               </tr>
                             </thead>
@@ -131,7 +131,7 @@ const StudentQuizDetails = () => {
                                   <td>{index + 1}</td>
                                   <td>{question.type}</td>
                                   <td>{question.content}</td>
-                                  <td>
+                                  <td style={{ minWidth: '200px', maxWidth: '300px', overflowX: 'auto' }}>
                                     {question.givenAnswers && question.givenAnswers.length > 0 ? (
                                       question.givenAnswers.map((ans, idx) => (
                                         <span key={idx} className={ans.isCorrect ? "text-success" : "text-danger"}>
@@ -142,7 +142,7 @@ const StudentQuizDetails = () => {
                                       <span className="text-warning">No Answer</span>
                                     )}
                                   </td>
-                                  <td>
+                                  <td style={{ minWidth: '200px', maxWidth: '300px', overflowX: 'auto' }}>
                                     {question.correctAnswers && question.correctAnswers.length > 0 ? (
                                       question.correctAnswers.map((ans, idx) => (
                                         <span key={idx} className="text-primary">
