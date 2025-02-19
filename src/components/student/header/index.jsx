@@ -354,6 +354,7 @@ export default function StudentHeader() {
                           <Home size={14} color={"#FF875A"} className="headerIcon me-2" />
                           Dashboard
                         </Link>
+                        
                         <Link
                           className="dropdown-item text"
                           to={`/student/student-profile/${localStorage.getItem("studentId")}`}

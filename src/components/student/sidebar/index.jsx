@@ -66,7 +66,7 @@ export default function StudentSidebar() {
                 </Link>
               </li>
 
-              <li className={`nav-item ${location.pathname === '/student/student-learning-schedule' ? 'active' : ''}`}>
+              <li className={`nav-item ${getActiveClass('/student/student-learning-schedule')}`}>
                 <Link to="/student/student-learning-schedule" className="nav-link">
                   <i className="bx bxs-chat" />
                   Calendar Study
