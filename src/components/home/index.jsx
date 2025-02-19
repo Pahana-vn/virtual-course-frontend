@@ -22,11 +22,11 @@ import {
   Icon10,
   Icon12,
   Icon13,
-  Icon14,
   Icon15,
-  Icon16,
-  Icon17,
   Icon18,
+  Icon16,
+  Icon14,
+  Icon17,
   Icon2,
   Icon7,
   Icon8,
@@ -35,12 +35,16 @@ import {
   PencilIcon,
   Share
 } from "../imagepath";
-import Header from "../student/header/index";
+import Header from "../header";
+import {InstructorHeader} from "../instructor/header";
+import StudentHeader from "../student/header";
 import Blog from "./slider/blog";
 import Companies from "./slider/companies";
 import Testimonial from "./slider/testimonial";
 import TopCategory from "./slider/topCategory";
 import TrendingCourse from "./slider/trendingCourse";
+import { selectCurrentRoles } from "../../redux/slices/auth/authSlice";
+
 
 const options = [
   { label: "Category", value: "Category" },
@@ -53,6 +57,7 @@ const options = [
 export const Home = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const role = useSelector(selectCurrentRoles);
   const mobileSidebar = useSelector((state) => state.sidebarSlice.expandMenu);
 
 
@@ -60,7 +65,7 @@ export const Home = () => {
     const loadCourses = async () => {
       try {
         const data = await fetchCourses();
-        console.log("Courses data:", data); // Xem cấu trúc dữ liệu ở đây
+        // console.log("Courses data:", data); // Xem cấu trúc dữ liệu ở đây
         setCourses(data);
       } catch (error) {
         console.error("Failed to load courses:", error);
@@ -73,8 +78,18 @@ export const Home = () => {
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
-    console.log(mobileSidebar, "gg");
+    // console.log(mobileSidebar, "gg");
   }, [mobileSidebar]);
+
+  const renderHeader = () => {
+    if (role?.includes("ROLE_INSTRUCTOR")) {
+      return <InstructorHeader />;
+    }
+    if (role?.includes("ROLE_STUDENT")) {
+      return <StudentHeader />;
+    }
+    return <Header />;
+  };
 
   if (loading) return <p>Loading...</p>;
   if (courses.length === 0) return <p>No courses available</p>;
@@ -112,7 +127,7 @@ export const Home = () => {
   return (
     <>
       <div className="main-wrapper">
-        <Header />
+      {renderHeader()}
         {/* banner */}
         <section
           className="home-slide d-flex align-items-center"
@@ -143,7 +158,6 @@ export const Home = () => {
                               value={options.value}
                               defaultValue={options[0]}
                               placeholder="Category"
-
                               styles={style}
                             ></Select>
                           </span>
@@ -338,7 +352,7 @@ export const Home = () => {
                     <div className="course-box d-flex">
                       <div className="product">
                         <div className="product-img">
-                          <Link to={`/course-details/${course.id}`}>
+                          <Link to={`/course/${course.id}/course-details`}>
                             <img
                               className="img-fluid"
                               alt={course.titleCourse || "Course"}
@@ -377,7 +391,7 @@ export const Home = () => {
                             </div>
                           </div>
                           <h3 className="title instructor-text">
-                            <Link to={`/course-details/${course.id}`}>
+                            <Link to={`/course/${course.id}/course-details`}>
                               {course.titleCourse || "Untitled Course"}
                             </Link>
                           </h3>

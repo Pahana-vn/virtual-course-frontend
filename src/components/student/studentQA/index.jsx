@@ -80,7 +80,6 @@ const StudentQA = () => {
         </div>
       </div>
       {/* /Breadcrumb */}
-
       {/* Page Content */}
       <div className="page-content">
         <div className="container">

@@ -1,5 +1,7 @@
 import React from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import RequireAuth from "./auth/RequireAuth";
+import Logout from "./auth/Logout";
 import BlogDetails from "./components/blog/blogDetails";
 import BlogGrid from "./components/blog/blogGrid";
 import BlogList from "./components/blog/bloglist";
@@ -8,7 +10,6 @@ import BlogModern from "./components/blog/blogModern";
 import Cart from "./components/pages/cart";
 import JobCategory from "./components/pages/category";
 import Checkout from "./components/pages/checkout";
-import AddCourse from "./components/pages/course/addCourse";
 import CourseDetails from "./components/pages/course/courseDetails";
 import CourseDetails1 from "./components/pages/course/courseDetails1";
 import CourseDetails2 from "./components/pages/course/courseDetails2";
@@ -27,79 +28,83 @@ import PrivacyPolicy from "./components/pages/policy";
 import PricingPlan from "./components/pages/pricingPlan";
 import PricingPlan2 from "./components/pages/pricingPlan/pricingPlan2";
 import Register from "./components/pages/register";
-import RegisterOne from "./components/pages/register/register1";
-import RegisterTwo from "./components/pages/register/register2";
-import RegisterThree from "./components/pages/register/register3";
-import RegisterFour from "./components/pages/register/register4";
-import RegisterFive from "./components/pages/register/register5";
 import Support from "./components/pages/support";
 import TermsCondition from "./components/pages/termsCondition";
 import Wishlist from "./components/pages/wishlist";
 
-import Home from "./components/home";
+import { Home } from "./components/home";
 import { Dashboard } from "./components/instructor/dashboard";
-import InstructorEarnings from "./components/instructor/earnings";
-import InstructorEditProfile from "./components/instructor/editProfile";
-import InstructorGrid from "./components/instructor/grid";
 import { InstructorList } from "./components/instructor/list";
+import AddOrEditCourse from "./components/instructor/addCourse";
+import InstructorGrid from "./components/instructor/grid";
+import InstructorReviews from "./components/instructor/reviews";
+import InstructorEarnings from "./components/instructor/earnings";
 import InstructorOrders from "./components/instructor/orders";
 import InstructorPayouts from "./components/instructor/payouts";
-import InstructorReviews from "./components/instructor/reviews";
+import InstructorEditProfile from "./components/instructor/editProfile";
 import InstructorSecurity from "./components/instructor/security";
 import InstructorSocialProfile from "./components/instructor/socialProfiles";
+import { InstructorCourseTests } from "./components/instructor/courseTest";
 
+import InstructorChat from "./components/instructor/instructorChat";
 import InstructorDeleteProfile from "./components/instructor/deleteProfile";
 import InstructorEdit from "./components/instructor/edit";
 import InstructorGrid2 from "./components/instructor/grid2";
-import InstructorChat from "./components/instructor/instructorChat";
 import InstructorLinkedAccount from "./components/instructor/linkedAccount";
 import InstructorNewTickets from "./components/instructor/newTickets";
 import InstructorProfile from "./components/instructor/profile";
 import InstructorProfilePrivacy from "./components/instructor/profilePrivacy";
 import InstructorStudentGrid from "./components/instructor/studentGrid";
 import InstructorStudentList from "./components/instructor/studentList";
+import StudentEditProfile from "./components/student/editProfile";
 import StudentAccounts from "./components/student/accounts";
 import StudentBilling from "./components/student/billing";
 import StudentDeleteProfile from "./components/student/deleteProfile";
-import StudentEditProfile from "./components/student/editProfile";
 import StudentInvoice from "./components/student/invoice";
 
 import StudentPayment from "./components/student/payment";
 import StudentPrivacy from "./components/student/privacy";
 import StudentSecurity from "./components/student/security";
 
-import StudentNewTickets from "./components/student/newTickets";
 import StudentSubscription from "./components/student/subscription";
+import StudentNewTickets from "./components/student/newTickets";
 
-import InstructorDepositDashboard from "./components/instructor/deposit";
-import DepositInstructor from "./components/instructor/depositInstructor";
-import TransactionInstructor from "./components/instructor/transactionInstructor";
-import WithdrawalInstructor from "./components/instructor/withdrawalInstructor";
-import StudentDepositDashboard from "./components/student/depositDashboard";
-import DepositStudent from "./components/student/depositStudent";
+import StudentViewTickets from "./components/student/viewTickets";
 import StudentsGrid from "./components/student/grid";
 import StudentsGrid2 from "./components/student/grid2";
 import StudentsList from "./components/student/list";
+import InstructorDepositDashboard from "./components/instructor/deposit";
+import StudentDepositDashboard from "./components/student/depositDashboard";
+import WithdrawalInstructor from "./components/instructor/withdrawalInstructor";
+import DepositInstructor from "./components/instructor/depositInstructor";
+import TransactionInstructor from "./components/instructor/transactionInstructor";
+import DepositStudent from "./components/student/depositStudent";
 import TransactionStudent from "./components/student/transactionStudent";
-import StudentViewTickets from "./components/student/viewTickets";
 
+import CourseMessage from "./components/student/courseMessage";
+import CourseWishlist from "./components/student/courseWishlist";
+import CourseStudent from "./components/student/courseStudent";
+import PurchaseHistory from "./components/student/purchaseHistory";
+import ViewInvoice from "./components/student/invoice/viewInvoice";
+import NewPassword from "./components/pages/newPassword";
 import DashboardProfile from "./components/instructor/dashboardProfile";
-import InstructorAnnouncement from "./components/instructor/instructorAnnouncement/index.jsx";
-import InstructorAssignment from "./components/instructor/instructorAssignment/index.jsx";
-import InstructorCourse from "./components/instructor/instructorCourse/index.jsx";
 import InstructorEnrolledCource from "./components/instructor/instructorEnrolledCourse";
-import InstructorNotification from "./components/instructor/instructorNotification/index.jsx";
-import InstructorQA from "./components/instructor/instructorQA/index.jsx";
-import InstructorQuiz from "./components/instructor/instructorQuiz/index.jsx";
-import InstructorQuizDetails from "./components/instructor/instructorQuiz/instructorQuizDetails.jsx";
-import InstructorQuizAttampts from "./components/instructor/instructorQuizAttempts/index.jsx";
-import InstructorReferral from "./components/instructor/instructorReferral/index.jsx";
-import InstructorTicket from "./components/instructor/instructorTicket/index.jsx";
 import InstructorWishlist from "./components/instructor/instructorWishlist.jsx";
-import InstructorWithdraw from "./components/instructor/instructorWithdraw/index.jsx";
+import InstructorProfileSettings from "./components/instructor/profileSettings/instructorProfileSettings";
+import InstructorSettings from "./components/instructor/settings/instructorSettings";
 import InstructorChangePassword from "./components/instructor/settings/instructorChangePassword";
-import InstructorDeleteAccount from "./components/instructor/settings/instructorDeleteAccount.jsx";
 import InstructorSettingNotifications from "./components/instructor/settings/instructorSettingNotifications";
+<<<<<<< HEAD
+import InstructorQuiz from "./components/instructor/instructorQuiz/index.jsx";
+import InstructorQA from "./components/instructor/instructorQA/index.jsx";
+import InstructorReferral from "./components/instructor/instructorReferral/index.jsx";
+import InstructorQuizAttampts from "./components/instructor/instructorQuizAttempts/index.jsx";
+import InstructorWithdraw from "./components/instructor/instructorWithdraw/index.jsx";
+import InstructorNotification from "./components/instructor/instructorNotification/index.jsx";
+import InstructorAssignment from "./components/instructor/instructorAssignment/index.jsx";
+import InstructorAnnouncement from "./components/instructor/instructorAnnouncement/index.jsx";
+import InstructorTicket from "./components/instructor/instructorTicket/index.jsx";
+=======
 import InstructorSettings from "./components/instructor/settings/instructorSettings";
 import InstructorSettingWithdraw from "./components/instructor/settings/instructorSettingWithdraw.jsx";
 import NewPassword from "./components/pages/newPassword";
@@ -116,31 +121,57 @@ import StudentLinkedAccounts from "./components/student/setting/studentLinkedAcc
 import StudentNotification from "./components/student/setting/studentNotification.jsx";
 import StudentSetting from "./components/student/setting/studentSetting.jsx";
 import StudentSocialProfile from "./components/student/setting/studentSocialProfile.jsx";
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 import StudentCourses from "./components/student/studentCourses/index.jsx";
+import InstructorSettingWithdraw from "./components/instructor/settings/instructorSettingWithdraw.jsx";
+import InstructorDeleteAccount from "./components/instructor/settings/instructorDeleteAccount.jsx";
 import StudentDashboard from "./components/student/studentDashboard/index.jsx";
+<<<<<<< HEAD
+=======
 import StudentFinalTest from "./components/student/studentFinalTest/StudentFinalTest.jsx";
 import StudentLearningSchedule from "./components/student/studentLearningSchedule/index.jsx";
 import StudentMessages from "./components/student/studentMessages/index.jsx";
 import StudentOrderHistory from "./components/student/studentOrderHistory/index.jsx";
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 import StudentProfile from "./components/student/studentProfile/index.jsx";
-import StudentQA from "./components/student/studentQA/index.jsx";
+import InstructorCourse from "./components/instructor/instructorCourse/index.jsx";
+import StudentWishlist from "./components/student/studentWishlist/index.jsx";
+import StudentReviews from "./components/student/studentReviews/index.jsx";
 import StudentQuiz from "./components/student/studentQuiz/index.jsx";
+<<<<<<< HEAD
+import StudentOrderHistory from "./components/student/studentOrderHistory/index.jsx";
+import StudentQA from "./components/student/studentQA/index.jsx";
+import StudentReferral from "./components/student/studentReferral/index.jsx";
+import StudentMessages from "./components/student/studentMessages/index.jsx";
+import StudentLinkedAccounts from "./components/student/setting/studentLinkedAccount.jsx";
+import StudentNotification from "./components/student/setting/studentNotification.jsx";
+import StudentSocialProfile from "./components/student/setting/studentSocialProfile.jsx";
+import StudentChangePassword from "./components/student/setting/studentChangePassword.jsx";
+import StudentSetting from "./components/student/setting/studentSetting.jsx";
+=======
 import StudentQuizDetails from "./components/student/studentQuiz/studentQuizDetails.jsx";
 import StudentReviews from "./components/student/studentReviews/index.jsx";
 import StudentStudy from "./components/student/studentStudy/index.jsx";
 import StudentTestResult from "./components/student/studentTestResult/StudentTestResult.jsx";
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 import StudentTicket from "./components/student/studentTicket/index.jsx";
-import StudentWishlist from "./components/student/studentWishlist/index.jsx";
+import InstructorQuizDetails from "./components/instructor/instructorQuiz/instructorQuizDetails.jsx";
+import StudentQuizDetails from "./components/student/studentQuiz/studentQuizDetails.jsx";
+import InstructorProfileEducation from "./components/instructor/profileSettings/instructorProfileEducation";
+import InstructorProfileExperience from "./components/instructor/profileSettings/instructorProfileExperience";
+import InstructorProfileSkill from "./components/instructor/profileSettings/instructorProfileSkill";
+import InstructorProfileSocial from "./components/instructor/profileSettings/instructorProfileSocial";
 
 const Approuter = () => {
   return (
-    <BrowserRouter basename="">
+    <BrowserRouter basename="/">
       <Routes>
         <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/home" element={<Home />} />
-        {/* <Route path="/home2" element={<Home2 />} />
-        <Route path="/home3" element={<Home3 />} />
-        <Route path="/home4" element={<Home4 />} /> */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/new-password" element={<NewPassword />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Blog */}
         <Route path="/blog-list" element={<BlogList />} />
@@ -154,10 +185,13 @@ const Approuter = () => {
         <Route path="/pricing-plan" element={<PricingPlan />} />
         <Route path="/pricing-plan2" element={<PricingPlan2 />} />
         <Route path="/wishlist" element={<Wishlist />} />
-        <Route path="/add-course" element={<AddCourse />} />
         <Route path="/course-list" element={<CourseList />} />
         <Route path="/course-grid" element={<CourseGrid />} />
+<<<<<<< HEAD
+        <Route path="/course/:courseId/course-details" element={<CourseDetails />} />
+=======
         <Route path="/course-details/:courseId" element={<CourseDetails />} />
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
         <Route path="/course-details1" element={<CourseDetails1 />} />
         <Route path="/course-details2" element={<CourseDetails2 />} />
         <Route path="/course-lesson/:courseId" element={<CourseLesson />} />
@@ -172,6 +206,8 @@ const Approuter = () => {
         <Route path="/job-category" element={<JobCategory />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+<<<<<<< HEAD
+=======
         <Route path="/checkout/:courseId" element={<Checkout />} />
         <Route path="/success" element={<Success />} />
         <Route path="/success-vnpay" element={<SuccessVnpay />} />
@@ -184,6 +220,7 @@ const Approuter = () => {
         <Route path="/register3" element={<RegisterThree />} />
         <Route path="/register4" element={<RegisterFour />} />
         <Route path="/register5" element={<RegisterFive />} />
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/term-condition" element={<TermsCondition />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -223,6 +260,7 @@ const Approuter = () => {
         <Route path="/course-message" element={<CourseMessage />} />
         <Route path="/purchase-history" element={<PurchaseHistory />} />
 
+        <Route element={<RequireAuth />}>
         {/* instructor routes starts */}
         <Route
           path="/instructor/instructor-list"
@@ -237,6 +275,11 @@ const Approuter = () => {
           path="/instructor/instructor-dashboard"
           element={<Dashboard />}
         />
+
+        <Route path="/instructor/add-course" element={<AddOrEditCourse />} />
+
+        <Route path="/instructor/edit-course/:courseId" element={<AddOrEditCourse />} />
+
         <Route
           path="/instructor/instructor-list"
           element={<InstructorList />}
@@ -252,7 +295,7 @@ const Approuter = () => {
         />
 
         <Route
-          path="/instructor/instructor-profile"
+          path="/instructor/:instructorId/instructor-profile"
           element={<InstructorProfile />}
         />
         <Route
@@ -274,6 +317,11 @@ const Approuter = () => {
         <Route
           path="/instructor/instructor-social-profile"
           element={<InstructorSocialProfile />}
+        />
+
+        <Route
+          path="/instructor/course-test/:courseId"
+          element={<InstructorCourseTests />}
         />
 
         <Route
@@ -340,6 +388,30 @@ const Approuter = () => {
         <Route
           path="/instructor/instructor-settings"
           element={<InstructorSettings />}
+        />
+        <Route
+          path="/instructor/instructor-profile-settings"
+          element={<InstructorProfileSettings />}
+        />
+        <Route
+          path="/instructor/instructor-profile-education"
+          element={<InstructorProfileEducation />}
+        />
+        <Route
+          path="/instructor/instructor-profile-experience"
+          element={<InstructorProfileExperience />}
+        />
+        <Route
+          path="/instructor/instructor-profile-skill"
+          element={<InstructorProfileSkill />}
+        />
+        <Route
+          path="/instructor/instructor-profile-social"
+          element={<InstructorProfileSocial />}
+        />
+        <Route
+          path="/instructor/instructor-profile-education"
+          element={<InstructorProfileSettings />}
         />
         <Route
           path="/instructor/instructor-earnings"
@@ -413,20 +485,37 @@ const Approuter = () => {
           element={<InstructorCourse />}
         />
         {/* instructor routes ends*/}
-
         {/* student routes starts*/}
         <Route path="/student/student-courses" element={<StudentCourses />} />
+<<<<<<< HEAD
+        <Route
+          path="/student/student-dashboard"
+          element={<StudentDashboard />}
+        />
+        <Route path="/student/student-profile" element={<StudentProfile />} />
+=======
 
         {/* router dash-board */}
         <Route path="/student/student-dashboard/:accountId" element={<StudentDashboard />} />
 
         <Route path="/student/student-profile/:studentId" element={<StudentProfile />} />
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
         <Route path="/student/student-wishlist" element={<StudentWishlist />} />
-        <Route path="/student/student-learning-schedule" element={<StudentLearningSchedule />} />
         <Route path="/student/student-reviews" element={<StudentReviews />} />
         <Route path="/student/student-quiz" element={<StudentQuiz />} />
+<<<<<<< HEAD
+        <Route
+          path="/student/student-quiz-details"
+          element={<StudentQuizDetails />}
+        />
+        <Route
+          path="/student/student-order-history"
+          element={<StudentOrderHistory />}
+        />
+=======
         <Route path="/student/student-quiz-details/:quizId" element={<StudentQuizDetails />} />
         <Route path="/student/student-order-history" element={<StudentOrderHistory />} />
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
         <Route path="/student/student-qa" element={<StudentQA />} />
         <Route path="/student/student-study" element={<StudentStudy />} />
         <Route path="/student/student-messages" element={<StudentMessages />} />
@@ -506,6 +595,7 @@ const Approuter = () => {
         <Route path="/student/student-setting" element={<StudentSetting />} />
         <Route path="/student/student-ticket" element={<StudentTicket />} />
         {/* student routes ends*/}
+        </Route>
       </Routes>
     </BrowserRouter>
   );

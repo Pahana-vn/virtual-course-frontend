@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+<<<<<<< HEAD
+import PropTypes from "prop-types";
+import { Icon1, Icon2 } from "../../../imagepath";
+
+const GridInnerPage = ({ courses }) => {
+  return (
+    <>
+      <div className="row">
+      {courses.map((course) => (
+        <div key={course.id} className="col-lg-4 col-md-6 d-flex">
+          <div className="course-box course-design d-flex ">
+=======
 import { fetchCourses } from "../../../../services/courseService";
 import { Icon1, Icon2 } from "../../../imagepath";
 
@@ -31,36 +43,56 @@ const GridInnerPage = () => {
       {courses.map((course) => (
         <div key={course.id} className="col-lg-4 col-md-6 d-flex">
           <div className="course-box course-design d-flex">
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
             <div className="product">
               <div className="product-img">
                 <Link to={`/course-details/${course.id}`}>
                   <img
                     className="img-fluid"
                     alt={course.titleCourse}
+<<<<<<< HEAD
+                    src={course.imageCover || "/default-image.png"}
+=======
                     src={course.imageCover}
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                   />
                 </Link>
                 <div className="price">
                   <h3>
+<<<<<<< HEAD
+                  {course.basePrice ? `$${course.basePrice - 10}` : "Free"} <span>{course.basePrice ? `$${course.basePrice}` : "Free"}</span>
+=======
                     ${course.basePrice} <span>${course.basePrice * 0.7}</span>
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                   </h3>
                 </div>
               </div>
               <div className="product-content">
                 <div className="course-group d-flex">
                   <div className="course-group-img d-flex">
+<<<<<<< HEAD
+                    <Link to="/instructor/instructor-profile">
+                      <img
+                        src={course.instructorPhoto}
+                        alt={course.instructorName}
+=======
                     <Link to={`/instructor/${course.instructorFirstName}-${course.instructorLastName}`}>
                       <img
                         src={course.instructorPhoto || "default-instructor.jpg"}
                         alt={course.instructorFirstName + " " + course.instructorLastName}
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                         className="img-fluid"
                       />
                     </Link>
                     <div className="course-name">
                       <h4>
+<<<<<<< HEAD
+                        <Link to="/instructor/instructor-profile">{course.instructorName}</Link>
+=======
                         <Link to={`/instructor/${course.instructorFirstName}-${course.instructorLastName}`}>
                           {course.instructorFirstName} {course.instructorLastName}
                         </Link>
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                       </h4>
                       <p>Instructor</p>
                     </div>
@@ -72,8 +104,13 @@ const GridInnerPage = () => {
                   </div>
                 </div>
                 <h3 className="title">
+<<<<<<< HEAD
+                  <Link to="/course-details">
+                  {course.titleCourse}
+=======
                   <Link to={`/course-details/${course.id}`}>
                     {course.titleCourse}
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                   </Link>
                 </h3>
                 <div className="course-info d-flex align-items-center">
@@ -109,8 +146,30 @@ const GridInnerPage = () => {
           </div>
         </div>
       ))}
+<<<<<<< HEAD
+      </div>
+    </>
+=======
     </div>
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
   );
+};
+GridInnerPage.propTypes = {
+  courses: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      titleCourse: PropTypes.string.isRequired,
+      description: PropTypes.string,
+      categoryId: PropTypes.number,
+      categoryName: PropTypes.string,
+      level: PropTypes.string,
+      imageCover: PropTypes.string,
+      basePrice: PropTypes.number,
+      status: PropTypes.string,
+      instructorName: PropTypes.string,
+      instructorPhoto: PropTypes.string,
+    })
+  ).isRequired,
 };
 
 export default GridInnerPage;

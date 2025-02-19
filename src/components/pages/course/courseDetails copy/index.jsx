@@ -1,0 +1,123 @@
+import React from "react";
+import DOMPurify from "dompurify";
+import { Link, useParams } from "react-router-dom";
+import CourseHeader from "../header";
+// import InnerBanner from "../../../../assets/img/inner-banner.jpg";
+import DetailsContent from "./detailsContent";
+import { Icon1, People, Timer } from "../../../imagepath";
+import Footer from "../../../footer";
+import { useGetCourseDetailsByIdQuery } from "../../../../redux/slices/course/courseApiSlice";
+const CourseDetails = () => {
+  const { courseId } = useParams();
+  const courseIdNumber = Number(courseId);
+  const {
+    data: courseDetails,
+    error,
+    isLoading,
+  } = useGetCourseDetailsByIdQuery({ id: courseIdNumber });
+  console.log(courseDetails);
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error fetching course details!</p>;
+
+  const sanitizedDescription = DOMPurify.sanitize(courseDetails.description);
+
+  return (
+    <>
+      <div className="main-wrapper">
+        <CourseHeader activeMenu={"CourseDetails"} />
+
+        <div className="breadcrumb-bar">
+          <div className="container">
+            <div className="row">
+              <div className="col-md-12 col-12">
+                <div className="breadcrumb-list">
+                  <nav aria-label="breadcrumb" className="page-breadcrumb">
+                    <ol className="breadcrumb">
+                      <li className="breadcrumb-item">
+                        <Link to="/home">Home</Link>
+                      </li>
+                      <li className="breadcrumb-item" aria-current="page">
+                        Courses
+                      </li>
+                      <li className="breadcrumb-item" aria-current="page">
+                        All Courses
+                      </li>
+                      <li className="breadcrumb-item" aria-current="page">
+                        {courseDetails.titleCourse}
+                      </li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="inner-banner">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-8">
+                <div className="instructor-wrap border-bottom-0 m-0">
+                  <div className="about-instructor align-items-center">
+                    <div className="abt-instructor-img">
+                      <Link to="/instructor/instructor-profile">
+                        <img
+                          src={courseDetails.instructorPhoto}
+                          alt="img"
+                          className="img-fluid"
+                        />
+                      </Link>
+                    </div>
+                    <div className="instructor-detail me-3">
+                      <h5>
+                        <Link to="/instructor/instructor-profile">{`${courseDetails.instructorFirstName} ${courseDetails.instructorLastName}`}</Link>
+                      </h5>
+                      <p>{courseDetails.categoryName}</p>
+                    </div>
+                    <div className="rating mb-0">
+                      <i className="fas fa-star filled me-1" />
+                      <i className="fas fa-star filled me-1" />
+                      <i className="fas fa-star filled me-1" />
+                      <i className="fas fa-star filled me-1" />
+                      <i className="fas fa-star me-1" />
+                      <span className="d-inline-block average-rating">
+                        <span>4.5</span> (15)
+                      </span>
+                    </div>
+                  </div>
+                  <span className="web-badge mb-3">
+                    {courseDetails.categoryName}
+                  </span>
+                </div>
+                <h2>{courseDetails.titleCourse}</h2>
+                <div
+                  dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+                ></div>
+                <div className="course-info d-flex align-items-center border-bottom-0 m-0 p-0">
+                  <div className="cou-info">
+                    <img src={Icon1} alt="" />
+                    <p>12+ Lesson</p>
+                  </div>
+                  <div className="cou-info">
+                    <img src={Timer} alt="" />
+                    <p>{`${courseDetails.duration} seconds`}</p>
+                  </div>
+                  <div className="cou-info">
+                    <img src={People} alt="" />
+                    <p>32 students enrolled</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <DetailsContent courseDetails={courseDetails} />
+
+        <Footer />
+      </div>
+    </>
+  );
+};
+
+export default CourseDetails;

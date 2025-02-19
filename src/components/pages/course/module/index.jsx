@@ -49,7 +49,6 @@ const HeadModule = () => {
 
   const wish = useRef();
   useOnClickOutside(wish, () => setShowCart(false));
-
   const noti = useRef();
   useOnClickOutside(noti, () => setShowCart(false));
 

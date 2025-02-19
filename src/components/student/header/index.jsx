@@ -1,14 +1,53 @@
+<<<<<<< HEAD
+/* eslint-disable no-unused-vars */
+import React, { useRef, useState } from "react";
+import { useSelector, useDispatch  } from "react-redux";
+import { Home, LogOut, Moon, Star, User } from "react-feather";
+import { Link } from "react-router-dom";
+import useAvatar from "../../../hooks/useAvatar";
+import { selectCurrentUser } from "../../../redux/slices/auth/authSlice";
+import { logOut } from "../../../redux/slices/auth/authSlice";
+=======
 import React, { useEffect, useRef, useState } from "react";
 import { Home, LogOut, Star, User } from "react-feather";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
 import { logout } from "../../../services/authService";
 import { addCourseToCart, fetchCartItems, fetchWishlist, removeCourseFromCart, removeCourseFromWishlist } from "../../../services/studentService";
 import DarkMode from "../../common/darkMode";
+<<<<<<< HEAD
+import {
+  Cart,
+  Course14,
+  Course15,
+  Course4,
+  logo,
+  Messages,
+  Notification,
+  User1,
+  User2,
+  User3, Wish
+} from "../../imagepath";
+import { useStudentAvatarQuery } from "../../../redux/slices/student/studentApiSlice";
+// eslint-disable-next-line react/prop-types
+export default function StudentHeader({ activeMenu }) {
+  const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser);
+  const accountId = useSelector((state) => state.auth.user.accountId);
+  const { data } = useStudentAvatarQuery({accountId});
+  const avatarUrl = data?.url || "default-avatar.png";
+
+  const handleLogout = () => {
+    dispatch(logOut());
+  };
+  const [navbar, setNavbar] = useState(false);
+=======
 import { Cart, logo, Messages, User16, Wish } from "../../imagepath";
 import "./StudentHeader1.css";
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 
 export default function StudentHeader() {
   const [cartCount, setCartCount] = useState(0);
@@ -350,6 +389,101 @@ export default function StudentHeader() {
                             <p className="text-muted mb-0"></p>
                           </div>
                         </div>
+<<<<<<< HEAD
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </li>
+
+              <li className="nav-item user-nav">
+                <Link
+                  to="#"
+                  className={
+                    showProfile ? "dropdown-toggle show" : "dropdown-toggle"
+                  }
+                  data-bs-toggle="dropdown"
+                  onClick={profileClick}
+                >
+                  <span className="user-img">
+                    <img src={avatarUrl} alt="" />
+                    <span className="status online"></span>
+                  </span>
+                </Link>
+                <div
+                  ref={profile}
+                  className={
+                    showProfile
+                      ? "users dropdown-menu dropdown-menu-right show modalPosition"
+                      : "users dropdown-menu dropdown-menu-right"
+                  }
+                  data-popper-placement="bottom-end"
+                >
+                  <div className="user-header">
+                    <div className="avatar avatar-sm">
+                      <img
+                        src={avatarUrl}
+                        alt="User Image"
+                        className="avatar-img rounded-circle"
+                      />
+                    </div>
+                    <div className="user-text">
+                      <h6>{user.fullname}</h6>
+                      <p className="text-muted text mb-0">Student</p>
+                    </div>
+                  </div>
+                  <Link
+                    className="dropdown-item text"
+                    to="/student/student-dashboard"
+                  >
+                    <Home size={14} color={"#FF875A"} className="headerIcon me-1" />{" "}
+                    Dashboard
+                  </Link>
+                  <Link
+                    className="dropdown-item text"
+                    to="/student/student-setting"
+                  >
+                    <User size={14} color={"#FF875A"} className="headerIcon me-1" />{" "}
+                    Profile
+                  </Link>
+                  <Link
+                    className="dropdown-item text"
+                    to="/student/setting-student-subscription"
+                  >
+                    <Star size={14} color={"#FF875A"} className="headerIcon me-1" />{" "}
+                    Subscription
+                  </Link>
+                  <div className="dropdown-item text night-mode">
+                    <span>
+                      <Moon size={14} className="headerIcon" /> Night Mode{" "}
+                    </span>
+                    <div className="form-check form-switch check-on m-0">
+                      <input
+                        className="form-check-input focusShadow"
+                        type="checkbox"
+                        id="night-mode"
+                      />
+                    </div>
+                  </div>
+                  <Link className="dropdown-item text" to="/logout" onClick={handleLogout}>
+                    <LogOut
+                      size={14}
+                      color={"#FF875A"}
+                      className="headerIcon me-1"
+                    />{" "}
+                    Logout
+                  </Link>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        <div
+          className={mobileMenu ? "sidebar-overlay opened" : "sidebar-overlay"}
+        ></div>
+      </div>
+    </header>
+=======
                         <Link className="dropdown-item text" to={`/student/student-dashboard/${localStorage.getItem("studentId")}`} onClick={() => setShowProfile(false)}>
                           <Home size={14} color={"#FF875A"} className="headerIcon me-2" />
                           Dashboard
@@ -396,5 +530,6 @@ export default function StudentHeader() {
         </div>
       </header>
     </>
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
   );
 }

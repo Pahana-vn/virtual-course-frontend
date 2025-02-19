@@ -45,16 +45,21 @@ const InstructorSettings = () => {
                       You have full control to manage your own account settings
                     </p>
                   </div>
-                  <SettingsPageHeader/>
+                  <SettingsPageHeader />
                   <form>
                     <div className="course-group profile-upload-group mb-0 d-flex">
                       <div className="course-group-img profile-edit-field d-flex align-items-center">
-                        <Link to="/student/student-profile" className="profile-pic">
+                        <Link
+                          to="/student/student-profile"
+                          className="profile-pic"
+                        >
                           <img src={User17} alt="Img" className="img-fluid" />
                         </Link>
                         <div className="profile-upload-head">
                           <h4>
-                            <Link to="/instructor/instructor-profile">Your avatar</Link>
+                            <Link to="/instructor/instructor-profile">
+                              Your avatar
+                            </Link>
                           </h4>
                           <p>
                             PNG or JPG no bigger than 800px width and height
