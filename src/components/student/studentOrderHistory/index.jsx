@@ -62,10 +62,9 @@ const StudentOrderHistory = () => {
                     <div className="checkout-form pb-0">
                       <div className="row"><p>No orders found.</p></div>
                     </div>
-
                   ) : (
                     <div className="table-responsive custom-table">
-                      <table className="table">
+                      <table className="table table-hover">
                         <thead>
                           <tr>
                             <th>Order ID</th>
@@ -84,12 +83,33 @@ const StudentOrderHistory = () => {
                               <td>{new Date(order.paymentDate).toLocaleString()}</td>
                               <td>{order.paymentMethod}</td>
                               <td>
-                                <span className={`badge ${order.status === "Completed" ? "bg-success" : "bg-warning"}`}>
+                                <span
+                                  className={`badge ${order.status === "Completed"
+                                      ? "badge-success"
+                                      : "badge-warning"
+                                    }`}
+                                  style={{
+                                    padding: "6px 12px",
+                                    borderRadius: "20px",
+                                    fontSize: "0.875rem",
+                                    fontWeight: "500",
+                                  }}
+                                >
                                   {order.status}
                                 </span>
                               </td>
                               <td>
-                                <Link to={`/view-invoice/${order.id}`} className="btn btn-primary btn-sm">
+                                <Link
+                                  to={`/view-invoice/${order.id}`}
+                                  className="btn btn-outline-primary btn-sm"
+                                  style={{
+                                    padding: "6px 12px",
+                                    borderRadius: "20px",
+                                    fontSize: "0.875rem",
+                                    fontWeight: "500",
+                                    transition: "all 0.3s ease",
+                                  }}
+                                >
                                   View Invoice
                                 </Link>
                               </td>
@@ -99,7 +119,6 @@ const StudentOrderHistory = () => {
                       </table>
                     </div>
                   )}
-
                 </div>
               </div>
             </div>

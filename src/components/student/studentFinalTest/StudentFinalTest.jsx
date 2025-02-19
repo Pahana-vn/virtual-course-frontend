@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaClock } from 'react-icons/fa';
+import { FaCheck, FaClock } from 'react-icons/fa';
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../utils/api";
 import Footer from "../../footer";
@@ -13,7 +13,6 @@ const StudentFinalTest = () => {
     const [timeLeft, setTimeLeft] = useState(40 * 60);
     const navigate = useNavigate();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-
 
     useEffect(() => {
         if (!testId) return;
@@ -29,7 +28,6 @@ const StudentFinalTest = () => {
 
         fetchQuestions();
     }, [testId]);
-
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -61,19 +59,17 @@ const StudentFinalTest = () => {
             testId: parseInt(testId),
             answers: Object.keys(answers).map(qId => ({
                 questionId: parseInt(qId),
-                selectedOptionIds: answers[qId] || [] // 🔹 Đảm bảo gửi mảng rỗng nếu không có chọn
+                selectedOptionIds: answers[qId] || []
             }))
         };
 
-        console.log("🔎 Data gửi lên:", JSON.stringify(submission, null, 2)); // ✅ Debug JSON trước khi gửi
+        console.log("🔎 Data gửi lên:", submission);
 
         try {
-            const response = await api.post("/tests/submit", submission);
-            console.log("✅ Bài kiểm tra đã nộp thành công:", response.data);
+            await api.post("/tests/submit", submission);
             navigate(`/student/test-result/${testId}`);
         } catch (error) {
             console.error("❌ Lỗi khi nộp bài:", error.response?.data || error);
-            alert("❌ Lỗi khi nộp bài kiểm tra! Hãy kiểm tra lại backend.");
         }
     };
 
@@ -175,9 +171,21 @@ const StudentFinalTest = () => {
                                         cursor: 'pointer',
                                         fontWeight: 'bold',
                                         fontSize: '1rem',
+                                        position: 'relative',
                                     }}
                                 >
                                     {idx + 1}
+                                    {answers[questions[idx].id]?.length > 0 && (
+                                        <FaCheck
+                                            style={{
+                                                position: 'absolute',
+                                                bottom: '0',
+                                                right: '0',
+                                                color: 'green',
+                                                fontSize: '0.8rem',
+                                            }}
+                                        />
+                                    )}
                                 </div>
                             ))}
                         </div>

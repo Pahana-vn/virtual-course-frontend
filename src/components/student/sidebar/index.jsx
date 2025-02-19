@@ -1,13 +1,20 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import StickyBox from "react-sticky-box";
+import { logout } from "../../../services/authService";
 import { User16 } from "../../imagepath";
 
 export default function StudentSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const getActiveClass = (path) => {
     return location.pathname === path ? "active" : "";
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -132,7 +139,7 @@ export default function StudentSidebar() {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/home" className="nav-link">
+                <Link to="/home" onClick={handleLogout} className="nav-link">
                   <i className="bx bxs-log-out" />
                   Logout
                 </Link>
