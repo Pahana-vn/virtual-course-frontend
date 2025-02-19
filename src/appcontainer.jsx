@@ -2,6 +2,7 @@ import React from "react";
 // import config from "config";
 
 import { Route, BrowserRouter as Router } from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
 import Footer from "./components/footer";
 import Header from "./components/header";
 import Home from "./components/home";

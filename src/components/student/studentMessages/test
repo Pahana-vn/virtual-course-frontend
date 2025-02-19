@@ -1,0 +1,141 @@
+import { Stomp } from '@stomp/stompjs';
+import React, { useEffect, useRef, useState } from "react";
+import SockJS from 'sockjs-client';
+import StudentHeader from "../header";
+import StudentSidebar from "../sidebar";
+
+const StudentMessages = () => {
+  const [messages, setMessages] = useState([]);
+  const [currentMsg, setCurrentMsg] = useState('');
+
+  // Giả lập user hiện tại là student với accountId=3
+  const currentUserAccountId = 3;
+
+  // Giả lập đang chat với instructor accountId=1
+  const chatWithAccountId = 1;
+
+  const stompClientRef = useRef(null);
+
+  useEffect(() => {
+    // Fetch lịch sử chat giữa 2 user
+    fetch(`http://localhost:8080/api/chat/history?user1Id=${currentUserAccountId}&user2Id=${chatWithAccountId}`)
+      .then(res => res.json())
+      .then(data => {
+        // Chuyển đổi dữ liệu chat từ server (có dạng entity) sang dạng DTO tương tự messageFromWS
+        const formattedData = data.map(msg => ({
+          senderAccountId: msg.senderAccount.id,
+          receiverAccountId: msg.receiverAccount.id,
+          content: msg.content,
+          type: "CHAT"
+        }));
+        setMessages(formattedData);
+      })
+      .catch(error => console.error('Error fetching chat history:', error));
+
+    // Kết nối đến backend WebSocket
+    const socket = new SockJS('http://localhost:8080/ws-chat');
+    const stompClient = Stomp.over(socket);
+    stompClientRef.current = stompClient;
+
+    stompClient.connect({}, (frame) => {
+      console.log('Connected: ' + frame);
+      // Subscribe vào /queue/user.{currentUserAccountId} để nhận tin nhắn gửi riêng cho user này
+      stompClient.subscribe(`/queue/user.${currentUserAccountId}`, (messageOutput) => {
+        const msg = JSON.parse(messageOutput.body);
+        setMessages(prev => [...prev, msg]);
+      });
+    }, (error) => {
+      console.error('Error', error);
+    });
+
+    return () => {
+      if (stompClientRef.current) {
+        stompClientRef.current.disconnect();
+      }
+    }
+  }, [currentUserAccountId, chatWithAccountId]);
+
+  const sendMessage = (e) => {
+    e.preventDefault();
+    if (currentMsg.trim() !== '' && stompClientRef.current) {
+      const chatMessageDTO = {
+        senderAccountId: currentUserAccountId,
+        receiverAccountId: chatWithAccountId,
+        content: currentMsg,
+        type: "CHAT"
+      };
+      // Gửi tin nhắn lên server
+      stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
+      // Thêm tin nhắn vào state để hiển thị ngay cho người gửi
+      setMessages(prev => [...prev, chatMessageDTO]);
+      setCurrentMsg('');
+    }
+  };
+
+  return (
+    <div className="main-wrapper chat-wrapper chat-page main-chat-blk">
+      <StudentHeader activeMenu={"Messages"} />
+      <div className="breadcrumb-bar breadcrumb-bar-info">
+        <div className="container">
+          <div className="row">
+            <div className="col-md-12 col-12">
+              <div className="breadcrumb-list">
+                <h2 className="breadcrumb-title">Messages</h2>
+                <nav aria-label="breadcrumb" className="page-breadcrumb">
+                  <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><a href="/home">Home</a></li>
+                    <li className="breadcrumb-item active" aria-current="page">Messages</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="page-content chat-page-wrapper">
+        <div className="container">
+          <div className="row">
+            <StudentSidebar />
+            <div className="col-xl-9 col-lg-9 theiaStickySidebar">
+              <div className="settings-widget card-details mb-0">
+                <div className="settings-menu p-0">
+                  <div className="profile-heading">
+                    <h3>Real-Time Chat</h3>
+                    <p>Current User: AccountID=3 (Student), Chat With: AccountID=1 (Instructor)</p>
+                  </div>
+                  <div className="checkout-form">
+                    <div className="content" style={{ border: '1px solid #ccc', padding: '10px' }}>
+                      <div style={{ height: '300px', overflowY: 'auto', marginBottom: '10px', border: '1px solid #ddd' }}>
+                        {messages.map((m, index) => (
+                          <div key={index} style={{ margin: '5px 0' }}>
+                            <b>{m.senderAccountId === currentUserAccountId ? 'You' : `User ${m.senderAccountId}`}:</b> {m.content}
+                          </div>
+                        ))}
+                      </div>
+                      <form onSubmit={sendMessage} style={{ display: 'flex', gap: '5px' }}>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Type your message here..."
+                          value={currentMsg}
+                          onChange={e => setCurrentMsg(e.target.value)}
+                        />
+                        <button className="btn btn-primary" type="submit">
+                          Send
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* End col */}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default StudentMessages;

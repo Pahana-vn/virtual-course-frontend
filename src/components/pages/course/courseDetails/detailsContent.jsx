@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import FeatherIcon from "feather-icons-react";
 import React, { useState } from "react";
 import PropTypes from "prop-types";
@@ -44,6 +45,123 @@ const DetailsContent = ({ courseDetails }) => {
   const sanitizedCourseDescription = DOMPurify.sanitize(courseDetails.description);
 
   const sanitizedInstructorDescription = DOMPurify.sanitize(instructorDetails.bio);
+=======
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../../services/studentService";
+import { Video } from "../../../imagepath";
+
+const DetailsContent = ({ course }) => {
+  const [studentId, setStudentId] = useState(() => {
+    const storedId = localStorage.getItem("studentId");
+    if (!storedId) {
+      console.warn("StudentId not found in LocalStorage!");
+    }
+    return storedId;
+  });
+
+  const [cartCourses, setCartCourses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [setWishlist] = useState([]);
+  const [cartLoading, setCartLoading] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newStudentId = localStorage.getItem("studentId");
+      if (newStudentId !== studentId) {
+        setStudentId(newStudentId);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [studentId]);
+
+  useEffect(() => {
+    const getCartItems = async () => {
+      if (!studentId) {
+        console.warn("StudentId not found, API call skipped");
+        return;
+      }
+
+      try {
+        console.log(`Send request to get shopping cart for studentId: ${studentId}`);
+        const courses = await fetchCartItems(studentId);
+        setCartCourses(courses);
+      } catch (error) {
+        console.error("Error getting shopping cart list:", error);
+      }
+    };
+
+    if (studentId) {
+      getCartItems();
+    }
+  }, [studentId]);
+
+  const isCourseInCart = (courseId) => {
+    return cartCourses.some((item) => item.course && item.course.id === courseId);
+  };
+
+  const handleAddToCart = async () => {
+    if (!studentId) {
+      toast.error("You need to login to add to cart.");
+      return;
+    }
+
+    if (isCourseInCart(course.id)) {
+      toast.info("This course is already in your cart!");
+      return;
+    }
+
+    try {
+      setCartLoading(true);
+      const courseData = { id: course.id };
+      await addCourseToCart(studentId, courseData);
+      toast.success("Add to cart successfully!");
+      setCartCourses([...cartCourses, { course: { id: course.id } }]);
+    } catch (error) {
+      toast.error("Add to cart failed.");
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const getWishlist = async () => {
+      if (!studentId) return;
+      try {
+        const wishlistData = await addCourseToWishlist(studentId);
+        setWishlist(wishlistData);
+      } catch (error) {
+        console.error("Error when getting wishlist:", error);
+      }
+    };
+
+    getWishlist();
+  }, [studentId]);
+
+  const handleAddToWishlist = async () => {
+    if (!studentId) {
+      toast.error("You need to login to add to favorites list.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const result = await addCourseToWishlist(studentId, course.id);
+
+      if (!result.success) {
+        toast.info(result.message);
+      } else {
+        toast.success("Add to wishlist successfully!");
+      }
+    } catch (error) {
+      toast.error("Add to favorites failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 
   return (
     <>
@@ -51,6 +169,7 @@ const DetailsContent = ({ courseDetails }) => {
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
+<<<<<<< HEAD
               {/* Overview */}
               <div className="card overview-sec">
                 <div className="card-body">
@@ -299,13 +418,40 @@ const DetailsContent = ({ courseDetails }) => {
                 </div>
               </div>
               {/* /Comment */}
+=======
+              <h1>{course.titleCourse}</h1>
+              <p>{course.description}</p>
+
+              {course.learn && course.learn.length > 0 && (
+                <div>
+                  <h3>You will learn</h3>
+                  <ul>
+                    {course.learn.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {course.requirements && course.requirements.length > 0 && (
+                <div>
+                  <h3>Yêu cầu</h3>
+                  <ul>
+                    {course.requirements.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
             </div>
+
             <div className="col-lg-4">
               <div className="sidebar-sec">
-                {/* Video */}
                 <div className="video-sec vid-bg">
                   <div className="card">
                     <div className="card-body">
+<<<<<<< HEAD
                       <Link
                         to={courseDetails.urlVideo}
                         className="video-thumbnail"
@@ -319,9 +465,18 @@ const DetailsContent = ({ courseDetails }) => {
                           src={courseDetails.imageCover}
                           alt=""
                         />
+=======
+                      <Link to={course.urlVideo || "#"} className="video-thumbnail">
+                        <div className="play-icon">
+                          <i className="fa-solid fa-play" />
+                        </div>
+                        <img className="" src={Video} alt="Video Preview" />
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                       </Link>
+
                       <div className="video-details">
                         <div className="course-fee">
+<<<<<<< HEAD
                           <h2>FREE</h2>
                           <p>
                             <span>${courseDetails.basePrice}</span> 50% off
@@ -333,25 +488,37 @@ const DetailsContent = ({ courseDetails }) => {
                               <i className="feather icon-share-2 me-2" />
                               Add Cart
                             </Link>
+=======
+                          <h2>{course.basePrice ? `$${course.basePrice}` : "Updating.."}</h2>
+                        </div>
+                        <div className="row gx-2">
+                          <div className="col-md-6 addHeart">
+                            <button className="btn btn-wish w-100" onClick={handleAddToCart} disabled={cartLoading}>
+                              {cartLoading ? "Adding to cart..." : "Add to cart"}
+                            </button>
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                           </div>
 
                           <div className="col-md-6 addHeart">
-                            <Link
-                              to="/course-wishlist"
-                              className=" btn btn-wish w-100"
-                            >
-                              <i className="feather icon-heart me-2" />
-                              Add to Wishlist
-                            </Link>
+                            <button className="btn btn-wish w-100" onClick={handleAddToWishlist} disabled={loading}>
+                              {loading ? "Adding..." : "Add to favorites"}
+                            </button>
                           </div>
                         </div>
+<<<<<<< HEAD
                         <Link to="/checkout" className="btn btn-enroll w-100">
                           Enroll Now
+=======
+
+                        <Link to="/checkout" className="btn btn-enroll w-100">
+                          Buy now
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                         </Link>
                       </div>
                     </div>
                   </div>
                 </div>
+<<<<<<< HEAD
                 {/* /Video */}
                 {/* Include */}
                 <div className="card include-sec">
@@ -418,6 +585,8 @@ const DetailsContent = ({ courseDetails }) => {
                   </div>
                 </div>
                 {/* /Features */}
+=======
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
               </div>
             </div>
           </div>
@@ -428,6 +597,7 @@ const DetailsContent = ({ courseDetails }) => {
 };
 
 DetailsContent.propTypes = {
+<<<<<<< HEAD
   courseDetails: PropTypes.shape({
     description: PropTypes.string,
     urlVideo: PropTypes.string,
@@ -441,6 +611,16 @@ DetailsContent.propTypes = {
         titleSection: PropTypes.string,
       })
     ),
+=======
+  course: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    titleCourse: PropTypes.string,
+    description: PropTypes.string,
+    basePrice: PropTypes.number,
+    learn: PropTypes.arrayOf(PropTypes.string),
+    requirements: PropTypes.arrayOf(PropTypes.string),
+    urlVideo: PropTypes.string,
+>>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
   }).isRequired,
 };
 
