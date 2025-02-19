@@ -1,53 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import DOMPurify from "dompurify";
 import { InstructorHeader } from "../../instructor/header";
 import Footer from "../../footer";
 import InstructorSidebar from "../sidebar";
 import { Link } from "react-router-dom";
-import useUser from "../../hooks/useUser";
+import { useInstructorProfileQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 
 const DashboardProfile = () => {
-  const [instructorProfile, setInstructorProfile] = useState(null);
-  const userData = useUser();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  // console.log(userData.username);
-  useEffect(() => {
-    const fetchInstructorProfileData = async () => {
-      const username = userData?.username; // Kiểm tra username có tồn tại không
-      if (!username) {
-        setError("Username is missing");
-        setLoading(false);
-        return;
-      } 
-      try {
-        const [response] = await Promise.all([
-          fetch(`http://localhost:8080/api/instructors/profile?username=${encodeURIComponent(username)}`)
-        ]);
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const intructorProfileData = await response.json();
+  const { data: profile, isLoading, isError } = useInstructorProfileQuery();
+  console.log(profile)
+  if (isLoading) return <p>Loading profile...</p>;
+  if (isError) return <p>Error loading profile.</p>;
 
-        setInstructorProfile(intructorProfileData);
-        setLoading(false);
-      } catch (err) {
-      setError(err.message);
-      setLoading(false); 
-      }
-    };
-    fetchInstructorProfileData();
-  }, []);
-  if (loading) {
-    return <div>Loading...</div>; // Hiển thị loading khi đang fetch dữ liệu
-  }
+  const sanitizedInstructorProfileBio = DOMPurify.sanitize(profile.bio);
 
-  if (error) {
-    return <div>Error: {error}</div>; // Hiển thị lỗi nếu fetch thất bại
-  }
   return (
     <div className="main-wrapper">
       <InstructorHeader activeMenu={"My Profile"} />
-      {/* Breadcrumb */}
       <div className="breadcrumb-bar breadcrumb-bar-info">
         <div className="container">
           <div className="row">
@@ -69,15 +38,10 @@ const DashboardProfile = () => {
           </div>
         </div>
       </div>
-      {/* /Breadcrumb */}
-      {/* Page Content */}
       <div className="page-content">
         <div className="container">
           <div className="row">
-            {/* sidebar */}
             <InstructorSidebar />
-            {/* /Sidebar */}
-            {/* Instructor profile */}
             <div className="col-xl-9 col-lg-9">
               <div className="settings-widget card-details mb-0">
                 <div className="settings-menu p-0">
@@ -88,50 +52,80 @@ const DashboardProfile = () => {
                     <div className="row">
                       <div className="col-sm-6">
                         <div className="contact-info">
-                          <h6>First Name</h6>
-                          <p>{instructorProfile.firstName}</p>
-                        </div>
-                      </div>
-                      <div className="col-sm-6">
-                        <div className="contact-info">
-                          <h6>Last Name</h6>
-                          <p>{instructorProfile.lastName}</p>
-                        </div>
-                      </div>
-                      <div className="col-sm-6">
-                        <div className="contact-info">
-                          <h6>User Name</h6>
-                          <p>{instructorProfile.username}</p>
+                          <h6>Username</h6>
+                          <p>{profile.username}</p>
                         </div>
                       </div>
                       <div className="col-sm-6">
                         <div className="contact-info">
                           <h6>Email</h6>
-                          <p>{instructorProfile.email}</p>
+                          <p>{profile.email}</p>
+                          <small>
+                            {profile.verifiedEmail ? (
+                              <span style={{ color: "green" }}>Verified</span>
+                            ) : (
+                              <span style={{ color: "red" }}>Not Verified</span>
+                            )}
+                          </small>
                         </div>
                       </div>
                       <div className="col-sm-6">
                         <div className="contact-info">
-                          <h6>Phone Number</h6>
-                          <p>{instructorProfile.phone}</p>
+                          <h6>First Name</h6>
+                          <p>{profile.firstName}</p>
+                        </div>
+                      </div>
+                      <div className="col-sm-6">
+                        <div className="contact-info">
+                          <h6>Last Name</h6>
+                          <p>{profile.lastName}</p>
+                        </div>
+                      </div>
+                      <div className="col-sm-6">
+                        <div className="contact-info">
+                          <h6>Gender</h6>
+                          <p>{profile.gender}</p>
+                        </div>
+                      </div>
+                      <div className="col-sm-6">
+                        <div className="contact-info">
+                          <h6>Phone</h6>
+                          <p>{profile.phone}</p>
+                          <small>
+                            {profile.verifiedPhone ? (
+                              <span style={{ color: "green" }}>Verified</span>
+                            ) : (
+                              <Link to="/verify-phone" style={{ color: "red" }}>
+                                Not Verified
+                              </Link>
+                            )}
+                          </small>
+                        </div>
+                      </div>
+                      <div className="col-sm-6">
+                        <div className="contact-info">
+                          <h6>Title</h6>
+                          <p>{profile.title}</p>
+                        </div>
+                      </div>
+                      <div className="col-sm-6">
+                        <div className="contact-info">
+                          <h6>Workplace</h6>
+                          <p>{profile.workplace}</p>
                         </div>
                       </div>
                       <div className="col-sm-12">
-                        <div className="contact-info mb-0">
-                          <h6>{instructorProfile.bio}</h6>
-                          <p>
-                            {" "}
-                            Very well thought out and articulate communication.
-                            Clear milestones, deadlines and fast work. Patience.
-                            Infinite patience. No shortcuts. Even if the client is
-                            being careless. Some quick example text to build on the
-                            card title and bulk the card&apos;s content Moltin gives you
-                            platform. As a highly skilled and successfull product
-                            development and design specialist with more than 4 Years
-                            of My experience lies in successfully conceptualizing,
-                            designing, and modifying consumer products specific to
-                            interior design and home furnishings.
-                          </p>
+                        <div className="contact-info">
+                          <h6>Address</h6>
+                          <p>{profile.address}</p>
+                        </div>
+                      </div>
+                      <div className="col-sm-12">
+                        <div className="contact-info">
+                          <h6>Bio</h6>
+                          <div
+                    dangerouslySetInnerHTML={{ __html: sanitizedInstructorProfileBio }}
+                  ></div>
                         </div>
                       </div>
                     </div>
@@ -139,15 +133,12 @@ const DashboardProfile = () => {
                 </div>
               </div>
             </div>
-            {/* /Instructor profile */}
           </div>
         </div>
       </div>
-      {/* /Page Content */}
-
       <Footer />
     </div>
   );
-}
+};
 
-export default DashboardProfile
+export default DashboardProfile;

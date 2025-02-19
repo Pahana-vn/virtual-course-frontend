@@ -5,7 +5,7 @@ import Select from "react-select";
 import { Filter, Grid, List, Search } from "react-feather";
 
 import useUser from "../../hooks/useUser";
-import { fetchCategories } from "../../common/redux/actions/categoryActions";
+import { fetchCategories } from "../../../redux/slices/course/categorySlice";
 import { InstructorHeader } from "../../instructor/header";
 import Footer from "../../footer";
 

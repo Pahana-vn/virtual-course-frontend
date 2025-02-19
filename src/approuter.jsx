@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-// import RequireAuth from "./auth/RequireAuth";
+import RequireAuth from "./auth/RequireAuth";
 import Logout from "./auth/Logout";
 import BlogDetails from "./components/blog/blogDetails";
 import BlogGrid from "./components/blog/blogGrid";
@@ -28,11 +28,6 @@ import PrivacyPolicy from "./components/pages/policy";
 import PricingPlan from "./components/pages/pricingPlan";
 import PricingPlan2 from "./components/pages/pricingPlan/pricingPlan2";
 import Register from "./components/pages/register";
-import RegisterOne from "./components/pages/register/register1";
-import RegisterTwo from "./components/pages/register/register2";
-import RegisterThree from "./components/pages/register/register3";
-import RegisterFour from "./components/pages/register/register4";
-import RegisterFive from "./components/pages/register/register5";
 import Support from "./components/pages/support";
 import TermsCondition from "./components/pages/termsCondition";
 import Wishlist from "./components/pages/wishlist";
@@ -40,7 +35,7 @@ import Wishlist from "./components/pages/wishlist";
 import { Home } from "./components/home";
 import { Dashboard } from "./components/instructor/dashboard";
 import { InstructorList } from "./components/instructor/list";
-import AddCourse from "./components/instructor/addCourse";
+import AddOrEditCourse from "./components/instructor/addCourse";
 import InstructorGrid from "./components/instructor/grid";
 import InstructorReviews from "./components/instructor/reviews";
 import InstructorEarnings from "./components/instructor/earnings";
@@ -49,6 +44,7 @@ import InstructorPayouts from "./components/instructor/payouts";
 import InstructorEditProfile from "./components/instructor/editProfile";
 import InstructorSecurity from "./components/instructor/security";
 import InstructorSocialProfile from "./components/instructor/socialProfiles";
+import { InstructorCourseTests } from "./components/instructor/courseTest";
 
 import InstructorChat from "./components/instructor/instructorChat";
 import InstructorDeleteProfile from "./components/instructor/deleteProfile";
@@ -94,6 +90,7 @@ import NewPassword from "./components/pages/newPassword";
 import DashboardProfile from "./components/instructor/dashboardProfile";
 import InstructorEnrolledCource from "./components/instructor/instructorEnrolledCourse";
 import InstructorWishlist from "./components/instructor/instructorWishlist.jsx";
+import InstructorProfileSettings from "./components/instructor/profileSettings/instructorProfileSettings";
 import InstructorSettings from "./components/instructor/settings/instructorSettings";
 import InstructorChangePassword from "./components/instructor/settings/instructorChangePassword";
 import InstructorSettingNotifications from "./components/instructor/settings/instructorSettingNotifications";
@@ -127,6 +124,10 @@ import StudentSetting from "./components/student/setting/studentSetting.jsx";
 import StudentTicket from "./components/student/studentTicket/index.jsx";
 import InstructorQuizDetails from "./components/instructor/instructorQuiz/instructorQuizDetails.jsx";
 import StudentQuizDetails from "./components/student/studentQuiz/studentQuizDetails.jsx";
+import InstructorProfileEducation from "./components/instructor/profileSettings/instructorProfileEducation";
+import InstructorProfileExperience from "./components/instructor/profileSettings/instructorProfileExperience";
+import InstructorProfileSkill from "./components/instructor/profileSettings/instructorProfileSkill";
+import InstructorProfileSocial from "./components/instructor/profileSettings/instructorProfileSocial";
 
 const Approuter = () => {
   return (
@@ -138,11 +139,6 @@ const Approuter = () => {
         <Route path="/logout" element={<Logout />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/register1" element={<RegisterOne />} />
-        <Route path="/register2" element={<RegisterTwo />} />
-        <Route path="/register3" element={<RegisterThree />} />
-        <Route path="/register4" element={<RegisterFour />} />
-        <Route path="/register5" element={<RegisterFive />} />
 
         {/* Blog */}
         <Route path="/blog-list" element={<BlogList />} />
@@ -158,7 +154,7 @@ const Approuter = () => {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/course-list" element={<CourseList />} />
         <Route path="/course-grid" element={<CourseGrid />} />
-        <Route path="/course-details" element={<CourseDetails />} />
+        <Route path="/course/:courseId/course-details" element={<CourseDetails />} />
         <Route path="/course-details1" element={<CourseDetails1 />} />
         <Route path="/course-details2" element={<CourseDetails2 />} />
         <Route path="/course-lesson" element={<CourseLesson />} />
@@ -210,310 +206,329 @@ const Approuter = () => {
         <Route path="/course-message" element={<CourseMessage />} />
         <Route path="/purchase-history" element={<PurchaseHistory />} />
 
-        {/* <Route element={<RequireAuth />}> */}
-          {/* instructor routes starts */}
-          <Route
-            path="/instructor/instructor-list"
-            element={<InstructorList />}
-          />
-          <Route
-            path="/instructor/instructor-grid"
-            element={<InstructorGrid />}
-          />
+        <Route element={<RequireAuth />}>
+        {/* instructor routes starts */}
+        <Route
+          path="/instructor/instructor-list"
+          element={<InstructorList />}
+        />
+        <Route
+          path="/instructor/instructor-grid"
+          element={<InstructorGrid />}
+        />
 
-          <Route
-            path="/instructor/instructor-dashboard"
-            element={<Dashboard />}
-          />
+        <Route
+          path="/instructor/instructor-dashboard"
+          element={<Dashboard />}
+        />
 
-        <Route path="/instructor/add-course" element={<AddCourse />} />
+        <Route path="/instructor/add-course" element={<AddOrEditCourse />} />
 
-          <Route
-            path="/instructor/instructor-list"
-            element={<InstructorList />}
-          />
-          <Route
-            path="/instructor/instructor-grid"
-            element={<InstructorGrid />}
-          />
+        <Route path="/instructor/edit-course/:courseId" element={<AddOrEditCourse />} />
 
-          <Route
-            path="/instructor/instructor-payouts"
-            element={<InstructorPayouts />}
-          />
+        <Route
+          path="/instructor/instructor-list"
+          element={<InstructorList />}
+        />
+        <Route
+          path="/instructor/instructor-grid"
+          element={<InstructorGrid />}
+        />
 
-          <Route
-            path="/instructor/instructor-profile"
-            element={<InstructorProfile />}
-          />
-          <Route
-            path="/instructor/instructor-enrolled-course"
-            element={<InstructorEnrolledCource />}
-          />
-          <Route
-            path="/instructor/instructor-wishlist"
-            element={<InstructorWishlist />}
-          />
-          <Route
-            path="/instructor/instructor-edit-profile"
-            element={<InstructorEditProfile />}
-          />
-          <Route
-            path="/instructor/instructor-security"
-            element={<InstructorSecurity />}
-          />
-          <Route
-            path="/instructor/instructor-social-profile"
-            element={<InstructorSocialProfile />}
-          />
+        <Route
+          path="/instructor/instructor-payouts"
+          element={<InstructorPayouts />}
+        />
 
-          <Route
-            path="/instructor/instructor-chat"
-            element={<InstructorChat />}
-          />
-          <Route
-            path="/instructor/instructor-notifications"
-            element={<InstructorNotification />}
-          />
+        <Route
+          path="/instructor/:instructorId/instructor-profile"
+          element={<InstructorProfile />}
+        />
+        <Route
+          path="/instructor/instructor-enrolled-course"
+          element={<InstructorEnrolledCource />}
+        />
+        <Route
+          path="/instructor/instructor-wishlist"
+          element={<InstructorWishlist />}
+        />
+        <Route
+          path="/instructor/instructor-edit-profile"
+          element={<InstructorEditProfile />}
+        />
+        <Route
+          path="/instructor/instructor-security"
+          element={<InstructorSecurity />}
+        />
+        <Route
+          path="/instructor/instructor-social-profile"
+          element={<InstructorSocialProfile />}
+        />
 
-          <Route
-            path="/instructor/instructor-delete-profile"
-            element={<InstructorDeleteProfile />}
-          />
-          <Route
-            path="/instructor/deposit-instructor-dashboard"
-            element={<InstructorDepositDashboard />}
-          />
-          <Route
-            path="/instructor/withdrawal-instructor"
-            element={<WithdrawalInstructor />}
-          />
-          <Route
-            path="/instructor/deposit-instructor"
-            element={<DepositInstructor />}
-          />
-          <Route
-            path="/instructor/transactions-instructor"
-            element={<TransactionInstructor />}
-          />
-          <Route
-            path="/instructor/instructor-edit"
-            element={<InstructorEdit />}
-          />
-          <Route
-            path="/instructor/instructor-grid-2"
-            element={<InstructorGrid2 />}
-          />
-          <Route
-            path="/instructor/instructor-linked-account"
-            element={<InstructorLinkedAccount />}
-          />
-          <Route
-            path="/instructor/instructor-new-tickets"
-            element={<InstructorNewTickets />}
-          />
-          <Route
-            path="/instructor/instructor-profile-privacy"
-            element={<InstructorProfilePrivacy />}
-          />
-          <Route
-            path="/instructor/instructor-student-grid"
-            element={<InstructorStudentGrid />}
-          />
-          <Route
-            path="/instructor/instructor-student-list"
-            element={<InstructorStudentList />}
-          />
-          <Route
-            path="/instructor/instructor-profiles"
-            element={<DashboardProfile />}
-          />
-          <Route
-            path="/instructor/instructor-settings"
-            element={<InstructorSettings />}
-          />
-          <Route
-            path="/instructor/instructor-earnings"
-            element={<InstructorEarnings />}
-          />
-          <Route
-            path="/instructor/instructor-change-password"
-            element={<InstructorChangePassword />}
-          />
-          <Route
-            path="/instructor/instructor-setting-notifications"
-            element={<InstructorSettingNotifications />}
-          />
-          <Route
-            path="/instructor/instructor-reviews"
-            element={<InstructorReviews />}
-          />
-          <Route
-            path="/instructor/instructor-quiz"
-            element={<InstructorQuiz />}
-          />
-          <Route
-            path="/instructor/instructor-quiz-details"
-            element={<InstructorQuizDetails />}
-          />
-          <Route
-            path="/instructor/instructor-orders"
-            element={<InstructorOrders />}
-          />
-          <Route path="/instructor/instructor-qa" element={<InstructorQA />} />
-          <Route
-            path="/instructor/instructor-referral"
-            element={<InstructorReferral />}
-          />
-          <Route
-            path="/instructor/instructor-setting-withdraw"
-            element={<InstructorSettingWithdraw />}
-          />
-          <Route
-            path="/instructor/instructor-delete-account"
-            element={<InstructorDeleteAccount />}
-          />
+        <Route
+          path="/instructor/course-test/:courseId"
+          element={<InstructorCourseTests />}
+        />
 
-          <Route
-            path="/instructor/instructor-quiz-attempts"
-            element={<InstructorQuizAttampts />}
-          />
-          <Route
-            path="/instructor/instructor-withdraw"
-            element={<InstructorWithdraw />}
-          />
-          <Route
-            path="/instructor/instructor-notification"
-            element={<InstructorNotification />}
-          />
-          <Route
-            path="/instructor/instructor-assignment"
-            element={<InstructorAssignment />}
-          />
-          <Route
-            path="/instructor/instructor-announcement"
-            element={<InstructorAnnouncement />}
-          />
-          <Route
-            path="/instructor/instructor-ticket"
-            element={<InstructorTicket />}
-          />
+        <Route
+          path="/instructor/instructor-chat"
+          element={<InstructorChat />}
+        />
+        <Route
+          path="/instructor/instructor-notifications"
+          element={<InstructorNotification />}
+        />
 
-          <Route
-            path="/instructor/instructor-course"
-            element={<InstructorCourse />}
-          />
-          {/* instructor routes ends*/}
-          {/* student routes starts*/}
-          <Route path="/student/student-courses" element={<StudentCourses />} />
-          <Route
-            path="/student/student-dashboard"
-            element={<StudentDashboard />}
-          />
-          <Route path="/student/student-profile" element={<StudentProfile />} />
-          <Route
-            path="/student/student-wishlist"
-            element={<StudentWishlist />}
-          />
-          <Route path="/student/student-reviews" element={<StudentReviews />} />
-          <Route path="/student/student-quiz" element={<StudentQuiz />} />
-          <Route
-            path="/student/student-quiz-details"
-            element={<StudentQuizDetails />}
-          />
-          <Route
-            path="/student/student-order-history"
-            element={<StudentOrderHistory />}
-          />
-          <Route path="/student/student-qa" element={<StudentQA />} />
-          <Route
-            path="/student/student-referral"
-            element={<StudentReferral />}
-          />
-          <Route
-            path="/student/student-messages"
-            element={<StudentMessages />}
-          />
-          <Route
-            path="/student/students-profile"
-            element={<StudentProfile />}
-          />
-          <Route path="/student/students-grid" element={<StudentsGrid />} />
-          <Route path="/student/students-grid2" element={<StudentsGrid2 />} />
-          <Route path="/student/students-list" element={<StudentsList />} />
+        <Route
+          path="/instructor/instructor-delete-profile"
+          element={<InstructorDeleteProfile />}
+        />
+        <Route
+          path="/instructor/deposit-instructor-dashboard"
+          element={<InstructorDepositDashboard />}
+        />
+        <Route
+          path="/instructor/withdrawal-instructor"
+          element={<WithdrawalInstructor />}
+        />
+        <Route
+          path="/instructor/deposit-instructor"
+          element={<DepositInstructor />}
+        />
+        <Route
+          path="/instructor/transactions-instructor"
+          element={<TransactionInstructor />}
+        />
+        <Route
+          path="/instructor/instructor-edit"
+          element={<InstructorEdit />}
+        />
+        <Route
+          path="/instructor/instructor-grid-2"
+          element={<InstructorGrid2 />}
+        />
+        <Route
+          path="/instructor/instructor-linked-account"
+          element={<InstructorLinkedAccount />}
+        />
+        <Route
+          path="/instructor/instructor-new-tickets"
+          element={<InstructorNewTickets />}
+        />
+        <Route
+          path="/instructor/instructor-profile-privacy"
+          element={<InstructorProfilePrivacy />}
+        />
+        <Route
+          path="/instructor/instructor-student-grid"
+          element={<InstructorStudentGrid />}
+        />
+        <Route
+          path="/instructor/instructor-student-list"
+          element={<InstructorStudentList />}
+        />
+        <Route
+          path="/instructor/instructor-profiles"
+          element={<DashboardProfile />}
+        />
+        <Route
+          path="/instructor/instructor-settings"
+          element={<InstructorSettings />}
+        />
+        <Route
+          path="/instructor/instructor-profile-settings"
+          element={<InstructorProfileSettings />}
+        />
+        <Route
+          path="/instructor/instructor-profile-education"
+          element={<InstructorProfileEducation />}
+        />
+        <Route
+          path="/instructor/instructor-profile-experience"
+          element={<InstructorProfileExperience />}
+        />
+        <Route
+          path="/instructor/instructor-profile-skill"
+          element={<InstructorProfileSkill />}
+        />
+        <Route
+          path="/instructor/instructor-profile-social"
+          element={<InstructorProfileSocial />}
+        />
+        <Route
+          path="/instructor/instructor-profile-education"
+          element={<InstructorProfileSettings />}
+        />
+        <Route
+          path="/instructor/instructor-earnings"
+          element={<InstructorEarnings />}
+        />
+        <Route
+          path="/instructor/instructor-change-password"
+          element={<InstructorChangePassword />}
+        />
+        <Route
+          path="/instructor/instructor-setting-notifications"
+          element={<InstructorSettingNotifications />}
+        />
+        <Route
+          path="/instructor/instructor-reviews"
+          element={<InstructorReviews />}
+        />
+        <Route
+          path="/instructor/instructor-quiz"
+          element={<InstructorQuiz />}
+        />
+        <Route
+          path="/instructor/instructor-quiz-details"
+          element={<InstructorQuizDetails />}
+        />
+        <Route
+          path="/instructor/instructor-orders"
+          element={<InstructorOrders />}
+        />
+        <Route path="/instructor/instructor-qa" element={<InstructorQA />} />
+        <Route
+          path="/instructor/instructor-referral"
+          element={<InstructorReferral />}
+        />
+        <Route
+          path="/instructor/instructor-setting-withdraw"
+          element={<InstructorSettingWithdraw />}
+        />
+        <Route
+          path="/instructor/instructor-delete-account"
+          element={<InstructorDeleteAccount />}
+        />
 
-          <Route
-            path="/student/setting-student-subscription"
-            element={<StudentSubscription />}
-          />
-          <Route
-            path="/student/setting-support-new-tickets"
-            element={<StudentNewTickets />}
-          />
+        <Route
+          path="/instructor/instructor-quiz-attempts"
+          element={<InstructorQuizAttampts />}
+        />
+        <Route
+          path="/instructor/instructor-withdraw"
+          element={<InstructorWithdraw />}
+        />
+        <Route
+          path="/instructor/instructor-notification"
+          element={<InstructorNotification />}
+        />
+        <Route
+          path="/instructor/instructor-assignment"
+          element={<InstructorAssignment />}
+        />
+        <Route
+          path="/instructor/instructor-announcement"
+          element={<InstructorAnnouncement />}
+        />
+        <Route
+          path="/instructor/instructor-ticket"
+          element={<InstructorTicket />}
+        />
 
-          <Route
-            path="/student/setting-support-view-tickets"
-            element={<StudentViewTickets />}
-          />
-          <Route
-            path="/student/deposit-student-dashboard"
-            element={<StudentDepositDashboard />}
-          />
-          <Route
-            path="/student/setting-student-accounts"
-            element={<StudentAccounts />}
-          />
-          <Route
-            path="/student/setting-student-billing"
-            element={<StudentBilling />}
-          />
-          <Route
-            path="/student/setting-student-delete-profile"
-            element={<StudentDeleteProfile />}
-          />
-          <Route
-            path="/student/setting-student-invoice"
-            element={<StudentInvoice />}
-          />
+        <Route
+          path="/instructor/instructor-course"
+          element={<InstructorCourse />}
+        />
+        {/* instructor routes ends*/}
+        {/* student routes starts*/}
+        <Route path="/student/student-courses" element={<StudentCourses />} />
+        <Route
+          path="/student/student-dashboard"
+          element={<StudentDashboard />}
+        />
+        <Route path="/student/student-profile" element={<StudentProfile />} />
+        <Route path="/student/student-wishlist" element={<StudentWishlist />} />
+        <Route path="/student/student-reviews" element={<StudentReviews />} />
+        <Route path="/student/student-quiz" element={<StudentQuiz />} />
+        <Route
+          path="/student/student-quiz-details"
+          element={<StudentQuizDetails />}
+        />
+        <Route
+          path="/student/student-order-history"
+          element={<StudentOrderHistory />}
+        />
+        <Route path="/student/student-qa" element={<StudentQA />} />
+        <Route path="/student/student-referral" element={<StudentReferral />} />
+        <Route path="/student/student-messages" element={<StudentMessages />} />
+        <Route path="/student/students-profile" element={<StudentProfile />} />
+        <Route path="/student/students-grid" element={<StudentsGrid />} />
+        <Route path="/student/students-grid2" element={<StudentsGrid2 />} />
+        <Route path="/student/students-list" element={<StudentsList />} />
 
-          <Route
-            path="/student/setting-student-payment"
-            element={<StudentPayment />}
-          />
-          <Route
-            path="/student/setting-student-privacy"
-            element={<StudentPrivacy />}
-          />
-          <Route
-            path="/student/setting-student-security"
-            element={<StudentSecurity />}
-          />
-          <Route path="/student/course-student" element={<CourseStudent />} />
-          <Route path="/student/deposit-student" element={<DepositStudent />} />
-          <Route
-            path="/student/transactions-student"
-            element={<TransactionStudent />}
-          />
-          <Route
-            path="/student/student-linked-accounts"
-            element={<StudentLinkedAccounts />}
-          />
-          <Route
-            path="/student/student-notification"
-            element={<StudentNotification />}
-          />
-          <Route
-            path="/student/student-social-profile"
-            element={<StudentSocialProfile />}
-          />
-          <Route
-            path="/student/student-change-password"
-            element={<StudentChangePassword />}
-          />
-          <Route path="/student/student-setting" element={<StudentSetting />} />
-          <Route path="/student/student-ticket" element={<StudentTicket />} />
-          {/* student routes ends*/}
-        {/* </Route> */}
+        <Route
+          path="/student/setting-student-subscription"
+          element={<StudentSubscription />}
+        />
+        <Route
+          path="/student/setting-support-new-tickets"
+          element={<StudentNewTickets />}
+        />
+
+        <Route
+          path="/student/setting-support-view-tickets"
+          element={<StudentViewTickets />}
+        />
+        <Route
+          path="/student/deposit-student-dashboard"
+          element={<StudentDepositDashboard />}
+        />
+        <Route
+          path="/student/setting-student-accounts"
+          element={<StudentAccounts />}
+        />
+        <Route
+          path="/student/setting-student-billing"
+          element={<StudentBilling />}
+        />
+        <Route
+          path="/student/setting-student-delete-profile"
+          element={<StudentDeleteProfile />}
+        />
+        <Route
+          path="/student/setting-student-invoice"
+          element={<StudentInvoice />}
+        />
+
+        <Route
+          path="/student/setting-student-payment"
+          element={<StudentPayment />}
+        />
+        <Route
+          path="/student/setting-student-privacy"
+          element={<StudentPrivacy />}
+        />
+        <Route
+          path="/student/setting-student-security"
+          element={<StudentSecurity />}
+        />
+        <Route path="/student/course-student" element={<CourseStudent />} />
+        <Route path="/student/deposit-student" element={<DepositStudent />} />
+        <Route
+          path="/student/transactions-student"
+          element={<TransactionStudent />}
+        />
+        <Route
+          path="/student/student-linked-accounts"
+          element={<StudentLinkedAccounts />}
+        />
+        <Route
+          path="/student/student-notification"
+          element={<StudentNotification />}
+        />
+        <Route
+          path="/student/student-social-profile"
+          element={<StudentSocialProfile />}
+        />
+        <Route
+          path="/student/student-change-password"
+          element={<StudentChangePassword />}
+        />
+        <Route path="/student/student-setting" element={<StudentSetting />} />
+        <Route path="/student/student-ticket" element={<StudentTicket />} />
+        {/* student routes ends*/}
+        </Route>
       </Routes>
     </BrowserRouter>
   );

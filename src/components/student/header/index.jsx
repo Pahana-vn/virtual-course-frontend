@@ -4,8 +4,8 @@ import { useSelector, useDispatch  } from "react-redux";
 import { Home, LogOut, Moon, Star, User } from "react-feather";
 import { Link } from "react-router-dom";
 import useAvatar from "../../../hooks/useAvatar";
-import { selectCurrentUser } from "../../common/redux/slices/authSlice";
-import { logOut } from "../../common/redux/slices/authSlice";
+import { selectCurrentUser } from "../../../redux/slices/auth/authSlice";
+import { logOut } from "../../../redux/slices/auth/authSlice";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
 import DarkMode from "../../common/darkMode";
 import {
@@ -20,15 +20,13 @@ import {
   User2,
   User3, Wish
 } from "../../imagepath";
+import { useStudentAvatarQuery } from "../../../redux/slices/student/studentApiSlice";
 // eslint-disable-next-line react/prop-types
 export default function StudentHeader({ activeMenu }) {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
-  const id = useSelector((state) => state.auth.user.id);
-  console.log(id)
-  const { data } = useAvatar({ id, role: "ROLE_STUDENT" });
-  console.log(data)
-
+  const accountId = useSelector((state) => state.auth.user.accountId);
+  const { data } = useStudentAvatarQuery({accountId});
   const avatarUrl = data?.url || "default-avatar.png";
 
   const handleLogout = () => {

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import ReactTagsInput from "./tags";
@@ -10,62 +9,67 @@ import {
   removeHashtag,
   setBasePrice,
   resetCourseState,
-} from "../../common/redux/slices/courseSlice";
-import { selectCurrentUser } from "../../common/redux/slices/authSlice";
+} from "../../../redux/slices/course/courseSlice";
+import { useGetInstructorByIdQuery } from "../../../redux/slices/instructor/instructorApiSlice";
+import { prepareCourseData } from "./utils/courseDataUtil";
+import { useCreateCourseMutation } from "../../../redux/slices/course/courseApiSlice";
+import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
 
-const Settings = ({ nextTab5, prevTab4 }) => {
+const Settings = ({ nextTab5, prevTab4, isEditing }) => {
   const dispatch = useDispatch();
+  const [createCourse] = useCreateCourseMutation();
   const courseSlice = useSelector((state) => state.course);
 
   // Lấy dữ liệu từ Redux
   const hashtags = useSelector((state) => state.course.settingsInfo.hashtags);
   const basePrice = useSelector((state) => state.course.settingsInfo.basePrice);
-  const user = useSelector(selectCurrentUser);
+  const instructorId = useSelector(selectCurrentInstructor);
+  const { data: instructor } = useGetInstructorByIdQuery({ id: instructorId });
   const [errorMessage, setErrorMessage] = useState("");
 
   const validateHashtag = (tag, existingTags) => {
     const errors = [];
-    
+
     // 1. Kiểm tra trống
     if (!tag.trim()) {
       errors.push("Hashtag cannot be empty.");
       return errors;
     }
-  
+
     // 2. Kiểm tra ký tự hợp lệ (cho phép dấu # ở đầu, không bắt buộc)
     if (!/^#?[a-zA-Z0-9_-]+$/.test(tag)) {
-      errors.push("Hashtag can only contain letters, numbers, underscores, hyphens, and optionally start with #.");
+      errors.push(
+        "Hashtag can only contain letters, numbers, underscores, hyphens, and optionally start with #."
+      );
     }
-  
+
     // 3. Kiểm tra độ dài
     if (tag.length > 30) {
       errors.push("Hashtag cannot be longer than 30 characters.");
     }
-  
+
     // 4. Kiểm tra trùng lặp (dạng không phân biệt dấu #)
     const normalizedTag = tag.startsWith("#") ? tag.slice(1) : tag;
     if (existingTags.some((t) => t.slice(1) === normalizedTag)) {
       errors.push("Hashtag already exists.");
     }
-  
+
     return errors;
   };
-  
 
   // Thêm hashtag
   const handleAddHashtag = (tag) => {
     const formattedTag = tag.startsWith("#") ? tag : `#${tag}`; // Thêm dấu # nếu chưa có
     const errors = validateHashtag(formattedTag, hashtags);
-  
+
     if (errors.length > 0) {
       setErrorMessage(errors.join(" ")); // Hiển thị lỗi gộp
       return;
     }
-  
+
     setErrorMessage(""); // Xóa lỗi nếu hợp lệ
     dispatch(addHashtag(formattedTag)); // Thêm hashtag vào Redux
   };
-  
 
   // Xóa hashtag
   const handleRemoveHashtag = (tag) => {
@@ -86,15 +90,11 @@ const Settings = ({ nextTab5, prevTab4 }) => {
 
   const submitCourse = async (courseData) => {
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/api/courses`,
-        courseData
-      );
-      console.log("Course saved successfully:", response.data);
-      return response.data; // Trả về dữ liệu đã lưu
+      const response = await createCourse({ courseData }).unwrap(); 
+      return response;
     } catch (error) {
       console.error("Failed to save course:", error);
-      throw error; // Xử lý lỗi nếu cần
+      throw error;
     }
   };
 
@@ -110,82 +110,10 @@ const Settings = ({ nextTab5, prevTab4 }) => {
     }
     setErrorMessage("");
 
-    console.log("Redux store:", courseSlice, user);
-    // Dữ liệu của khóa học từ Redux store
-    const createCourseData = {
-      titleCourse: courseSlice.basicInfo.courseTitle || "",
-      description: courseSlice.basicInfo.description || "",
-      categoryId: courseSlice.basicInfo.category.value || 0,
-      categoryName: courseSlice.basicInfo.category.label || "",
-      level: courseSlice.basicInfo.level?.value || "BEGINNER",
-
-      imageCover: courseSlice.mediaInfo.imageUrl || "",
-      urlVideo: courseSlice.mediaInfo.videoUrl || "",
-
-      sections: courseSlice.curriculumInfo.sections.map(
-        (section, sectionIndex) => ({
-          titleSection: section.title || "",
-          numOfLectures: section.lectures.length || 0,
-          sessionDuration: section.lectures.reduce(
-            (sum, lecture) => sum + (lecture.videoDuration || 0),
-            0
-          ),
-          sequenceNumber: sectionIndex + 1,
-
-          lectures: section.lectures.map((lecture, lectureIndex) => ({
-            titleLecture: lecture.title || "",
-            lectureOrder: lectureIndex + 1,
-            lectureVideo: lecture.videoUrl,
-            // sectionId: section.id || sectionIndex + 1,
-            articles: lecture.articles.map((article) => ({
-              content: article.content || "",
-              fileUrl: article.url || "",
-              // lectureId: lecture.id || lectureIndex + 1,
-            })),
-          })),
-        })
-      ),
-      questions: courseSlice.questionInfo.questions.map(
-        (question) => {
-          const isSingle = question.answerOptions?.filter(option => option.isCorrect).length === 1;
-          return {
-            content: question.title || "",
-            type: isSingle ? "SINGLE" : "MULTIPLE", // Chỉ 1 câu trả lời đúng -> SINGLE
-            marks: question.type || 0,
-            answerOptions: question.answerOptions.map((option) => ({
-              content: option.title || "",
-              isCorrect: option.isCorrect || false,
-            })),
-          };
-        }
-      ),
-
-      duration: courseSlice.curriculumInfo.sections.reduce((totalDuration, section) => {
-        const sectionDuration = section.lectures.reduce(
-          (sum, lecture) => sum + (lecture.videoDuration || 0),
-          0
-        );
-        return totalDuration + sectionDuration;
-      }, 0),
-
-      hashtag: courseSlice.settingsInfo.hashtags.join(", "),
-      basePrice: courseSlice.settingsInfo.basePrice || 0,
-      status: courseSlice.settingsInfo.visibility === 2 ? "ACTIVE" : "INACTIVE",
-
-      instructorId: user.id || 0,
-      instructorInfo: {
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        photo: user.photo || "",
-      },
-
-      // courseId: courseSlice.id || 0,
-    };
-
-    console.log(createCourseData);
+    const courseData = prepareCourseData(courseSlice, instructor);
 
     try {
-      const savedCourse = await submitCourse(createCourseData);
+      const savedCourse = await submitCourse(courseData);
       toast.success("Course saved successfully!");
       console.log("Course added:", savedCourse);
       dispatch(resetCourseState());
@@ -220,7 +148,7 @@ const Settings = ({ nextTab5, prevTab4 }) => {
                   type="number"
                   className="form-control"
                   placeholder="10.0"
-                  value={basePrice || ""}
+                  value={basePrice || 0}
                   onChange={handleBasePriceChange}
                 />
               </div>
@@ -234,13 +162,15 @@ const Settings = ({ nextTab5, prevTab4 }) => {
             <Link className="btn btn-black prev_btn" to="#" onClick={prevTab4}>
               Previous
             </Link>
-            <Link
-              className="btn btn-info-light next_btn"
-              to="#"
-              onClick={handleContinue}
-            >
-              Continue
-            </Link>
+            {!isEditing && ( // Chỉ hiển thị nút Continue khi không phải chế độ cập nhật
+              <Link
+                className="btn btn-danger next_btn"
+                to="#"
+                onClick={handleContinue}
+              >
+                Submit
+              </Link>
+            )}
           </div>
         </div>
       </fieldset>
@@ -251,6 +181,7 @@ const Settings = ({ nextTab5, prevTab4 }) => {
 Settings.propTypes = {
   nextTab5: PropTypes.func.isRequired,
   prevTab4: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
 };
 
 export default Settings;

@@ -4,8 +4,8 @@ import TextEditor from "./editor";
 import Select from "react-select";
 import DOMPurify from "dompurify";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchCategories } from "../../common/redux/slices/categorySlice";
-import { setBasicInfo } from "../../common/redux/slices/courseSlice";
+import { fetchCategories } from "../../../redux/slices/course/categorySlice";
+import { setBasicInfo } from "../../../redux/slices/course/courseSlice";
 
 // eslint-disable-next-line react/prop-types
 const Basic = ({ nextTab }) => {

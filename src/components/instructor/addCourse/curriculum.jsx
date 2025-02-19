@@ -11,7 +11,7 @@ import {
   addLecture,
   updateLecture,
   deleteLecture,
-} from "../../common/redux/slices/courseSlice";
+} from "../../../redux/slices/course/courseSlice";
 import "./Curriculum.css";
 // eslint-disable-next-line react/prop-types
 const Curriculum = ({ nextTab3, prevTab2 }) => {
@@ -68,7 +68,7 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
     const newLecture = {
       title,
       articles: [],
-      videoUrl: "",
+      lectureVideo: "",
       videoThumbnail: "",
     };
     dispatch(addLecture({ sectionIndex, lecture: newLecture }));
@@ -83,37 +83,61 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
     dispatch(deleteLecture({ sectionIndex, lectureIndex }));
   };
 
-  const handleAddArticle = (sectionIndex, lectureIndex) => {
-    const currentArticles =
-      sections[sectionIndex].lectures[lectureIndex].articles;
-
-    // Validate số lượng file pdf
+  const handleAddArticle = async (sectionIndex, lectureIndex) => {
+    const currentArticles = sections[sectionIndex].lectures[lectureIndex].articles;
+  
+    // Validate số lượng file PDF
     if (currentArticles.length >= 1) {
       setErrorMessage("You can only upload a maximum of 1 articles.");
       return;
     }
+  
     const fileInput = document.createElement("input");
     fileInput.type = "file";
-    fileInput.accept = ".pdf"; // Restrict to PDF files only
-    fileInput.onchange = (e) => {
+    fileInput.accept = ".pdf"; // Chỉ cho phép file PDF
+    fileInput.onchange = async (e) => {
       const file = e.target.files[0];
       if (file) {
-        // Simulate file upload and get the file URL
-        const uploadedFile = {
-          name: file.name,
-          url: `/uploads/articles/${file.name}`, // This is a mock. Replace with actual upload logic.
-          content: "",
-        };
-        const updatedLecture = {
-          ...sections[sectionIndex].lectures[lectureIndex],
-          articles: [...currentArticles, uploadedFile], // Thêm file mới
-        };
-        handleUpdateLecture(sectionIndex, lectureIndex, updatedLecture);
-        setErrorMessage(""); // Reset lỗi
+        try {
+          // Gọi API upload file
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("type", "articles"); // Loại file (dựa vào API của bạn)
+  
+          const response = await fetch("http://localhost:8080/api/files/upload", {
+            method: "POST",
+            body: formData,
+          });
+  
+          if (!response.ok) {
+            throw new Error("Failed to upload file.");
+          }
+  
+          const fileUrl = await response.text(); 
+          const fileName = fileUrl.split("/").pop();
+  
+          const uploadedFile = {
+            name: file.name,
+            fileUrl: fileName,
+            content: "",
+          };
+  
+          // Cập nhật Lecture với Article mới
+          const updatedLecture = {
+            ...sections[sectionIndex].lectures[lectureIndex],
+            articles: [...currentArticles, uploadedFile],
+          };
+          handleUpdateLecture(sectionIndex, lectureIndex, updatedLecture);
+          setErrorMessage("");
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          setErrorMessage("Failed to upload file. Please try again.");
+        }
       }
     };
     fileInput.click();
   };
+  
 
   const handleDeleteArticle = (sectionIndex, lectureIndex, articleIndex) => {
     const updatedArticles = sections[sectionIndex].lectures[
@@ -161,7 +185,7 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
 
     const updatedLecture = {
       ...sections[sectionIndex].lectures[lectureIndex],
-      videoUrl: url,
+      lectureVideo: url,
       videoThumbnail,
       videoDuration,
     };
@@ -225,7 +249,7 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
                           "Edit Section Title",
                           (newTitle) =>
                             handleUpdateSection(sectionIndex, newTitle),
-                          section.title // Giá trị mặc định
+                          section.title
                         )
                       }
                     >
@@ -261,8 +285,8 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
                             data-bs-toggle="collapse"
                             to={`#collapse-${sectionIndex}-${lectureIndex}`}
                           >
-                            <i className="fas fa-align-justify" />{" "}
-                            Lecture {lectureIndex + 1}: {lecture.title}
+                            <i className="fas fa-align-justify" /> Lecture{" "}
+                            {lectureIndex + 1}: {lecture.title}
                           </Link>
                           <div className="faq-right">
                             <button
@@ -313,11 +337,12 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
                           <div className="faq-body">
                             {/* Show Video */}
                             <div className="input-block">
-                              Lecture Video URL:<input
+                              Lecture Video URL:
+                              <input
                                 type="text"
                                 className="form-control"
                                 placeholder="Video URL"
-                                value={lecture.videoUrl}
+                                value={lecture.lectureVideo}
                                 onChange={(e) =>
                                   handleVideoUrlChange(
                                     sectionIndex,
@@ -327,7 +352,7 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
                                 }
                               />
                             </div>
-                            {lecture.videoUrl && (
+                            {lecture.lectureVideo && (
                               <>
                                 <div className="input-block">
                                   <div className="add-image-box add-video-box">
@@ -347,7 +372,20 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
                                 {lecture.videoDuration && (
                                   <p>
                                     <strong>Duration:</strong>{" "}
-                                    {formatDuration(lecture.videoDuration)} (hh:mm:ss)
+                                    {formatDuration(lecture.videoDuration)}{" "}
+                                    (hh:mm:ss)
+                                  </p>
+                                )}
+                                {lecture.lectureVideo && (
+                                  <p>
+                                    <a
+                                      className="btn btn-warning"
+                                      href={lecture.lectureVideo}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      Watch Video
+                                    </a>
                                   </p>
                                 )}
                               </>
@@ -362,11 +400,11 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
                                     (article, articleIndex) => (
                                       <li key={articleIndex}>
                                         <a
-                                          href={article.url}
+                                          href={article.fileUrl}
                                           target="_blank"
                                           rel="noopener noreferrer"
                                         >
-                                          {article.name}
+                                          {article.fileUrl.split("/").pop()}
                                         </a>
                                         <button
                                           className="btn btn-delete-article"
