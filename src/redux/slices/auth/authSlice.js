@@ -4,8 +4,8 @@ const authSlice = createSlice({
   initialState: { 
     user: null,
     token: localStorage.getItem("token") || null,
+    studentId: localStorage.getItem("studentId") || null,
     instructorId: null,
-    studentId: null,
    },
   reducers: {
     setCredentials: (state, action) => {
@@ -18,7 +18,7 @@ const authSlice = createSlice({
       // localStorage.setItem("user", JSON.stringify(state.user));
       localStorage.setItem("token", state.token);
       // localStorage.setItem("instructorId", state.instructorId);
-      // localStorage.setItem("studentId", state.studentId);
+      localStorage.setItem("studentId", state.studentId);
     },
     logOut: (state) => {
       state.user = null;
@@ -29,7 +29,7 @@ const authSlice = createSlice({
       // localStorage.removeItem("user");
       localStorage.removeItem("token");
       // localStorage.removeItem("instructorId");
-      // localStorage.removeItem("studentId");
+      localStorage.removeItem("studentId");
     },
   },
 });

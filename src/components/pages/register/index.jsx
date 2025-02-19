@@ -133,57 +133,6 @@ const Register = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <>
-      <div className="main-wrapper log-wrap">
-        <div className="row">
-          {/* Login Banner */}
-          <div className="col-md-6 login-bg">
-            <OwlCarousel
-              {...settings}
-              className="owl-carousel login-slide owl-theme"
-            >
-              <div className="welcome-login">
-                <div className="login-banner">
-                  <img src={LoginImg} className="img-fluid" alt="Logo" />
-                </div>
-                <div className="mentor-course text-center">
-                <h2>
-                    Welcome to <br />
-                    Virtual Course Network.
-                  </h2>
-                  <p>
-                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
-                  </p>
-                </div>
-              </div>
-              <div className="welcome-login">
-                <div className="login-banner">
-                  <img src={LoginImg} className="img-fluid" alt="Logo" />
-                </div>
-                <div className="mentor-course text-center">
-                <h2>
-                    Welcome to <br />
-                    Virtual Course Network.
-                  </h2>
-                  <p>
-                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
-                  </p>
-                </div>
-              </div>
-              <div className="welcome-login">
-                <div className="login-banner">
-                  <img src={LoginImg} className="img-fluid" alt="Logo" />
-                </div>
-                <div className="mentor-course text-center">
-                <h2>
-                    Welcome to <br />
-                    Virtual Course Network.
-                  </h2>
-                  <p>
-                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
-                  </p>
-=======
     <div className="main-wrapper log-wrap">
       <div className="row">
         {/* Login Banner */}
@@ -194,8 +143,13 @@ const Register = () => {
                 <img src={LoginImg} className="img-fluid" alt="Banner" />
               </div>
               <div className="mentor-course text-center">
-                <h2>Welcome to <br />DreamsLMS Courses.</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+              <h2>
+                    Welcome to <br />
+                    Virtual Course Network.
+                  </h2>
+                  <p>
+                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                  </p>
               </div>
             </div>
             <div className="welcome-login">
@@ -203,8 +157,13 @@ const Register = () => {
                 <img src={LoginImg} className="img-fluid" alt="Banner" />
               </div>
               <div className="mentor-course text-center">
-                <h2>Welcome to <br />DreamsLMS Courses.</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+              <h2>
+                    Welcome to <br />
+                    Virtual Course Network.
+                  </h2>
+                  <p>
+                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                  </p>
               </div>
             </div>
             <div className="welcome-login">
@@ -212,8 +171,13 @@ const Register = () => {
                 <img src={LoginImg} className="img-fluid" alt="Banner" />
               </div>
               <div className="mentor-course text-center">
-                <h2>Welcome to <br />DreamsLMS Courses.</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+              <h2>
+                    Welcome to <br />
+                    Virtual Course Network.
+                  </h2>
+                  <p>
+                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                  </p>
               </div>
             </div>
           </OwlCarousel>
@@ -228,7 +192,6 @@ const Register = () => {
                 <img src={logo} className="img-fluid" alt="Logo" />
                 <div className="back-home">
                   <Link to="/home">Back to Home</Link>
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                 </div>
               </div>
               <h1>Sign up</h1>

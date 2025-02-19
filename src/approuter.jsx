@@ -94,7 +94,6 @@ import InstructorProfileSettings from "./components/instructor/profileSettings/i
 import InstructorSettings from "./components/instructor/settings/instructorSettings";
 import InstructorChangePassword from "./components/instructor/settings/instructorChangePassword";
 import InstructorSettingNotifications from "./components/instructor/settings/instructorSettingNotifications";
-<<<<<<< HEAD
 import InstructorQuiz from "./components/instructor/instructorQuiz/index.jsx";
 import InstructorQA from "./components/instructor/instructorQA/index.jsx";
 import InstructorReferral from "./components/instructor/instructorReferral/index.jsx";
@@ -104,63 +103,36 @@ import InstructorNotification from "./components/instructor/instructorNotificati
 import InstructorAssignment from "./components/instructor/instructorAssignment/index.jsx";
 import InstructorAnnouncement from "./components/instructor/instructorAnnouncement/index.jsx";
 import InstructorTicket from "./components/instructor/instructorTicket/index.jsx";
-=======
-import InstructorSettings from "./components/instructor/settings/instructorSettings";
 import InstructorSettingWithdraw from "./components/instructor/settings/instructorSettingWithdraw.jsx";
-import NewPassword from "./components/pages/newPassword";
 import Failure from "./components/pages/payment/Failure.jsx";
 import Success from "./components/pages/payment/Success.jsx";
 import SuccessVnpay from "./components/pages/payment/SuccessVnpay.jsx";
-import CourseMessage from "./components/student/courseMessage";
-import CourseStudent from "./components/student/courseStudent";
-import CourseWishlist from "./components/student/courseWishlist";
-import ViewInvoice from "./components/student/invoice/viewInvoice";
-import PurchaseHistory from "./components/student/purchaseHistory";
-import StudentChangePassword from "./components/student/setting/studentChangePassword.jsx";
-import StudentLinkedAccounts from "./components/student/setting/studentLinkedAccount.jsx";
-import StudentNotification from "./components/student/setting/studentNotification.jsx";
-import StudentSetting from "./components/student/setting/studentSetting.jsx";
-import StudentSocialProfile from "./components/student/setting/studentSocialProfile.jsx";
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 import StudentCourses from "./components/student/studentCourses/index.jsx";
-import InstructorSettingWithdraw from "./components/instructor/settings/instructorSettingWithdraw.jsx";
 import InstructorDeleteAccount from "./components/instructor/settings/instructorDeleteAccount.jsx";
 import StudentDashboard from "./components/student/studentDashboard/index.jsx";
-<<<<<<< HEAD
-=======
-import StudentFinalTest from "./components/student/studentFinalTest/StudentFinalTest.jsx";
-import StudentLearningSchedule from "./components/student/studentLearningSchedule/index.jsx";
-import StudentMessages from "./components/student/studentMessages/index.jsx";
-import StudentOrderHistory from "./components/student/studentOrderHistory/index.jsx";
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 import StudentProfile from "./components/student/studentProfile/index.jsx";
 import InstructorCourse from "./components/instructor/instructorCourse/index.jsx";
 import StudentWishlist from "./components/student/studentWishlist/index.jsx";
 import StudentReviews from "./components/student/studentReviews/index.jsx";
 import StudentQuiz from "./components/student/studentQuiz/index.jsx";
-<<<<<<< HEAD
 import StudentOrderHistory from "./components/student/studentOrderHistory/index.jsx";
 import StudentQA from "./components/student/studentQA/index.jsx";
-import StudentReferral from "./components/student/studentReferral/index.jsx";
 import StudentMessages from "./components/student/studentMessages/index.jsx";
 import StudentLinkedAccounts from "./components/student/setting/studentLinkedAccount.jsx";
 import StudentNotification from "./components/student/setting/studentNotification.jsx";
 import StudentSocialProfile from "./components/student/setting/studentSocialProfile.jsx";
 import StudentChangePassword from "./components/student/setting/studentChangePassword.jsx";
 import StudentSetting from "./components/student/setting/studentSetting.jsx";
-=======
 import StudentQuizDetails from "./components/student/studentQuiz/studentQuizDetails.jsx";
-import StudentReviews from "./components/student/studentReviews/index.jsx";
 import StudentStudy from "./components/student/studentStudy/index.jsx";
 import StudentTestResult from "./components/student/studentTestResult/StudentTestResult.jsx";
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 import StudentTicket from "./components/student/studentTicket/index.jsx";
-import InstructorQuizDetails from "./components/instructor/instructorQuiz/instructorQuizDetails.jsx";
-import StudentQuizDetails from "./components/student/studentQuiz/studentQuizDetails.jsx";
 import InstructorProfileEducation from "./components/instructor/profileSettings/instructorProfileEducation";
 import InstructorProfileExperience from "./components/instructor/profileSettings/instructorProfileExperience";
 import InstructorProfileSkill from "./components/instructor/profileSettings/instructorProfileSkill";
 import InstructorProfileSocial from "./components/instructor/profileSettings/instructorProfileSocial";
+import StudentFinalTest from "./components/student/studentFinalTest/StudentFinalTest";
+import InstructorQuizDetails from "./components/instructor/instructorQuiz/instructorQuizDetails";
 
 const Approuter = () => {
   return (
@@ -187,11 +159,8 @@ const Approuter = () => {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/course-list" element={<CourseList />} />
         <Route path="/course-grid" element={<CourseGrid />} />
-<<<<<<< HEAD
         <Route path="/course/:courseId/course-details" element={<CourseDetails />} />
-=======
         <Route path="/course-details/:courseId" element={<CourseDetails />} />
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
         <Route path="/course-details1" element={<CourseDetails1 />} />
         <Route path="/course-details2" element={<CourseDetails2 />} />
         <Route path="/course-lesson/:courseId" element={<CourseLesson />} />
@@ -206,8 +175,6 @@ const Approuter = () => {
         <Route path="/job-category" element={<JobCategory />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
-<<<<<<< HEAD
-=======
         <Route path="/checkout/:courseId" element={<Checkout />} />
         <Route path="/success" element={<Success />} />
         <Route path="/success-vnpay" element={<SuccessVnpay />} />
@@ -215,12 +182,6 @@ const Approuter = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/register1" element={<RegisterOne />} />
-        <Route path="/register2" element={<RegisterTwo />} />
-        <Route path="/register3" element={<RegisterThree />} />
-        <Route path="/register4" element={<RegisterFour />} />
-        <Route path="/register5" element={<RegisterFive />} />
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/term-condition" element={<TermsCondition />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -487,23 +448,19 @@ const Approuter = () => {
         {/* instructor routes ends*/}
         {/* student routes starts*/}
         <Route path="/student/student-courses" element={<StudentCourses />} />
-<<<<<<< HEAD
         <Route
           path="/student/student-dashboard"
           element={<StudentDashboard />}
         />
         <Route path="/student/student-profile" element={<StudentProfile />} />
-=======
 
         {/* router dash-board */}
         <Route path="/student/student-dashboard/:accountId" element={<StudentDashboard />} />
 
         <Route path="/student/student-profile/:studentId" element={<StudentProfile />} />
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
         <Route path="/student/student-wishlist" element={<StudentWishlist />} />
         <Route path="/student/student-reviews" element={<StudentReviews />} />
         <Route path="/student/student-quiz" element={<StudentQuiz />} />
-<<<<<<< HEAD
         <Route
           path="/student/student-quiz-details"
           element={<StudentQuizDetails />}
@@ -512,10 +469,8 @@ const Approuter = () => {
           path="/student/student-order-history"
           element={<StudentOrderHistory />}
         />
-=======
         <Route path="/student/student-quiz-details/:quizId" element={<StudentQuizDetails />} />
         <Route path="/student/student-order-history" element={<StudentOrderHistory />} />
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
         <Route path="/student/student-qa" element={<StudentQA />} />
         <Route path="/student/student-study" element={<StudentStudy />} />
         <Route path="/student/student-messages" element={<StudentMessages />} />

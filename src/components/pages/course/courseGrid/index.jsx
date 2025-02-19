@@ -3,13 +3,8 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Select from "react-select";
-<<<<<<< HEAD
 import Footer from "../../../footer";
-=======
-import CourseHeader from "../../../header/index";
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 import { Blog1, Blog2, Blog3 } from "../../../imagepath";
-import Footer from "../../../student/header";
 import GridInnerPage from "./gridInnerPage";
 import { useGetCoursesQuery } from "../../../../redux/slices/course/courseApiSlice";
 import { selectCurrentRoles } from "../../../../redux/slices/auth/authSlice";
