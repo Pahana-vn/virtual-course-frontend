@@ -367,6 +367,7 @@ export default function StudentHeader() {
                           <Star size={14} color={"#FF875A"} className="headerIcon me-2" />
                           Subscription
                         </Link>
+                        
                         <Link to="#" onClick={handleLogout} className="dropdown-item text">
                           <LogOut
                             size={14}
