@@ -143,8 +143,13 @@ const Register = () => {
                 <img src={LoginImg} className="img-fluid" alt="Banner" />
               </div>
               <div className="mentor-course text-center">
-                <h2>Welcome to <br />DreamsLMS Courses.</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+              <h2>
+                    Welcome to <br />
+                    Virtual Course Network.
+                  </h2>
+                  <p>
+                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                  </p>
               </div>
             </div>
             <div className="welcome-login">
@@ -152,8 +157,13 @@ const Register = () => {
                 <img src={LoginImg} className="img-fluid" alt="Banner" />
               </div>
               <div className="mentor-course text-center">
-                <h2>Welcome to <br />DreamsLMS Courses.</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+              <h2>
+                    Welcome to <br />
+                    Virtual Course Network.
+                  </h2>
+                  <p>
+                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                  </p>
               </div>
             </div>
             <div className="welcome-login">
@@ -161,8 +171,13 @@ const Register = () => {
                 <img src={LoginImg} className="img-fluid" alt="Banner" />
               </div>
               <div className="mentor-course text-center">
-                <h2>Welcome to <br />DreamsLMS Courses.</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+              <h2>
+                    Welcome to <br />
+                    Virtual Course Network.
+                  </h2>
+                  <p>
+                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                  </p>
               </div>
             </div>
           </OwlCarousel>

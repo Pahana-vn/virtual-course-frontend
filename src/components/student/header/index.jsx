@@ -1,25 +1,47 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Home, LogOut, Star, User } from "react-feather";
+import { selectCurrentUser } from "../../../redux/slices/auth/authSlice";
+import { logOut } from "../../../redux/slices/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
-import { logout } from "../../../services/authService";
-import { addCourseToCart, fetchCartItems, fetchWishlist, removeCourseFromCart, removeCourseFromWishlist } from "../../../services/studentService";
+import {
+  addCourseToCart,
+  fetchCartItems,
+  fetchWishlist,
+  removeCourseFromCart,
+  removeCourseFromWishlist,
+} from "../../../services/studentService";
 import DarkMode from "../../common/darkMode";
 import { Cart, logo, Messages, User16, Wish } from "../../imagepath";
 import "./StudentHeader1.css";
+import { useStudentAvatarQuery } from "../../../redux/slices/student/studentApiSlice";
+// eslint-disable-next-line react/prop-types
+export default function StudentHeader({ activeMenu }) {
+  const dispatch = useDispatch();
 
-export default function StudentHeader() {
+  const [navbar, setNavbar] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [wishlistItems, setWishlistItems] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [showWish, setShowWish] = useState(false);
-  const [navbar, setNavbar] = useState(false);
   const [setShowNotification] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+
+  const user = useSelector(selectCurrentUser);
+
+  const accountId = useSelector((state) => state.auth.user.accountId);
+  const { data } = useStudentAvatarQuery({ accountId });
+  const avatarUrl = data?.url || "default-avatar.png";
+
+  const handleLogout = () => {
+    dispatch(logOut());
+  };
 
   // Mobile Menu toggle
   const [setMobileMenu] = useState(false);
@@ -38,6 +60,7 @@ export default function StudentHeader() {
 
   // Check login status and fetch data from token
   useEffect(() => {
+    console.log("Student role detected--------------------1111");
     const token = localStorage.getItem("token");
     const studentId = localStorage.getItem("studentId");
 
@@ -94,10 +117,13 @@ export default function StudentHeader() {
     };
   }, []);
 
-
   // Helper function to calculate the total of cart items
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.course.discountPrice || item.course.basePrice), 0);
+    return cartItems.reduce(
+      (total, item) =>
+        total + (item.course.discountPrice || item.course.basePrice),
+      0
+    );
   };
 
   // Handle course removal from cart
@@ -107,7 +133,9 @@ export default function StudentHeader() {
 
     try {
       await removeCourseFromCart(studentId, cartItemId);
-      setCartItems((prevItems) => prevItems.filter((item) => item.id !== cartItemId));
+      setCartItems((prevItems) =>
+        prevItems.filter((item) => item.id !== cartItemId)
+      );
       setCartCount((prevCount) => prevCount - 1);
     } catch (error) {
       console.error("❌ Lỗi khi xóa khỏi giỏ hàng:", error);
@@ -121,7 +149,9 @@ export default function StudentHeader() {
 
     try {
       await removeCourseFromWishlist(studentId, courseId);
-      setWishlistItems((prevItems) => prevItems.filter((item) => item.id !== courseId));
+      setWishlistItems((prevItems) =>
+        prevItems.filter((item) => item.id !== courseId)
+      );
     } catch (error) {
       console.error("❌ Lỗi khi xóa khỏi Wishlist:", error);
     }
@@ -136,20 +166,17 @@ export default function StudentHeader() {
       const addToCartDTO = { id: course.id };
       await addCourseToCart(studentId, addToCartDTO);
 
-      setCartCount(prevCount => prevCount + 1);
-      setCartItems(prevItems => [...prevItems, { id: Date.now(), course: course, quantity: 1 }]);
+      setCartCount((prevCount) => prevCount + 1);
+      setCartItems((prevItems) => [
+        ...prevItems,
+        { id: Date.now(), course: course, quantity: 1 },
+      ]);
 
       await handleRemoveFromWishlist(course.id);
     } catch (error) {
       console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
     }
   };
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
-
   // Mobile Menu Handlers
 
   const hideMobileMenu = () => {
@@ -167,13 +194,25 @@ export default function StudentHeader() {
       <ToastContainer />
       <header className="header header-page">
         <div className="header-fixed">
-          <nav className={navbar ? "navbar navbar-expand-lg header-nav scroll-sticky add-header-bg" : "navbar navbar-expand-lg header-nav scroll-sticky"}>
+          <nav
+            className={
+              navbar
+                ? "navbar navbar-expand-lg header-nav scroll-sticky add-header-bg"
+                : "navbar navbar-expand-lg header-nav scroll-sticky"
+            }
+          >
             <div className="container">
               <div className="navbar-header">
                 <Link to="#" id="mobile_btn">
-                  <span className="bar-icon"><span></span><span></span><span></span></span>
+                  <span className="bar-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </span>
                 </Link>
-                <Link to="/home" className="navbar-brand logo"><img src={logo} className="img-fluid" alt="Logo" /></Link>
+                <Link to="/home" className="navbar-brand logo">
+                  <img src={logo} className="img-fluid" alt="Logo" />
+                </Link>
               </div>
 
               <div className="main-menu-wrapper">
@@ -192,7 +231,10 @@ export default function StudentHeader() {
                 </div>
                 <ul className="main-nav">
                   <li className="has-submenu">
-                    <Link to="/home" className={mobileSubMenu4 ? "submenu" : ""}>
+                    <Link
+                      to="/home"
+                      className={mobileSubMenu4 ? "submenu" : ""}
+                    >
                       Home
                     </Link>
                   </li>
@@ -230,9 +272,7 @@ export default function StudentHeader() {
                     <Link to="/support">About us</Link>
                   </li>
                   <li className="has-submenu">
-                    <Link to="/blog-modern">
-                      Blog
-                    </Link>
+                    <Link to="/blog-modern">Blog</Link>
                   </li>
                 </ul>
               </div>
@@ -241,17 +281,46 @@ export default function StudentHeader() {
                 <DarkMode />
                 {isLoggedIn ? (
                   <>
-                    <li className="nav-item"><Link to="/student/dashboard"><img src={Messages} alt="Messages" /></Link></li>
+                    <li className="nav-item">
+                      <Link to="/student/dashboard">
+                        <img src={Messages} alt="Messages" />
+                      </Link>
+                    </li>
 
                     <li className="nav-item cart-nav" ref={cartRef}>
-                      <Link to="#" className="dropdown-toggle" onClick={cartClick}>
+                      <Link
+                        to="#"
+                        className="dropdown-toggle"
+                        onClick={cartClick}
+                      >
                         <img src={Cart} alt="Cart" />
-                        {cartCount > 0 && <span className="cart-count-badge">{cartCount}</span>}
+                        {cartCount > 0 && (
+                          <span className="cart-count-badge">{cartCount}</span>
+                        )}
                       </Link>
-                      <div className={`wishes-list dropdown-menu dropdown-end dropdown-menu-right modalPosition ${showCart ? 'show' : ''}`}>
+                      <div
+                        className={`wishes-list dropdown-menu dropdown-end dropdown-menu-right modalPosition ${
+                          showCart ? "show" : ""
+                        }`}
+                      >
                         <div className="wish-header d-flex justify-content-between align-items-center p-2 border-bottom">
-                          <Link to={`/cart?studentId=${localStorage.getItem("studentId")}`} onClick={() => setShowCart(false)}>View Cart</Link>
-                          <Link to={`/checkout?studentId=${localStorage.getItem("studentId")}`} className="float-end" onClick={() => setShowCart(false)}>Checkout</Link>
+                          <Link
+                            to={`/cart?studentId=${localStorage.getItem(
+                              "studentId"
+                            )}`}
+                            onClick={() => setShowCart(false)}
+                          >
+                            View Cart
+                          </Link>
+                          <Link
+                            to={`/checkout?studentId=${localStorage.getItem(
+                              "studentId"
+                            )}`}
+                            className="float-end"
+                            onClick={() => setShowCart(false)}
+                          >
+                            Checkout
+                          </Link>
                         </div>
                         <div className="wish-content p-2">
                           <ul>
@@ -261,24 +330,54 @@ export default function StudentHeader() {
                                   <div className="media">
                                     <div className="d-flex media-wide">
                                       <div className="avatar">
-                                        <Link to={`/course-details/${item.course.id}`}>
-                                          <img alt={item.course.titleCourse} src={item.course.imageCover || Cart} />
+                                        <Link
+                                          to={`/course-details/${item.course.id}`}
+                                        >
+                                          <img
+                                            alt={item.course.titleCourse}
+                                            src={item.course.imageCover || Cart}
+                                          />
                                         </Link>
                                       </div>
                                       <div className="media-body">
-                                        <h6><Link to={`/course-details/${item.course.id}`}>{item.course.titleCourse}</Link></h6>
-                                        <p>By {item.course.instructorFirstName}</p>
-                                        <h5>${item.course.basePrice} <span>${item.course.discountPrice || item.course.basePrice}</span></h5>
+                                        <h6>
+                                          <Link
+                                            to={`/course-details/${item.course.id}`}
+                                          >
+                                            {item.course.titleCourse}
+                                          </Link>
+                                        </h6>
+                                        <p>
+                                          By {item.course.instructorFirstName}
+                                        </p>
+                                        <h5>
+                                          ${item.course.basePrice}{" "}
+                                          <span>
+                                            $
+                                            {item.course.discountPrice ||
+                                              item.course.basePrice}
+                                          </span>
+                                        </h5>
                                       </div>
                                     </div>
                                     <div className="remove-btn">
-                                      <Link to="#" className="btn" onClick={() => handleRemoveFromCart(item.id)}>Remove</Link>
+                                      <Link
+                                        to="#"
+                                        className="btn"
+                                        onClick={() =>
+                                          handleRemoveFromCart(item.id)
+                                        }
+                                      >
+                                        Remove
+                                      </Link>
                                     </div>
                                   </div>
                                 </li>
                               ))
                             ) : (
-                              <li className="text-center">Your cart is empty.</li>
+                              <li className="text-center">
+                                Your cart is empty.
+                              </li>
                             )}
                           </ul>
                         </div>
@@ -289,14 +388,28 @@ export default function StudentHeader() {
                     </li>
 
                     <li className="nav-item wish-nav" ref={wishRef}>
-                      <Link to="#" className="dropdown-toggle" onClick={wishClick}>
+                      <Link
+                        to="#"
+                        className="dropdown-toggle"
+                        onClick={wishClick}
+                      >
                         <img src={Wish} alt="Wishlist" />
-                        {wishlistItems.length > 0 && <span className="cart-count-badge">{wishlistItems.length}</span>}
+                        {wishlistItems.length > 0 && (
+                          <span className="cart-count-badge">
+                            {wishlistItems.length}
+                          </span>
+                        )}
                       </Link>
-                      <div className={`wishes-list dropdown-menu dropdown-end dropdown-menu-right modalPosition ${showWish ? 'show' : ''}`}>
+                      <div
+                        className={`wishes-list dropdown-menu dropdown-end dropdown-menu-right modalPosition ${
+                          showWish ? "show" : ""
+                        }`}
+                      >
                         <div className="wish-header d-flex justify-content-between align-items-center p-2 border-bottom">
                           <h5>Wishlist</h5>
-                          <Link to="#" onClick={() => setShowWish(false)}><i className="fas fa-times"></i></Link>
+                          <Link to="#" onClick={() => setShowWish(false)}>
+                            <i className="fas fa-times"></i>
+                          </Link>
                         </div>
                         <div className="wish-content p-2">
                           <ul>
@@ -306,17 +419,55 @@ export default function StudentHeader() {
                                   <div className="media">
                                     <div className="d-flex media-wide">
                                       <div className="avatar">
-                                        <Link to={`/course-details/${course.id}`}>
-                                          <img alt={course.titleCourse} src={course.imageCover || Cart} />
+                                        <Link
+                                          to={`/course-details/${course.id}`}
+                                        >
+                                          <img
+                                            alt={course.titleCourse}
+                                            src={course.imageCover || Cart}
+                                          />
                                         </Link>
                                       </div>
                                       <div className="media-body">
-                                        <h6><Link to={`/course-details/${course.id}`}>{course.titleCourse}</Link></h6>
+                                        <h6>
+                                          <Link
+                                            to={`/course-details/${course.id}`}
+                                          >
+                                            {course.titleCourse}
+                                          </Link>
+                                        </h6>
                                         <p>By {course.instructorFirstName}</p>
-                                        <h5>${course.basePrice} <span>${course.discountPrice || course.basePrice}</span></h5>
+                                        <h5>
+                                          ${course.basePrice}{" "}
+                                          <span>
+                                            $
+                                            {course.discountPrice ||
+                                              course.basePrice}
+                                          </span>
+                                        </h5>
                                         <div className="remove-btn">
-                                          <Link to="#" className="btn me-2" onClick={() => handleAddToCartFromWishlist(course)}>Add to cart</Link>
-                                          <Link to="#" className="btn" onClick={() => handleRemoveFromWishlist(course.id)}>Remove</Link>
+                                          <Link
+                                            to="#"
+                                            className="btn me-2"
+                                            onClick={() =>
+                                              handleAddToCartFromWishlist(
+                                                course
+                                              )
+                                            }
+                                          >
+                                            Add to cart
+                                          </Link>
+                                          <Link
+                                            to="#"
+                                            className="btn"
+                                            onClick={() =>
+                                              handleRemoveFromWishlist(
+                                                course.id
+                                              )
+                                            }
+                                          >
+                                            Remove
+                                          </Link>
                                         </div>
                                       </div>
                                     </div>
@@ -324,7 +475,9 @@ export default function StudentHeader() {
                                 </li>
                               ))
                             ) : (
-                              <li className="text-center">Your wishlist is empty.</li>
+                              <li className="text-center">
+                                Your wishlist is empty.
+                              </li>
                             )}
                           </ul>
                         </div>
@@ -334,42 +487,86 @@ export default function StudentHeader() {
                     {/* Logout Button */}
 
                     <li className="nav-item user-nav" ref={profileRef}>
-                      <Link to="#" className={showProfile ? "dropdown-toggle show" : "dropdown-toggle"} onClick={profileClick}>
+                      <Link
+                        to="#"
+                        className={
+                          showProfile
+                            ? "dropdown-toggle show"
+                            : "dropdown-toggle"
+                        }
+                        onClick={profileClick}
+                      >
                         <span className="user-img">
                           <img src={User16} alt="User" />
                           <span className="status online"></span>
                         </span>
                       </Link>
-                      <div className={`users dropdown-menu dropdown-menu-right modalPosition ${showProfile ? 'show' : ''}`}>
+                      <div
+                        className={`users dropdown-menu dropdown-menu-right modalPosition ${
+                          showProfile ? "show" : ""
+                        }`}
+                      >
                         <div className="user-header d-flex align-items-center p-2 border-bottom">
                           <div className="avatar avatar-sm">
-                            <img src={User16} alt="User Image" className="avatar-img rounded-circle" />
+                            <img
+                              src={User16}
+                              alt="User Image"
+                              className="avatar-img rounded-circle"
+                            />
                           </div>
                           <div className="user-text ms-2">
                             <h6>Student</h6>
                             <p className="text-muted mb-0"></p>
                           </div>
                         </div>
-                        <Link className="dropdown-item text" to={`/student/student-dashboard/${localStorage.getItem("studentId")}`} onClick={() => setShowProfile(false)}>
-                          <Home size={14} color={"#FF875A"} className="headerIcon me-2" />
+                        <Link
+                          className="dropdown-item text"
+                          to={`/student/student-dashboard/${localStorage.getItem(
+                            "studentId"
+                          )}`}
+                          onClick={() => setShowProfile(false)}
+                        >
+                          <Home
+                            size={14}
+                            color={"#FF875A"}
+                            className="headerIcon me-2"
+                          />
                           Dashboard
                         </Link>
                         
                         <Link
                           className="dropdown-item text"
-                          to={`/student/student-profile/${localStorage.getItem("studentId")}`}
+                          to={`/student/student-profile/${localStorage.getItem(
+                            "studentId"
+                          )}`}
                           onClick={() => setShowProfile(false)}
                         >
-                          <User size={14} color={"#FF875A"} className="headerIcon me-2" />
+                          <User
+                            size={14}
+                            color={"#FF875A"}
+                            className="headerIcon me-2"
+                          />
                           Profile
                         </Link>
 
-                        <Link className="dropdown-item text" to="/student/setting-student-subscription" onClick={() => setShowProfile(false)}>
-                          <Star size={14} color={"#FF875A"} className="headerIcon me-2" />
+                        <Link
+                          className="dropdown-item text"
+                          to="/student/setting-student-subscription"
+                          onClick={() => setShowProfile(false)}
+                        >
+                          <Star
+                            size={14}
+                            color={"#FF875A"}
+                            className="headerIcon me-2"
+                          />
                           Subscription
                         </Link>
-                        
-                        <Link to="#" onClick={handleLogout} className="dropdown-item text">
+
+                        <Link
+                          to="#"
+                          onClick={handleLogout}
+                          className="dropdown-item text"
+                        >
                           <LogOut
                             size={14}
                             color={"#FF875A"}
@@ -379,15 +576,18 @@ export default function StudentHeader() {
                         </Link>
                       </div>
                     </li>
-
                   </>
                 ) : (
                   <>
                     <li className="nav-item">
-                      <Link className="nav-link header-sign" to="/login">Sign In</Link>
+                      <Link className="nav-link header-sign" to="/login">
+                        Sign In
+                      </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link header-login" to="/register">Sign Up</Link>
+                      <Link className="nav-link header-login" to="/register">
+                        Sign Up
+                      </Link>
                     </li>
                   </>
                 )}

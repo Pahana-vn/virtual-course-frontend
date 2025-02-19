@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 
 //Bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../node_modules/bootstrap/dist/js/bootstrap.bundle.js';
+import "../node_modules/bootstrap/dist/js/bootstrap.bundle.js";
 
 //Font Awesome
 import "./assets/icons/fontawesome/css/fontawesome.min.css";
@@ -17,17 +17,22 @@ import "./index.css";
 import "./assets/css/style.css";
 
 // Feather
-import "./assets/icons/feather/css/iconfont.css"
+import "./assets/icons/feather/css/iconfont.css";
 
 import Approuter from "./approuter";
 import { Provider } from "react-redux";
-import store from "./components/common/redux/store.jsx";
+import { PersistGate } from "redux-persist/integration/react";
+import store, { persistor } from "./redux/store.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <>
-  <Provider store={store}>
-    <Approuter />
-    </Provider>
+    <React.StrictMode>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <Approuter />
+        </PersistGate>
+      </Provider>
+    </React.StrictMode>
   </>
 );

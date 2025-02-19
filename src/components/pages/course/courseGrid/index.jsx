@@ -3,14 +3,29 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Select from "react-select";
-import CourseHeader from "../../../header/index";
+import Footer from "../../../footer";
 import { Blog1, Blog2, Blog3 } from "../../../imagepath";
-import Footer from "../../../student/header";
 import GridInnerPage from "./gridInnerPage";
+import { useGetCoursesQuery } from "../../../../redux/slices/course/courseApiSlice";
+import { selectCurrentRoles } from "../../../../redux/slices/auth/authSlice";
+import { InstructorHeader } from "../../../instructor/header";
+import StudentHeader from "../../../student/header";
+import Header from "../../../header/index";
 const CourseGrid = () => {
+  const role = useSelector(selectCurrentRoles);
   const mobileSidebar = useSelector(
     (state) => state.sidebarSlice.expandMenu
   );
+
+  const renderHeader = () => {
+    if (role?.includes("ROLE_INSTRUCTOR")) {
+      return <InstructorHeader activeMenu={"CourseGrid"}/>;
+    }
+    if (role?.includes("ROLE_STUDENT")) {
+      return <StudentHeader activeMenu={"CourseGrid"}/>;
+    }
+    return <Header activeMenu={"CourseGrid"}/>;
+  };
   const customStyles = {
     option: (provided) => ({
       ...provided,
@@ -38,10 +53,21 @@ const CourseGrid = () => {
 
   const [input, setInput] = useState(null);
 
+  // Fetch data from API
+  const { data: courses, isLoading, isError, error } = useGetCoursesQuery();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <>
       <div className="main-wrapper">
-        <CourseHeader activeMenu={"CourseGrid"} />
+      {renderHeader()}
 
         <div className="breadcrumb-bar">
           <div className="container">
@@ -129,7 +155,7 @@ const CourseGrid = () => {
                 </div>
                 {/* /Filter */}
 
-                <GridInnerPage />
+                <GridInnerPage courses={courses} />
 
                 {/* /pagination */}
                 <div className="row">

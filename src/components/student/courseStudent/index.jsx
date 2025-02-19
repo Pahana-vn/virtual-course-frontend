@@ -77,7 +77,6 @@ export default function CourseStudent() {
         <div className="container">
           <div className="student-group">
             <div className="course-group ">
-
               <div className="course-group-img d-flex">
                 <Link to="/student/students-profile">
                   <img src={User11} alt="" className="img-fluid" />
@@ -92,7 +91,6 @@ export default function CourseStudent() {
                   </div>
                 </div>
               </div>
-
               <div className="course-share ">
                 <Link to="#" className="btn btn-primary">
                   Account Settings
