@@ -81,7 +81,15 @@ object-assign
   and limitations under the License.
   ***************************************************************************** */
 
+<<<<<<< HEAD:build/static/js/main.47541156.js.LICENSE.txt
 /*! @license DOMPurify 3.2.4 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.2.4/LICENSE */
+=======
+/*! @license DOMPurify 3.2.3 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.2.3/LICENSE */
+
+/*! svg.draggable.js - v2.2.2 - 2019-01-08
+* https://github.com/svgdotjs/svg.draggable.js
+* Copyright (c) 2019 Wout Fierens; Licensed MIT */
+>>>>>>> 943c1cb1704fefdc018069ce153a675f4106da9f:build/static/js/main.a3d1963d.js.LICENSE.txt
 
 /**
  * @license Copyright (c) 2003-2025, CKSource Holding sp. z o.o. All rights reserved.
