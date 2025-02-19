@@ -33,10 +33,10 @@ import {
   Icon9,
   Join,
   PencilIcon,
-  Share
+  Share,
 } from "../imagepath";
 import Header from "../header";
-import {InstructorHeader} from "../instructor/header";
+import { InstructorHeader } from "../instructor/header";
 import StudentHeader from "../student/header";
 import Blog from "./slider/blog";
 import Companies from "./slider/companies";
@@ -44,7 +44,6 @@ import Testimonial from "./slider/testimonial";
 import TopCategory from "./slider/topCategory";
 import TrendingCourse from "./slider/trendingCourse";
 import { selectCurrentRoles } from "../../redux/slices/auth/authSlice";
-
 
 const options = [
   { label: "Category", value: "Category" },
@@ -57,9 +56,23 @@ const options = [
 export const Home = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const role = useSelector(selectCurrentRoles);
   const mobileSidebar = useSelector((state) => state.sidebarSlice.expandMenu);
 
+  const role = useSelector(selectCurrentRoles);
+  console.log(role);
+
+  const renderHeader = () => {
+    if (role?.includes("ROLE_INSTRUCTOR")) {
+      console.log("Instructor role detected");
+      return <InstructorHeader />;
+    }
+    if (role?.includes("ROLE_STUDENT")) {
+      console.log("Student role detected");
+      return <StudentHeader />;
+    }
+    console.log("    return <Header />; ----------------- ");
+    return <Header />;
+  };
 
   useEffect(() => {
     const loadCourses = async () => {
@@ -80,16 +93,6 @@ export const Home = () => {
     AOS.init({ duration: 1000, once: true });
     // console.log(mobileSidebar, "gg");
   }, [mobileSidebar]);
-
-  const renderHeader = () => {
-    if (role?.includes("ROLE_INSTRUCTOR")) {
-      return <InstructorHeader />;
-    }
-    if (role?.includes("ROLE_STUDENT")) {
-      return <StudentHeader />;
-    }
-    return <Header />;
-  };
 
   if (loading) return <p>Loading...</p>;
   if (courses.length === 0) return <p>No courses available</p>;
@@ -127,11 +130,9 @@ export const Home = () => {
   return (
     <>
       <div className="main-wrapper">
-      {renderHeader()}
+        {renderHeader()}
         {/* banner */}
-        <section
-          className="home-slide d-flex align-items-center"
-        >
+        <section className="home-slide d-flex align-items-center">
           <div className="container">
             <div className="row ">
               <div className="col-md-7">
@@ -362,7 +363,12 @@ export const Home = () => {
                           <div className="price">
                             <h3>
                               ${course.price || "N/A"}{" "}
-                              <span>${course.discountedPrice || course.price || "N/A"}</span>
+                              <span>
+                                $
+                                {course.discountedPrice ||
+                                  course.price ||
+                                  "N/A"}
+                              </span>
                             </h3>
                           </div>
                         </div>
@@ -371,15 +377,16 @@ export const Home = () => {
                             <div className="course-group-img d-flex">
                               {/* Nếu API không có instructor, hiển thị mặc định */}
                               <img
-                                src={course.instructorPhoto || "default-instructor.jpg"}
+                                src={
+                                  course.instructorPhoto ||
+                                  "default-instructor.jpg"
+                                }
                                 alt="Unknown Instructor"
                                 className="img-fluid"
                               />
                               <div className="course-name">
                                 <h4>
-                                  <Link>
-                                    {course.instructorFirstName}
-                                  </Link>
+                                  <Link>{course.instructorFirstName}</Link>
                                 </h4>
                                 <p>Instructor</p>
                               </div>
@@ -410,7 +417,9 @@ export const Home = () => {
                               {[...Array(5)].map((_, i) => (
                                 <i
                                   key={i}
-                                  className={`fas fa-star ${i < course.rating ? "filled" : ""}`}
+                                  className={`fas fa-star ${
+                                    i < course.rating ? "filled" : ""
+                                  }`}
                                 />
                               ))}
                               <span className="d-inline-block average-rating">
@@ -538,9 +547,7 @@ export const Home = () => {
         {/* Companies */}
 
         {/* Share knowledge */}
-        <section
-          className="section share-knowledge"
-        >
+        <section className="section share-knowledge">
           <div className="container">
             <div className="row">
               <div className="col-md-6">
@@ -568,7 +575,10 @@ export const Home = () => {
                     </li>
                   </ul>
                   <div className="all-btn all-category d-flex align-items-center">
-                    <Link to="/instructor/instructor-list" className="btn btn-primary">
+                    <Link
+                      to="/instructor/instructor-list"
+                      className="btn btn-primary"
+                    >
                       Read More
                     </Link>
                   </div>
@@ -579,9 +589,7 @@ export const Home = () => {
         </section>
         {/* /Share knowledge */}
 
-        <section
-          className="section user-love"
-        >
+        <section className="section user-love">
           <div className="container">
             <div className="section-header white-header aos" data-aos="fade-up">
               <div className="section-sub-head feature-head text-center">
@@ -645,9 +653,7 @@ export const Home = () => {
         {/* /Become a instructor */}
 
         {/* Blog */}
-        <section
-          className="section latest-blog"
-        >
+        <section className="section latest-blog">
           <div className="container">
             <div className="section-header aos" data-aos="fade-up">
               <div className="section-sub-head feature-head text-center mb-0">

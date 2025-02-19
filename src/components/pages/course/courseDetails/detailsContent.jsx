@@ -1,9 +1,9 @@
-<<<<<<< HEAD
 import FeatherIcon from "feather-icons-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import DOMPurify from "dompurify";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   Chapter,
   Chart,
@@ -24,9 +24,23 @@ import {
 import Rating from "./rating"
 import { useInstructorDetailsQuery } from "../../../../redux/slices/instructor/instructorApiSlice";
 import useLectureDurations from "../../../../hooks/useLectureDurations";
+import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../../services/studentService";
+
 
 const DetailsContent = ({ courseDetails }) => {
   const [openStates, setOpenStates] = useState([]);
+  const [cartCourses, setCartCourses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [setWishlist] = useState([]);
+  const [cartLoading, setCartLoading] = useState(false);
+  
+  const [studentId, setStudentId] = useState(() => {
+    const storedId = localStorage.getItem("studentId");
+    if (!storedId) {
+      console.warn("StudentId not found in LocalStorage!");
+    }
+    return storedId;
+  });
 
   const durations = useLectureDurations(
     courseDetails.sections.flatMap((section) => section.lectures || [])
@@ -45,27 +59,6 @@ const DetailsContent = ({ courseDetails }) => {
   const sanitizedCourseDescription = DOMPurify.sanitize(courseDetails.description);
 
   const sanitizedInstructorDescription = DOMPurify.sanitize(instructorDetails.bio);
-=======
-import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../../services/studentService";
-import { Video } from "../../../imagepath";
-
-const DetailsContent = ({ course }) => {
-  const [studentId, setStudentId] = useState(() => {
-    const storedId = localStorage.getItem("studentId");
-    if (!storedId) {
-      console.warn("StudentId not found in LocalStorage!");
-    }
-    return storedId;
-  });
-
-  const [cartCourses, setCartCourses] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [setWishlist] = useState([]);
-  const [cartLoading, setCartLoading] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -108,17 +101,17 @@ const DetailsContent = ({ course }) => {
       return;
     }
 
-    if (isCourseInCart(course.id)) {
+    if (isCourseInCart(courseDetails.id)) {
       toast.info("This course is already in your cart!");
       return;
     }
 
     try {
       setCartLoading(true);
-      const courseData = { id: course.id };
+      const courseData = { id: courseDetails.id };
       await addCourseToCart(studentId, courseData);
       toast.success("Add to cart successfully!");
-      setCartCourses([...cartCourses, { course: { id: course.id } }]);
+      setCartCourses([...cartCourses, { course: { id: courseDetails.id } }]);
     } catch (error) {
       toast.error("Add to cart failed.");
     } finally {
@@ -148,7 +141,7 @@ const DetailsContent = ({ course }) => {
 
     try {
       setLoading(true);
-      const result = await addCourseToWishlist(studentId, course.id);
+      const result = await addCourseToWishlist(studentId, courseDetails.id);
 
       if (!result.success) {
         toast.info(result.message);
@@ -161,7 +154,6 @@ const DetailsContent = ({ course }) => {
       setLoading(false);
     }
   };
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
 
   return (
     <>
@@ -169,7 +161,6 @@ const DetailsContent = ({ course }) => {
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
-<<<<<<< HEAD
               {/* Overview */}
               <div className="card overview-sec">
                 <div className="card-body">
@@ -418,32 +409,6 @@ const DetailsContent = ({ course }) => {
                 </div>
               </div>
               {/* /Comment */}
-=======
-              <h1>{course.titleCourse}</h1>
-              <p>{course.description}</p>
-
-              {course.learn && course.learn.length > 0 && (
-                <div>
-                  <h3>You will learn</h3>
-                  <ul>
-                    {course.learn.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {course.requirements && course.requirements.length > 0 && (
-                <div>
-                  <h3>Yêu cầu</h3>
-                  <ul>
-                    {course.requirements.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
             </div>
 
             <div className="col-lg-4">
@@ -451,7 +416,6 @@ const DetailsContent = ({ course }) => {
                 <div className="video-sec vid-bg">
                   <div className="card">
                     <div className="card-body">
-<<<<<<< HEAD
                       <Link
                         to={courseDetails.urlVideo}
                         className="video-thumbnail"
@@ -465,18 +429,10 @@ const DetailsContent = ({ course }) => {
                           src={courseDetails.imageCover}
                           alt=""
                         />
-=======
-                      <Link to={course.urlVideo || "#"} className="video-thumbnail">
-                        <div className="play-icon">
-                          <i className="fa-solid fa-play" />
-                        </div>
-                        <img className="" src={Video} alt="Video Preview" />
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                       </Link>
 
                       <div className="video-details">
                         <div className="course-fee">
-<<<<<<< HEAD
                           <h2>FREE</h2>
                           <p>
                             <span>${courseDetails.basePrice}</span> 50% off
@@ -484,19 +440,9 @@ const DetailsContent = ({ course }) => {
                         </div>
                         <div className="row gx-2">
                           <div className="col-md-6 addHeart">
-                            <Link to="/cart" className="btn btn-wish w-100">
-                              <i className="feather icon-share-2 me-2" />
-                              Add Cart
-                            </Link>
-=======
-                          <h2>{course.basePrice ? `$${course.basePrice}` : "Updating.."}</h2>
-                        </div>
-                        <div className="row gx-2">
-                          <div className="col-md-6 addHeart">
-                            <button className="btn btn-wish w-100" onClick={handleAddToCart} disabled={cartLoading}>
+                          <button className="btn btn-wish w-100" onClick={handleAddToCart} disabled={cartLoading}>
                               {cartLoading ? "Adding to cart..." : "Add to cart"}
                             </button>
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                           </div>
 
                           <div className="col-md-6 addHeart">
@@ -505,20 +451,13 @@ const DetailsContent = ({ course }) => {
                             </button>
                           </div>
                         </div>
-<<<<<<< HEAD
-                        <Link to="/checkout" className="btn btn-enroll w-100">
-                          Enroll Now
-=======
-
                         <Link to="/checkout" className="btn btn-enroll w-100">
                           Buy now
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
                         </Link>
                       </div>
                     </div>
                   </div>
                 </div>
-<<<<<<< HEAD
                 {/* /Video */}
                 {/* Include */}
                 <div className="card include-sec">
@@ -585,8 +524,6 @@ const DetailsContent = ({ course }) => {
                   </div>
                 </div>
                 {/* /Features */}
-=======
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
               </div>
             </div>
           </div>
@@ -597,8 +534,8 @@ const DetailsContent = ({ course }) => {
 };
 
 DetailsContent.propTypes = {
-<<<<<<< HEAD
   courseDetails: PropTypes.shape({
+    id: PropTypes.number.isRequired,
     description: PropTypes.string,
     urlVideo: PropTypes.string,
     imageCover: PropTypes.string,
@@ -611,16 +548,6 @@ DetailsContent.propTypes = {
         titleSection: PropTypes.string,
       })
     ),
-=======
-  course: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    titleCourse: PropTypes.string,
-    description: PropTypes.string,
-    basePrice: PropTypes.number,
-    learn: PropTypes.arrayOf(PropTypes.string),
-    requirements: PropTypes.arrayOf(PropTypes.string),
-    urlVideo: PropTypes.string,
->>>>>>> 5d54b7a15301b628ba74c5d864b81c250b37221c
   }).isRequired,
 };
 
