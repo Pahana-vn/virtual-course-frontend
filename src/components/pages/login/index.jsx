@@ -1,13 +1,13 @@
 import FeatherIcon from "feather-icons-react";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useState } from "react";
 import OwlCarousel from "react-owl-carousel";
-import { setCredentials } from "../../../redux/slices/auth/authSlice";
 import { useDispatch } from "react-redux";
-import { LoginImg, logo, NetIcon1, NetIcon2 } from "../../imagepath";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
+import * as Yup from "yup";
 import { useLoginMutation } from "../../../redux/slices/auth/authApiSlice";
+import { setCredentials } from "../../../redux/slices/auth/authSlice";
+import { LoginImg, logo, NetIcon1, NetIcon2 } from "../../imagepath";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -46,14 +46,14 @@ const Login = () => {
       // console.log("User Data:", userData);
       dispatch(setCredentials(userData));
       navigate("/");
-      
+
     } catch (error) {
       if (!error.data) {
         setErrMsg("No Server Response");
       } else if (error.status === 400) {
         setErrMsg("Invalid email or password");
       } else if (error.status === 401) {
-        setErrMsg("Unauthorized: Incorrect credentials");
+        setErrMsg("Incorrect email or password");
       } else {
         setErrMsg("Login Failed: Unknown error");
       }
@@ -108,7 +108,7 @@ const Login = () => {
                     Virtual Course Network.
                   </h2>
                   <p>
-                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                    Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
                   </p>
                 </div>
               </div>
@@ -117,12 +117,12 @@ const Login = () => {
                   <img src={LoginImg} className="img-fluid" alt="Logo" />
                 </div>
                 <div className="mentor-course text-center">
-                <h2>
+                  <h2>
                     Welcome to <br />
                     Virtual Course Network.
                   </h2>
                   <p>
-                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                    Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
                   </p>
                 </div>
               </div>
@@ -131,12 +131,12 @@ const Login = () => {
                   <img src={LoginImg} className="img-fluid" alt="Logo" />
                 </div>
                 <div className="mentor-course text-center">
-                <h2>
+                  <h2>
                     Welcome to <br />
                     Virtual Course Network.
                   </h2>
                   <p>
-                  Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                    Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
                   </p>
                 </div>
               </div>

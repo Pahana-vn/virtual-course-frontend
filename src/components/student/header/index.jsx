@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Home, LogOut, Star, User } from "react-feather";
-import { selectCurrentUser } from "../../../redux/slices/auth/authSlice";
-import { logOut } from "../../../redux/slices/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
+import { logOut, selectCurrentUser } from "../../../redux/slices/auth/authSlice";
+import { useStudentAvatarQuery } from "../../../redux/slices/student/studentApiSlice";
 import {
   addCourseToCart,
   fetchCartItems,
@@ -18,9 +18,7 @@ import {
 import DarkMode from "../../common/darkMode";
 import { Cart, logo, Messages, User16, Wish } from "../../imagepath";
 import "./StudentHeader1.css";
-import { useStudentAvatarQuery } from "../../../redux/slices/student/studentApiSlice";
-// eslint-disable-next-line react/prop-types
-export default function StudentHeader({ activeMenu }) {
+export default function StudentHeader() {
   const dispatch = useDispatch();
 
   const [navbar, setNavbar] = useState(false);
@@ -60,7 +58,6 @@ export default function StudentHeader({ activeMenu }) {
 
   // Check login status and fetch data from token
   useEffect(() => {
-    console.log("Student role detected--------------------1111");
     const token = localStorage.getItem("token");
     const studentId = localStorage.getItem("studentId");
 
@@ -299,9 +296,8 @@ export default function StudentHeader({ activeMenu }) {
                         )}
                       </Link>
                       <div
-                        className={`wishes-list dropdown-menu dropdown-end dropdown-menu-right modalPosition ${
-                          showCart ? "show" : ""
-                        }`}
+                        className={`wishes-list dropdown-menu dropdown-end dropdown-menu-right modalPosition ${showCart ? "show" : ""
+                          }`}
                       >
                         <div className="wish-header d-flex justify-content-between align-items-center p-2 border-bottom">
                           <Link
@@ -401,9 +397,8 @@ export default function StudentHeader({ activeMenu }) {
                         )}
                       </Link>
                       <div
-                        className={`wishes-list dropdown-menu dropdown-end dropdown-menu-right modalPosition ${
-                          showWish ? "show" : ""
-                        }`}
+                        className={`wishes-list dropdown-menu dropdown-end dropdown-menu-right modalPosition ${showWish ? "show" : ""
+                          }`}
                       >
                         <div className="wish-header d-flex justify-content-between align-items-center p-2 border-bottom">
                           <h5>Wishlist</h5>
@@ -502,9 +497,8 @@ export default function StudentHeader({ activeMenu }) {
                         </span>
                       </Link>
                       <div
-                        className={`users dropdown-menu dropdown-menu-right modalPosition ${
-                          showProfile ? "show" : ""
-                        }`}
+                        className={`users dropdown-menu dropdown-menu-right modalPosition ${showProfile ? "show" : ""
+                          }`}
                       >
                         <div className="user-header d-flex align-items-center p-2 border-bottom">
                           <div className="avatar avatar-sm">
@@ -533,7 +527,7 @@ export default function StudentHeader({ activeMenu }) {
                           />
                           Dashboard
                         </Link>
-                        
+
                         <Link
                           className="dropdown-item text"
                           to={`/student/student-profile/${localStorage.getItem(

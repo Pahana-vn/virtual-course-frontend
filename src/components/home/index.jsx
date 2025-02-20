@@ -5,8 +5,10 @@ import CountUp from "react-countup";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Select from "react-select";
+import { selectCurrentRoles } from "../../redux/slices/auth/authSlice";
 import { fetchCourses } from "../../services/courseService";
 import Footer from "../footer";
+import Header from "../header";
 import {
   bannerimg,
   Become1,
@@ -22,11 +24,11 @@ import {
   Icon10,
   Icon12,
   Icon13,
-  Icon15,
-  Icon18,
-  Icon16,
   Icon14,
+  Icon15,
+  Icon16,
   Icon17,
+  Icon18,
   Icon2,
   Icon7,
   Icon8,
@@ -35,7 +37,6 @@ import {
   PencilIcon,
   Share,
 } from "../imagepath";
-import Header from "../header";
 import { InstructorHeader } from "../instructor/header";
 import StudentHeader from "../student/header";
 import Blog from "./slider/blog";
@@ -43,7 +44,6 @@ import Companies from "./slider/companies";
 import Testimonial from "./slider/testimonial";
 import TopCategory from "./slider/topCategory";
 import TrendingCourse from "./slider/trendingCourse";
-import { selectCurrentRoles } from "../../redux/slices/auth/authSlice";
 
 const options = [
   { label: "Category", value: "Category" },
@@ -59,18 +59,14 @@ export const Home = () => {
   const mobileSidebar = useSelector((state) => state.sidebarSlice.expandMenu);
 
   const role = useSelector(selectCurrentRoles);
-  console.log(role);
-
   const renderHeader = () => {
     if (role?.includes("ROLE_INSTRUCTOR")) {
-      console.log("Instructor role detected");
       return <InstructorHeader />;
     }
     if (role?.includes("ROLE_STUDENT")) {
       console.log("Student role detected");
       return <StudentHeader />;
     }
-    console.log("    return <Header />; ----------------- ");
     return <Header />;
   };
 
@@ -417,9 +413,8 @@ export const Home = () => {
                               {[...Array(5)].map((_, i) => (
                                 <i
                                   key={i}
-                                  className={`fas fa-star ${
-                                    i < course.rating ? "filled" : ""
-                                  }`}
+                                  className={`fas fa-star ${i < course.rating ? "filled" : ""
+                                    }`}
                                 />
                               ))}
                               <span className="d-inline-block average-rating">
