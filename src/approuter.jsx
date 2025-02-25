@@ -133,6 +133,7 @@ import InstructorProfileSkill from "./components/instructor/profileSettings/inst
 import InstructorProfileSocial from "./components/instructor/profileSettings/instructorProfileSocial";
 import StudentFinalTest from "./components/student/studentFinalTest/StudentFinalTest";
 import InstructorQuizDetails from "./components/instructor/instructorQuiz/instructorQuizDetails";
+import InstructorCheckout from "./components/instructor/InstructorCheckout";
 
 const Approuter = () => {
   return (
@@ -444,6 +445,11 @@ const Approuter = () => {
         <Route
           path="/instructor/instructor-course"
           element={<InstructorCourse />}
+        />
+
+        <Route
+          path="/instructor/instructor-checkout"
+          element={<InstructorCheckout />}
         />
         {/* instructor routes ends*/}
         {/* student routes starts*/}

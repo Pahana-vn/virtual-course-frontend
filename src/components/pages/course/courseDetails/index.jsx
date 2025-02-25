@@ -1,23 +1,22 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
-import CourseHeader from "../header";
 import DetailsContent from "./detailsContent";
 import { Icon1, People, Timer } from "../../../imagepath";
 import Footer from "../../../footer";
 import { useGetCourseDetailsByIdQuery } from "../../../../redux/slices/course/courseApiSlice";
+import RoleBasedHeader from "../../../header/RoleBasedHeader";
 const CourseDetails = () => {
   const { courseId } = useParams();
   const courseIdNumber = Number(courseId);
-  // console.log(courseIdNumber)
   
   const { data: courseDetails, isLoading, isError } = useGetCourseDetailsByIdQuery({ id: courseIdNumber });
-  // console.log(courseDetails)
+  
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error loading course details.</p>;
   return (
     <>
       <div className="main-wrapper">
-        <CourseHeader activeMenu={"CourseDetails"}/>
+      <RoleBasedHeader />
 
         <div className="breadcrumb-bar">
           <div className="container">

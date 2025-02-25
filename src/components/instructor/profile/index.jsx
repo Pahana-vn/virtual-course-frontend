@@ -37,7 +37,7 @@ export default function InstructorProfile() {
     isError,
   } = useInstructorDetailsQuery({ id: id });
 
-  const { data: courses } = useGetInstructorCoursesQuery({
+  const { data: courses } = useGetInstructorCoursesQuery({ instructorId:id,
     status: "PUBLISHED",
   });
 

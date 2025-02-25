@@ -6,10 +6,12 @@ import { Icon1, Icon2 } from "../../imagepath";
 import { useDeleteCourseMutation, useGetInstructorCoursesQuery } from "../../../redux/slices/course/courseApiSlice";
 import { useSelector } from "react-redux";
 import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
+import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 
 const InstructorCourse = () => {
   const [activeTab, setActiveTab] = useState("PUBLISHED");
   const instructorId = useSelector(selectCurrentInstructor);
+  const formatCurrency = useCurrencyFormatter();
 
   const { data: courses, isLoading, isError } = useGetInstructorCoursesQuery({
     instructorId: instructorId, status: activeTab
@@ -130,12 +132,7 @@ const InstructorCourse = () => {
                                       </Link>
                                       <div className="price">
                                         <h3>
-                                          $
-                                          {course.discountPrice ||
-                                            course.basePrice}{" "}
-                                          {course.discountPrice && (
-                                            <span>${course.basePrice}</span>
-                                          )}
+                                          {formatCurrency(course.basePrice)}
                                         </h3>
                                       </div>
                                     </div>

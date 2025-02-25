@@ -20,7 +20,7 @@ import { Cart, logo, Messages, User16, Wish } from "../../imagepath";
 import "./StudentHeader1.css";
 import { useStudentAvatarQuery } from "../../../redux/slices/student/studentApiSlice";
 // eslint-disable-next-line react/prop-types
-export default function StudentHeader({ activeMenu }) {
+export default function StudentHeader() {
   const dispatch = useDispatch();
 
   const [navbar, setNavbar] = useState(false);
@@ -60,7 +60,6 @@ export default function StudentHeader({ activeMenu }) {
 
   // Check login status and fetch data from token
   useEffect(() => {
-    console.log("Student role detected--------------------1111");
     const token = localStorage.getItem("token");
     const studentId = localStorage.getItem("studentId");
 

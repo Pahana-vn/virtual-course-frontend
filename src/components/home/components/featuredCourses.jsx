@@ -24,6 +24,13 @@ const FeaturedCourses = () => {
     // Thêm logic toggleClass ở đây nếu cần
   };
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
+  };
+
   return (
     // What's new Featured Course
     <section className="section new-course">
@@ -34,7 +41,7 @@ const FeaturedCourses = () => {
             <h2>Featured Courses</h2>
           </div>
           <div className="all-btn all-category d-flex align-items-center">
-            <Link to="/course-list" className="btn btn-primary">
+            <Link to="/course-grid" className="btn btn-primary">
               All Courses
             </Link>
           </div>
@@ -62,24 +69,24 @@ const FeaturedCourses = () => {
                       </Link>
                       <div className="price">
                         <h3>
-                          ${course.basePrice} <span>$99.00</span>
+                          {formatCurrency(course.basePrice)}
                         </h3>
                       </div>
                     </div>
                     <div className="product-content">
                       <div className="course-group d-flex">
                         <div className="course-group-img d-flex">
-                          <Link to="/instructor/instructor-profile">
+                          <Link to={`/instructor/${course.instructorId}/instructor-profile`}>
                             <img
-                              src={course.instructor?.photo || "default-avatar.jpg"}
+                              src={course.instructorPhoto || "default-avatar.jpg"}
                               alt=""
                               className="img-fluid"
                             />
                           </Link>
                           <div className="course-name">
                             <h4>
-                              <Link to="/instructor/instructor-profile">
-                                {course.instructor?.firstName || "Unknown"}
+                              <Link to={`/instructor/${course.instructorId}/instructor-profile`}>
+                                {course.instructorFirstName} {course.instructorLastName}
                               </Link>
                             </h4>
                             <p>Instructor</p>
@@ -95,7 +102,7 @@ const FeaturedCourses = () => {
                         </div>
                       </div>
                       <h3 className="title instructor-text">
-                        <Link to={`/course-details/${course.id}`}>
+                        <Link to={`/course/${course.id}/course-details`}>
                           {course.titleCourse}
                         </Link>
                       </h3>

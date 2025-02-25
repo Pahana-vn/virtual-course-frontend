@@ -18,7 +18,6 @@ import {
   Icon02,
   Icon03,
   Icon04,
-  Icon1,
   Icon10,
   Icon12,
   Icon13,
@@ -27,7 +26,6 @@ import {
   Icon16,
   Icon14,
   Icon17,
-  Icon2,
   Icon7,
   Icon8,
   Icon9,
@@ -35,50 +33,32 @@ import {
   PencilIcon,
   Share,
 } from "../imagepath";
-import Header from "../header";
-import { InstructorHeader } from "../instructor/header";
-import StudentHeader from "../student/header";
 import Blog from "./slider/blog";
 import Companies from "./slider/companies";
 import Testimonial from "./slider/testimonial";
 import TopCategory from "./slider/topCategory";
 import TrendingCourse from "./slider/trendingCourse";
-import { selectCurrentRoles } from "../../redux/slices/auth/authSlice";
-
-const options = [
-  { label: "Category", value: "Category" },
-  { label: "Angular", value: "Angular" },
-  { label: "Node Js", value: "Node Js" },
-  { label: "React", value: "React" },
-  { label: "Python", value: "Python" },
-];
+import RoleBasedHeader from "../header/RoleBasedHeader";
+import { useGetCategoriesQuery } from "../../redux/slices/course/categoryApiSlice";
+import FeaturedCourses from "./components/featuredCourses";
 
 export const Home = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const mobileSidebar = useSelector((state) => state.sidebarSlice.expandMenu);
 
-  const role = useSelector(selectCurrentRoles);
-  console.log(role);
-
-  const renderHeader = () => {
-    if (role?.includes("ROLE_INSTRUCTOR")) {
-      console.log("Instructor role detected");
-      return <InstructorHeader />;
-    }
-    if (role?.includes("ROLE_STUDENT")) {
-      console.log("Student role detected");
-      return <StudentHeader />;
-    }
-    console.log("    return <Header />; ----------------- ");
-    return <Header />;
-  };
-
+  const { data: categories } = useGetCategoriesQuery();
+  const categoryOptions = categories
+    ? categories.map(category => ({
+        value: category.id,
+        label: category.name
+      }))
+    : [];
+      
   useEffect(() => {
     const loadCourses = async () => {
       try {
         const data = await fetchCourses();
-        // console.log("Courses data:", data); // Xem cấu trúc dữ liệu ở đây
         setCourses(data);
       } catch (error) {
         console.error("Failed to load courses:", error);
@@ -91,7 +71,6 @@ export const Home = () => {
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
-    // console.log(mobileSidebar, "gg");
   }, [mobileSidebar]);
 
   if (loading) return <p>Loading...</p>;
@@ -130,7 +109,7 @@ export const Home = () => {
   return (
     <>
       <div className="main-wrapper">
-        {renderHeader()}
+      <RoleBasedHeader />
         {/* banner */}
         <section className="home-slide d-flex align-items-center">
           <div className="container">
@@ -154,10 +133,10 @@ export const Home = () => {
                           />
                           <span className="drop-detail">
                             <Select
-                              // className="select2-container"
-                              options={options}
-                              value={options.value}
-                              defaultValue={options[0]}
+                              className="select2-container"
+                              options={categoryOptions}
+                              value={categoryOptions.value}
+                              defaultValue={categoryOptions[0]}
                               placeholder="Category"
                               styles={style}
                             ></Select>
@@ -333,115 +312,7 @@ export const Home = () => {
         {/* Top Category with Owl Carousel */}
 
         {/* What's new Featured Course */}
-        <section className="section new-course">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-sub-head">
-                <span>What’s New</span>
-                <h2>Featured Courses</h2>
-              </div>
-              <div className="all-btn all-category d-flex align-items-center">
-                <Link to="/course-list" className="btn btn-primary">
-                  All Courses
-                </Link>
-              </div>
-            </div>
-            <div className="course-feature">
-              <div className="row">
-                {courses.map((course) => (
-                  <div className="col-lg-4 col-md-6 d-flex" key={course.id}>
-                    <div className="course-box d-flex">
-                      <div className="product">
-                        <div className="product-img">
-                          <Link to={`/course/${course.id}/course-details`}>
-                            <img
-                              className="img-fluid"
-                              alt={course.titleCourse || "Course"}
-                              src={course.imageCover} // Đây là URL ảnh từ API
-                            />
-                          </Link>
-                          <div className="price">
-                            <h3>
-                              ${course.price || "N/A"}{" "}
-                              <span>
-                                $
-                                {course.discountedPrice ||
-                                  course.price ||
-                                  "N/A"}
-                              </span>
-                            </h3>
-                          </div>
-                        </div>
-                        <div className="product-content">
-                          <div className="course-group d-flex">
-                            <div className="course-group-img d-flex">
-                              {/* Nếu API không có instructor, hiển thị mặc định */}
-                              <img
-                                src={
-                                  course.instructorPhoto ||
-                                  "default-instructor.jpg"
-                                }
-                                alt="Unknown Instructor"
-                                className="img-fluid"
-                              />
-                              <div className="course-name">
-                                <h4>
-                                  <Link>{course.instructorFirstName}</Link>
-                                </h4>
-                                <p>Instructor</p>
-                              </div>
-                            </div>
-                            <div className="course-share d-flex align-items-center justify-content-center">
-                              <Link to="#">
-                                <i className="fa-regular fa-heart"></i>
-                              </Link>
-                            </div>
-                          </div>
-                          <h3 className="title instructor-text">
-                            <Link to={`/course/${course.id}/course-details`}>
-                              {course.titleCourse || "Untitled Course"}
-                            </Link>
-                          </h3>
-                          <div className="course-info d-flex align-items-center">
-                            <div className="rating-img d-flex align-items-center">
-                              <img src={Icon1} alt="" />
-                              <p>{course.lessons || "0"}+ Lesson</p>
-                            </div>
-                            <div className="course-view d-flex align-items-center">
-                              <img src={Icon2} alt="" />
-                              <p>{course.duration || "N/A"}</p>
-                            </div>
-                          </div>
-                          <div className="d-flex align-items-center justify-content-between">
-                            <div className="rating">
-                              {[...Array(5)].map((_, i) => (
-                                <i
-                                  key={i}
-                                  className={`fas fa-star ${
-                                    i < course.rating ? "filled" : ""
-                                  }`}
-                                />
-                              ))}
-                              <span className="d-inline-block average-rating">
-                                {course.rating || "0"}
-                              </span>
-                            </div>
-                            <div className="all-btn all-category d-flex align-items-center">
-                              <Link to="/checkout" className="btn btn-primary">
-                                BUY NOW
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
+        <FeaturedCourses />
         {/* What's new Featured Course */}
 
         {/* Master Skills */}

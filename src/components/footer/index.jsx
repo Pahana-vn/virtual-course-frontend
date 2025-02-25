@@ -41,7 +41,7 @@ const Footer = () => {
                     <Link to="/instructor/instructor-list">Instructor</Link>
                   </li>
                   <li>
-                    <Link to="/deposit-instructor-dashboard"> Dashboard</Link>
+                    <Link to="/instructor/deposit-instructor-dashboard"> Dashboard</Link>
                   </li>
                 </ul>
               </div>
