@@ -65,19 +65,19 @@ export default function StudentSidebar() {
                 </Link>
               </li>
 
-              <li className={`nav-item ${location.pathname === '/student/student-learning-schedule' ? 'active' : ''}`}>
+              <li className={`nav-item ${getActiveClass('/student/student-learning-schedule')}`}>
                 <Link to="/student/student-learning-schedule" className="nav-link">
                   <i className="bx bxs-chat" />
                   Calendar Study
                 </Link>
               </li>
 
-              <li className={`nav-item ${getActiveClass('/student/student-qa')}`}>
+              {/* <li className={`nav-item ${getActiveClass('/student/student-qa')}`}>
                 <Link to="/student/student-qa" className="nav-link">
                   <i className="bx bxs-bookmark-alt" />
                   Certificate
                 </Link>
-              </li>
+              </li> */}
 
               <li className={`nav-item ${getActiveClass('/student/student-courses')}`}>
                 <Link to="/student/student-courses" className="nav-link">
@@ -93,12 +93,12 @@ export default function StudentSidebar() {
                 </Link>
               </li>
 
-              <li className={`nav-item ${location.pathname === '/student/student-reviews' ? 'active' : ''}`}>
+              {/* <li className={`nav-item ${location.pathname === '/student/student-reviews' ? 'active' : ''}`}>
                 <Link to="/student/student-reviews" className="nav-link">
                   <i className="bx bxs-star" />
                   Reviews
                 </Link>
-              </li>
+              </li> */}
 
               <li className={`nav-item ${location.pathname === '/student/student-quiz' || location.pathname === '/student/student-quiz-details' ? 'active' : ''}`}>
                 <Link to="/student/student-quiz" className="nav-link">
@@ -121,13 +121,13 @@ export default function StudentSidebar() {
                 </Link>
               </li>
 
-              <li className={`nav-item ${location.pathname === '/student/student-ticket' ? 'active' : ''}`}>
+              {/* <li className={`nav-item ${location.pathname === '/student/student-ticket' ? 'active' : ''}`}>
 
                 <Link to="/student/student-ticket" className="nav-link">
                   <i className="bx bxs-coupon" />
                   Support Tickets
                 </Link>
-              </li>
+              </li> */}
             </ul>
             <h3>Account Settings</h3>
             <ul>

@@ -1,5 +1,3 @@
-// components/student/StudentStudy.js
-
 import React, { useEffect, useState } from "react";
 import { Search } from "react-feather";
 import { useSelector } from "react-redux";
@@ -11,15 +9,32 @@ import { Course10 } from "../../imagepath";
 import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
 
+// ============ COMPONENT =============
 const StudentStudy = () => {
   const mobileSidebar = useSelector((state) => state.sidebarSlice.expandMenu);
+
+  // Danh sách các khoá học
   const [courses, setCourses] = useState({
     active: [],
     completed: [],
     enrolled: [],
   });
-  const [setValue] = useState(null);
 
+  // Nếu không dùng filter, có thể xoá hẳn:
+  // const [selectedFilter, setSelectedFilter] = useState(null);
+
+  // 1) Lưu số giờ học/ngày cho từng khoá: { courseId: number, ... }
+  const [hoursPerDayForCourse, setHoursPerDayForCourse] = useState({});
+
+  // 2) Lưu deadline (Date) cho từng khoá: { courseId: Date, ... }
+  const [deadlineForCourse, setDeadlineForCourse] = useState({});
+
+  // 3) Lưu countdown (timeLeft) cho từng khoá: { courseId: { days, hours, ... } }
+  const [timeLeftForCourse, setTimeLeftForCourse] = useState({});
+
+  const studentId = localStorage.getItem("studentId");
+
+  // Tuỳ chọn demo cho react-select
   const options = [
     { label: "Newly Published", value: "new" },
     { label: "Angular", value: "1" },
@@ -27,8 +42,7 @@ const StudentStudy = () => {
     { label: "Node", value: "3" },
   ];
 
-  const studentId = localStorage.getItem("studentId");
-
+  // Style react-select
   const style = {
     control: (baseStyles, state) => ({
       ...baseStyles,
@@ -40,7 +54,7 @@ const StudentStudy = () => {
       border: "1px solid #e9ecef",
       paddingLeft: "5px",
       boxShadow: state.isFocused ? 0 : 0,
-      borderRadius: state.isSelected ? "0" : "10px",
+      borderRadius: "10px",
       fontSize: "14px",
       "&:hover": {
         cursor: "pointer",
@@ -58,8 +72,7 @@ const StudentStudy = () => {
         backgroundColor: mobileSidebar === "disabled" ? "#FFDEDA" : "#2b2838",
       },
     }),
-    indicatorSeparator: (base) => ({
-      ...base,
+    indicatorSeparator: () => ({
       display: "none",
     }),
     dropdownIndicator: (base, state) => ({
@@ -70,10 +83,170 @@ const StudentStudy = () => {
     }),
   };
 
+  // ==================== HÀM TÍNH TOÁN ====================
+  // 1. Tính deadline (duration/giờ học mỗi ngày)
+  const calculateDeadline = (duration, hoursPerDay) => {
+    // Nếu hoursPerDay < 1 => không set deadline
+    // (trường hợp hiển thị 0 hours/day => No deadline)
+    if (hoursPerDay < 1) return null;
+
+    const totalDays = Math.ceil(duration / hoursPerDay);
+    const deadlineDate = new Date();
+    deadlineDate.setDate(deadlineDate.getDate() + totalDays);
+    return deadlineDate;
+  };
+
+  // 2. Tính countdown
+  const calculateTimeLeft = (deadline) => {
+    const now = new Date();
+    const difference = deadline - now;
+    if (difference > 0) {
+      return {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    }
+    return null;
+  };
+
+  // 3. Render chuỗi countdown
+  const renderCountdown = (timeLeft) => {
+    if (!timeLeft) return "Deadline passed!";
+    return `${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s`;
+  };
+
+  // ==================== LƯU / ĐỌC TỪ LOCALSTORAGE ====================
+  const saveDeadlineToLocalStorage = (courseId, deadline) => {
+    const deadlines = JSON.parse(localStorage.getItem("deadlines")) || {};
+    deadlines[courseId] = deadline ? deadline.toISOString() : null;
+    localStorage.setItem("deadlines", JSON.stringify(deadlines));
+  };
+
+  const getDeadlineFromLocalStorage = (courseId) => {
+    const deadlines = JSON.parse(localStorage.getItem("deadlines")) || {};
+    return deadlines[courseId] ? new Date(deadlines[courseId]) : null;
+  };
+
+  const saveHoursToLocalStorage = (courseId, hours) => {
+    const hoursData = JSON.parse(localStorage.getItem("hoursPerDayCourses")) || {};
+    hoursData[courseId] = hours;
+    localStorage.setItem("hoursPerDayCourses", JSON.stringify(hoursData));
+  };
+
+  const getHoursFromLocalStorage = (courseId) => {
+    const hoursData = JSON.parse(localStorage.getItem("hoursPerDayCourses")) || {};
+    // Mặc định hiển thị 0
+    return typeof hoursData[courseId] === "number" ? hoursData[courseId] : 0;
+  };
+
+  // ==================== RESET ====================
+  // Trả về 0 hours/day, xoá deadline => "No deadline set"
+  const handleReset = (courseId) => {
+    // 1) Xoá deadline + đặt hours = 0 trong localStorage
+    const deadlines = JSON.parse(localStorage.getItem("deadlines")) || {};
+    const hoursData = JSON.parse(localStorage.getItem("hoursPerDayCourses")) || {};
+
+    delete deadlines[courseId];
+    hoursData[courseId] = 0; // set 0
+    localStorage.setItem("deadlines", JSON.stringify(deadlines));
+    localStorage.setItem("hoursPerDayCourses", JSON.stringify(hoursData));
+
+    // 2) Update state
+    setDeadlineForCourse((prev) => {
+      const newDeadlines = { ...prev };
+      delete newDeadlines[courseId]; // remove deadline
+      return newDeadlines;
+    });
+
+    setHoursPerDayForCourse((prev) => {
+      const newHoursObj = { ...prev, [courseId]: 0 };
+      return newHoursObj;
+    });
+
+    setTimeLeftForCourse((prev) => {
+      const newTimeLeft = { ...prev };
+      delete newTimeLeft[courseId];
+      return newTimeLeft;
+    });
+  };
+
+  // ==================== LẤY DỮ LIỆU LƯU TRỮ LẦN ĐẦU ====================
+  useEffect(() => {
+    const deadlines = JSON.parse(localStorage.getItem("deadlines")) || {};
+    const hoursData = JSON.parse(localStorage.getItem("hoursPerDayCourses")) || {};
+
+    // deadline
+    const newDeadlineObj = {};
+    Object.keys(deadlines).forEach((courseId) => {
+      if (deadlines[courseId]) {
+        newDeadlineObj[courseId] = new Date(deadlines[courseId]);
+      }
+    });
+    setDeadlineForCourse(newDeadlineObj);
+
+    // hours
+    const newHoursObj = {};
+    Object.keys(hoursData).forEach((courseId) => {
+      newHoursObj[courseId] = hoursData[courseId];
+    });
+    setHoursPerDayForCourse(newHoursObj);
+  }, []);
+
+  // ==================== CHANGE HOURS/DAY ====================
+  const handleHoursPerDayChange = (courseId, duration, hours) => {
+    if (isNaN(hours) || hours < 0) {
+      hours = 0;
+    }
+    // Lưu hours vào localStorage + state
+    saveHoursToLocalStorage(courseId, hours);
+    setHoursPerDayForCourse((prev) => ({ ...prev, [courseId]: hours }));
+
+    if (hours === 0) {
+      // Xoá deadline => "No deadline set"
+      saveDeadlineToLocalStorage(courseId, null);
+      setDeadlineForCourse((prev) => {
+        const newDeadlines = { ...prev };
+        delete newDeadlines[courseId];
+        return newDeadlines;
+      });
+      return;
+    }
+
+    // hours > 0 => Tính deadline và lưu
+    const newDeadline = calculateDeadline(duration, hours);
+    if (newDeadline) {
+      setDeadlineForCourse((prev) => {
+        const newDeadlinesState = { ...prev, [courseId]: newDeadline };
+        return newDeadlinesState;
+      });
+      saveDeadlineToLocalStorage(courseId, newDeadline);
+    }
+  };
+
+  // ==================== CẬP NHẬT COUNTDOWN MỖI GIÂY ====================
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeftForCourse((prev) => {
+        const newTimeLeftObj = { ...prev };
+        Object.keys(deadlineForCourse).forEach((courseId) => {
+          const dl = deadlineForCourse[courseId];
+          if (dl) {
+            newTimeLeftObj[courseId] = calculateTimeLeft(dl);
+          }
+        });
+        return newTimeLeftObj;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [deadlineForCourse]);
+
+  // ==================== GỌI API LẤY KHOÁ HỌC ====================
   useEffect(() => {
     const fetchCoursesForStudent = async () => {
       try {
-        const studentId = localStorage.getItem("studentId");
         if (studentId) {
           const response = await fetchStudentCourses(studentId);
           setCourses({
@@ -86,88 +259,161 @@ const StudentStudy = () => {
         console.error("Error fetching student courses:", error);
       }
     };
-
     fetchCoursesForStudent();
-  }, []);
+  }, [studentId]);
 
+  // ==================== RENDER DANH SÁCH KHOÁ HỌC ====================
   const renderCourses = (coursesList) => {
-    return coursesList.map((course) => (
-      <div key={course.id} className="col-xl-4 col-lg-4 col-md-6 d-flex">
-        <div className="course-box course-design d-flex">
-          <div className="product">
-            <div className="product-img">
-              <Link to={`/course-details/${course.id}`}>
-                <img
-                  className="img-fluid"
-                  alt={course.titleCourse}
-                  src={course.imageCover || Course10}
-                />
-              </Link>
-            </div>
-            <div className="product-content">
-              <h3
-                className="title"
-                style={{
-                  fontSize: "20px",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-                title={course.titleCourse} // Hiển thị đầy đủ khi hover
-              >
-                <Link
-                  to={`/course-details/${course.id}`}
-                  style={{ textDecoration: "none", color: "#000" }}
-                >
-                  {course.titleCourse}
+    return coursesList.map((course) => {
+      // Lấy hours từ state (nếu chưa có => 0)
+      const hoursValue =
+        typeof hoursPerDayForCourse[course.id] === "number"
+          ? hoursPerDayForCourse[course.id]
+          : getHoursFromLocalStorage(course.id);
+
+      // Lấy deadline (nếu có)
+      let deadlineValue = deadlineForCourse[course.id];
+      if (!deadlineValue) {
+        // Thử lấy từ localStorage
+        const savedDeadline = getDeadlineFromLocalStorage(course.id);
+        if (savedDeadline) {
+          deadlineValue = savedDeadline;
+        }
+      }
+
+      // timeLeft
+      const timeLeftForThisCourse =
+        deadlineValue && timeLeftForCourse[course.id] !== undefined
+          ? timeLeftForCourse[course.id]
+          : null;
+
+      // Xử lý hiển thị countdown
+      let deadlineElement = <p>No deadline set</p>;
+      if (deadlineValue) {
+        deadlineElement = (
+          <p>
+            Deadline: {renderCountdown(timeLeftForThisCourse)}
+          </p>
+        );
+      }
+
+      return (
+        <div key={course.id} className="col-xl-4 col-lg-4 col-md-6 d-flex">
+          <div className="course-box course-design d-flex">
+            <div className="product">
+              {/* Ảnh khoá học */}
+              <div className="product-img">
+                <Link to={`/course-details/${course.id}`}>
+                  <img
+                    className="img-fluid"
+                    alt={course.titleCourse}
+                    src={course.imageCover || Course10}
+                  />
                 </Link>
-              </h3>
-              <div className="rating-student">
-                <div className="rating">
-                  {[...Array(5)].map((_, index) => (
-                    <i
-                      key={index}
-                      className={`fas fa-star ${index < course.rating ? "filled" : ""
-                        }`}
-                    ></i>
-                  ))}
-                  <span className="d-inline-block average-rating">
-                    <span>{course.rating}</span>
-                  </span>
-                </div>
-                <div className="edit-rate">
-                  <Link to="#">Deadline</Link>
-                </div>
-              </div>
-              <div className="progress-stip">
-                <div
-                  className="progress-bar bg-success progress-bar-striped active-stip"
-                  role="progressbar"
-                  style={{ width: `${course.progress || 0}%` }}
-                  aria-valuenow={course.progress || 0}
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                ></div>
-              </div>
-              <div className="student-percent">
-                <p>{course.progress || 0}% Completed</p>
               </div>
 
-              <div className="start-leason hoverBlue d-flex align-items-center">
-                <Link to={`/course-lesson/${course.id}?studentId=${studentId}`} className="btn btn-primary">
-                  Start Lesson
-                </Link>
+              {/* Nội dung khóa học */}
+              <div className="product-content">
+                <h3
+                  className="title"
+                  style={{
+                    fontSize: "20px",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                  title={course.titleCourse}
+                >
+                  <Link
+                    to={`/course-details/${course.id}`}
+                    style={{ textDecoration: "none", color: "#000" }}
+                  >
+                    {course.titleCourse}
+                  </Link>
+                </h3>
+
+                {/* Gỡ bỏ phần rating - thay bằng input hours/day + reset */}
+                <div className="hours-day d-flex align-items-center">
+                  <label style={{ marginRight: "5px" }}>Hours/Day:</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="24"
+                    value={hoursValue}
+                    style={{ width: "60px" }}
+                    onKeyDown={(e) => {
+                      // Chỉ cho bấm lên/xuống, xóa, ...
+                      const allowedKeys = [
+                        "ArrowUp",
+                        "ArrowDown",
+                        "Tab",
+                        "Backspace",
+                        "Delete",
+                      ];
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onChange={(e) => {
+                      let newHours = parseInt(e.target.value, 10);
+                      if (isNaN(newHours) || newHours < 0) {
+                        newHours = 0;
+                      }
+                      handleHoursPerDayChange(course.id, course.duration, newHours);
+                    }}
+                  />
+                  {/* Nút Reset kế bên */}
+                  <button
+                    onClick={() => handleReset(course.id)}
+                    className="btn btn-primary"
+                    style={{ marginLeft: "10px" }}
+                  >
+                    Reset
+                  </button>
+                </div>
+
+                {/* Thanh progress */}
+                <div className="progress-stip mt-3">
+                  <div
+                    className="progress-bar bg-success progress-bar-striped active-stip"
+                    role="progressbar"
+                    style={{ width: `${course.progress || 0}%` }}
+                    aria-valuenow={course.progress || 0}
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  />
+                </div>
+                <div className="student-percent">
+                  <p>{course.progress || 0}% Completed</p>
+                </div>
+
+                {/* Nút Start Lesson */}
+                <div className="start-leason hoverBlue d-flex align-items-center">
+                  <Link
+                    to={`/course-lesson/${course.id}?studentId=${studentId}`}
+                    className="btn btn-primary"
+                  >
+                    Start Lesson
+                  </Link>
+                </div>
+
+                {/* Deadline countdown (hoặc No deadline set) */}
+                <div className="deadline-countdown mt-2">
+                  {deadlineElement}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    ));
+      );
+    });
   };
 
+  // ================ JSX TRẢ VỀ ================
   return (
     <div className="main-wrapper">
       <StudentHeader activeMenu={"Studys"} />
+
       <div className="breadcrumb-bar breadcrumb-bar-info">
         <div className="container">
           <div className="row">
@@ -208,7 +454,10 @@ const StudentStudy = () => {
                                   <div className="mycourse-student align-items-center">
                                     <div className="student-search">
                                       <div className="search-group">
-                                        <Search className="searchFeather" size={16} />
+                                        <Search
+                                          className="searchFeather"
+                                          size={16}
+                                        />
                                         <input
                                           type="text"
                                           className="form-control"
@@ -224,9 +473,10 @@ const StudentStudy = () => {
                                           options={options}
                                           defaultValue={options[0]}
                                           placeholder="Choose"
-                                          onChange={setValue}
+                                          // Nếu không dùng filter, có thể bỏ onChange
+                                          // onChange={(val) => setSelectedFilter(val)}
                                           styles={style}
-                                        ></Select>
+                                        />
                                       </div>
                                     </div>
                                   </div>
@@ -236,18 +486,18 @@ const StudentStudy = () => {
                           </div>
                         </div>
 
-                        {/* Enrolled Courses */}
+                        {/* ENROLLED COURSES */}
                         <div className="row">
                           <h3>Studying</h3>
                           {renderCourses(courses.enrolled)}
                         </div>
-
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* PHÂN TRANG (demo) */}
               <div className="dash-pagination">
                 <div className="row align-items-center">
                   <div className="col-6">
@@ -281,3 +531,5 @@ const StudentStudy = () => {
 };
 
 export default StudentStudy;
+
+//aaaaa
