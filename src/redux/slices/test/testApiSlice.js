@@ -31,7 +31,12 @@ export const testApiSlice = baseApiSlice.injectEndpoints({
         return currentArg !== previousArg; // Buộc refetch khi có sự thay đổi ở currentArg
       },
       providesTags: (result, error, { id, courseId }) =>
-        result ? [{ type: "Test", id: `${id}-${courseId}` }] : [], // Tag cho bài test của giảng viên và khóa học
+    result
+      ? [
+          { type: "Test", id: `${id}-${courseId}` }, // Invalidate danh sách bài test
+          ...result.map(({ id: testId }) => ({ type: "Test", id: testId })), // Invalidate từng bài test cụ thể
+        ]
+      : [{ type: "Test", id: `${id}-${courseId}` }],
     }),
 
     // Thêm, sửa, xóa bài test
@@ -49,10 +54,21 @@ export const testApiSlice = baseApiSlice.injectEndpoints({
           body: method !== 'DELETE' ? test : undefined, // Gửi dữ liệu body khi không phải DELETE
         };
       },
-      invalidatesTags: (result, error, { courseId, testId }) => [
-        { type: "Test", id: courseId }, // Invalidates danh sách bài test của khóa học
-        ...(testId ? [{ type: "Test", id: testId }] : []), // Invalidates bài test cụ thể nếu có testId
-      ],
+      invalidatesTags: (result, error, { courseId, testId, method }) => {
+    if (method === "PUT") {
+      return [
+        { type: "Test", id: testId }, // Invalidate bài test cụ thể
+        { type: "Test", id: courseId }, // Invalidate danh sách bài test của khóa học
+      ];
+    } else if (method === "DELETE") {
+      return [
+        { type: "Test", id: testId }, // Xóa cache của bài test bị xóa
+        { type: "Test", id: courseId },
+      ];
+    } else {
+      return [{ type: "Test", id: courseId }];
+    }
+  },
     }),
   }),
 });

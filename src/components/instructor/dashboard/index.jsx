@@ -10,10 +10,13 @@ import {
 } from "../../../redux/slices/course/courseApiSlice";
 import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
 import { useInstructorStatisticsQuery } from "../../../redux/slices/instructor/instructorApiSlice";
+import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 
 export const Dashboard = () => {
   const [isClassAdded, setIsClassAdded] = useState([false]);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const formatCurrency = useCurrencyFormatter();
   
   const instructorId = useSelector(selectCurrentInstructor);
 
@@ -130,7 +133,7 @@ export const Dashboard = () => {
                   <div className="card dash-info flex-fill">
                     <div className="card-body">
                       <h5>Total Earnings</h5>
-                      <h2>{instructorStatistics.balance} $</h2>
+                      <h2>{instructorStatistics.balance} VND</h2>
                     </div>
                   </div>
                 </div>
@@ -216,9 +219,7 @@ export const Dashboard = () => {
                             </Link>
                             <div className="price">
                               <h3>
-                                $
-                                {Math.round(course.basePrice * 0.8 * 100) / 100}{" "}
-                                <span>${course.basePrice}</span>
+                                {formatCurrency(course.basePrice)}
                               </h3>
                             </div>
                           </div>

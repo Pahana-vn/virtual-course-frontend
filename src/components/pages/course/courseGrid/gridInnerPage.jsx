@@ -4,6 +4,12 @@ import PropTypes from "prop-types";
 import { Icon1, Icon2 } from "../../../imagepath";
 
 const GridInnerPage = ({ courses }) => {
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
+  };
   return (
     <>
       <div className="row">
@@ -21,14 +27,14 @@ const GridInnerPage = ({ courses }) => {
                 </Link>
                 <div className="price">
                   <h3>
-                  {course.basePrice ? `$${course.basePrice - 10}` : "Free"} <span>{course.basePrice ? `$${course.basePrice}` : "Free"}</span>
+                  <small>{course.basePrice === 0 ? "Free" : formatCurrency(course.basePrice)}</small>
                   </h3>
                 </div>
               </div>
               <div className="product-content">
                 <div className="course-group d-flex">
                   <div className="course-group-img d-flex">
-                    <Link to="/instructor/instructor-profile">
+                    <Link to={`/instructor/${course.instructorId}/instructor-profile`}>
                       <img
                         src={course.instructorPhoto}
                         alt={course.instructorName}
@@ -37,7 +43,7 @@ const GridInnerPage = ({ courses }) => {
                     </Link>
                     <div className="course-name">
                       <h4>
-                        <Link to="/instructor/instructor-profile">{course.instructorName}</Link>
+                        <Link to={`/instructor/${course.instructorId}/instructor-profile`}>{course.instructorFirstName} {course.instructorLastName}</Link>
                       </h4>
                       <p>Instructor</p>
                     </div>
@@ -49,7 +55,7 @@ const GridInnerPage = ({ courses }) => {
                   </div>
                 </div>
                 <h3 className="title">
-                  <Link to="/course-details">
+                  <Link to={`/course-details/${course.id}`}>
                   {course.titleCourse}
                   </Link>
                 </h3>

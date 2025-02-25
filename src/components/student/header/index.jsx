@@ -18,6 +18,8 @@ import {
 import DarkMode from "../../common/darkMode";
 import { Cart, logo, Messages, User16, Wish } from "../../imagepath";
 import "./StudentHeader1.css";
+import { useStudentAvatarQuery } from "../../../redux/slices/student/studentApiSlice";
+
 export default function StudentHeader() {
   const dispatch = useDispatch();
 

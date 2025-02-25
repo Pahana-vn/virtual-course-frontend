@@ -28,38 +28,26 @@ import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../.
 
 
 const DetailsContent = ({ courseDetails }) => {
+
   const [openStates, setOpenStates] = useState([]);
   const [cartCourses, setCartCourses] = useState([]);
+  const [wishlist, setWishlist] = useState([]); // Fix setWishlist initialization
   const [loading, setLoading] = useState(false);
-  const [setWishlist] = useState([]);
   const [cartLoading, setCartLoading] = useState(false);
-  
-  const [studentId, setStudentId] = useState(() => {
-    const storedId = localStorage.getItem("studentId");
-    if (!storedId) {
-      console.warn("StudentId not found in LocalStorage!");
-    }
-    return storedId;
-  });
+  const [studentId, setStudentId] = useState(() => localStorage.getItem("studentId") || "");
 
+  // Derived states
+  const instructorIdNumber = Number(courseDetails.instructorId);
   const durations = useLectureDurations(
     courseDetails.sections.flatMap((section) => section.lectures || [])
   );
 
-  const instructorIdNumber = Number(courseDetails.instructorId);
-  const {
-    data: instructorDetails,
-    isLoading,
-    isError,
-  } = useInstructorDetailsQuery({ id: instructorIdNumber });
+  // Fetch instructor details
+  const { data: instructorDetails, isLoading, isError } = useInstructorDetailsQuery({
+    id: instructorIdNumber,
+  });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading instructor details.</p>;
-
-  const sanitizedCourseDescription = DOMPurify.sanitize(courseDetails.description);
-
-  const sanitizedInstructorDescription = DOMPurify.sanitize(instructorDetails.bio);
-
+  // Sync studentId with localStorage every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       const newStudentId = localStorage.getItem("studentId");
@@ -67,34 +55,49 @@ const DetailsContent = ({ courseDetails }) => {
         setStudentId(newStudentId);
       }
     }, 5000);
+
     return () => clearInterval(interval);
   }, [studentId]);
 
+  // Fetch cart items when studentId changes
   useEffect(() => {
-    const getCartItems = async () => {
-      if (!studentId) {
-        console.warn("StudentId not found, API call skipped");
-        return;
-      }
+    if (!studentId) return;
 
+    const getCartItems = async () => {
       try {
-        console.log(`Send request to get shopping cart for studentId: ${studentId}`);
+        console.log(`Fetching cart items for studentId: ${studentId}`);
         const courses = await fetchCartItems(studentId);
         setCartCourses(courses);
       } catch (error) {
-        console.error("Error getting shopping cart list:", error);
+        console.error("Error fetching cart:", error);
       }
     };
 
-    if (studentId) {
-      getCartItems();
-    }
+    getCartItems();
   }, [studentId]);
 
+  // Fetch wishlist when studentId changes
+  useEffect(() => {
+    if (!studentId) return;
+
+    const getWishlist = async () => {
+      try {
+        const wishlistData = await addCourseToWishlist(studentId);
+        setWishlist(wishlistData);
+      } catch (error) {
+        console.error("Error fetching wishlist:", error);
+      }
+    };
+
+    getWishlist();
+  }, [studentId]);
+
+  // Helper function to check if course is in cart
   const isCourseInCart = (courseId) => {
-    return cartCourses.some((item) => item.course && item.course.id === courseId);
+    return cartCourses.some((item) => item.course?.id === courseId);
   };
 
+  // Handle add to cart
   const handleAddToCart = async () => {
     if (!studentId) {
       toast.error("You need to login to add to cart.");
@@ -108,9 +111,8 @@ const DetailsContent = ({ courseDetails }) => {
 
     try {
       setCartLoading(true);
-      const courseData = { id: courseDetails.id };
-      await addCourseToCart(studentId, courseData);
-      toast.success("Add to cart successfully!");
+      await addCourseToCart(studentId, { id: courseDetails.id });
+      toast.success("Added to cart successfully!");
       setCartCourses([...cartCourses, { course: { id: courseDetails.id } }]);
     } catch (error) {
       toast.error("Add to cart failed.");
@@ -119,23 +121,10 @@ const DetailsContent = ({ courseDetails }) => {
     }
   };
 
-  useEffect(() => {
-    const getWishlist = async () => {
-      if (!studentId) return;
-      try {
-        const wishlistData = await addCourseToWishlist(studentId);
-        setWishlist(wishlistData);
-      } catch (error) {
-        console.error("Error when getting wishlist:", error);
-      }
-    };
-
-    getWishlist();
-  }, [studentId]);
-
+  // Handle add to wishlist
   const handleAddToWishlist = async () => {
     if (!studentId) {
-      toast.error("You need to login to add to favorites list.");
+      toast.error("You need to login to add to wishlist.");
       return;
     }
 
@@ -146,14 +135,22 @@ const DetailsContent = ({ courseDetails }) => {
       if (!result.success) {
         toast.info(result.message);
       } else {
-        toast.success("Add to wishlist successfully!");
+        toast.success("Added to wishlist successfully!");
+        setWishlist([...wishlist, courseDetails.id]); // Update wishlist state
       }
     } catch (error) {
-      toast.error("Add to favorites failed.");
+      toast.error("Add to wishlist failed.");
     } finally {
       setLoading(false);
     }
   };
+
+  // Sanitize descriptions for security
+  const sanitizedCourseDescription = DOMPurify.sanitize(courseDetails.description);
+  const sanitizedInstructorDescription = DOMPurify.sanitize(instructorDetails?.bio);
+
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error loading instructor details.</p>;
 
   return (
     <>

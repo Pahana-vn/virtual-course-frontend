@@ -1,7 +1,7 @@
 import { baseApiSlice } from "../baseApiSlice";
 export const courseApiSlice = baseApiSlice.injectEndpoints({
     endpoints: builder => ({
-        getCourses: builder.query({
+        getAllCourses: builder.query({
             query: () => ({
                 url: `/courses`
             }),
@@ -12,8 +12,33 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
               { type: "Courses", id: "LIST" },
             ]
           : [{ type: "Courses", id: "LIST" }],
+          
         }),
-        
+
+        getFilteredCourses: builder.query({
+            query: ({ categoryId, instructorId, minPrice, maxPrice, search, page = 0, size = 10 }) => {
+                let queryParams = new URLSearchParams();
+                if (categoryId) queryParams.append("categoryId", categoryId);
+                if (instructorId) queryParams.append("instructorId", instructorId);
+                if (minPrice) queryParams.append("minPrice", minPrice);
+                if (maxPrice) queryParams.append("maxPrice", maxPrice);
+                if (search) queryParams.append("search", search);
+                queryParams.append("page", page);
+                queryParams.append("size", size);
+
+                return {
+                    url: `/courses/filter?${queryParams.toString()}`,
+                };
+            },
+            providesTags: (result) =>
+                result?.content
+                    ? [
+                        ...result.content.map(({ id }) => ({ type: "Courses", id })),
+                        { type: "Courses", id: "LIST" },
+                    ]
+                    : [{ type: "Courses", id: "LIST" }],
+        }),
+
         getCoursesByInstructorId: builder.query({
             query: ({ instructorId }) => ({
                 url: `/courses/${instructorId}/instructor-courses`,
@@ -88,7 +113,8 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
 })
 
 export const {
-    useGetCoursesQuery,
+    useAllGetCoursesQuery,
+    useGetFilteredCoursesQuery,
     useGetInstructorCoursesQuery,
     useGetCoursesByInstructorIdQuery,
     useGetCourseByIdQuery,

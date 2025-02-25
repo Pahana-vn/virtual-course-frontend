@@ -1,6 +1,19 @@
 import { baseApiSlice } from "../baseApiSlice";
 export const instructorApiSlice = baseApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getAllInstructors: builder.query({
+      query: () => ({
+        url: `/instructors`,
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Instructor", id })),
+              { type: "Instructor", id: "LIST" },
+            ]
+          : [{ type: "Instructor", id: "LIST" }],
+    }),
+
     getInstructorById: builder.query({
       query: ({ id }) => ({
         url: `/instructors/${id}`,
@@ -87,6 +100,7 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
 });
 
 export const {
+  useGetAllInstructorsQuery,
   useGetInstructorByIdQuery,
   useInstructorStatisticsQuery,
   useInstructorAvatarQuery,

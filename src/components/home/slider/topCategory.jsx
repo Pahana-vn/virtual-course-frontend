@@ -62,7 +62,7 @@ const TopCategory = () => {
             <h2>Top Category</h2>
           </div>
           <div className="all-btn all-category d-flex align-items-center">
-            <Link to="job-category" className="btn btn-primary">
+            <Link to="/job-category" className="btn btn-primary">
               All Categories
             </Link>
           </div>

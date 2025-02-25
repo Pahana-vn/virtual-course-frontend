@@ -1,120 +1,31 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { InstructorHeader } from "../../instructor/header";
 import Footer from "../../footer";
 import {
   BookSvg,
   EmptyWalletChange,
   EmptyWalletTick,
-  Icon25,
-  Icon26,
-  Icon27,
-  ProfileAvatar,
   ProfileUser,
   ReceiptText,
 } from "../../imagepath";
-import { Link } from "react-router-dom";
+import MenuInstructorDashboard from "./menuInstructorDashboard";
+import { useGetInstructorStatisticsQuery } from "../../../redux/slices/instructor/instructorStatisticsApiSlice";
+import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
 
 export default function InstructorDepositDashboard() {
+
+  const instructorId = useSelector(selectCurrentInstructor);
+  const { data: instructorStatistics, isError, isLoading } = useGetInstructorStatisticsQuery({instructorId:instructorId});
+
+  if (isLoading) return <p>Loading statistics...</p>;
+  if (isError) return <p>Error loading statistics</p>;
   return (
     <div className="main-wrapper">
       <InstructorHeader />
-      {/* BreadCrumb */}
-      <div
-        className="page-banner instructor-bg-blk"
-      >
-        <div className="container">
-          <div className="row align-items-center student-group">
-            <div className="col-lg-6 col-md-12">
-              <div className="instructor-profile d-flex align-items-center">
-                <div className="instructor-profile-pic">
-                  <Link to="/instructor/instructor-profile">
-                    <img src={ProfileAvatar} alt="" className="img-fluid" />
-                  </Link>
-                </div>
-                <div className="instructor-profile-content">
-                  <h4>
-                    <Link to="/instructor/instructor-profile">
-                      Jenny Wilson <span>Beginner</span>
-                    </Link>
-                  </h4>
-                  <p>Instructor</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-6 col-md-12">
-              <div className="instructor-profile-menu">
-                <ul className="nav">
-                  <li>
-                    <div className="d-flex align-items-center">
-                      <div className="instructor-profile-menu-img">
-                        <img src={Icon25} alt="" />
-                      </div>
-                      <div className="instructor-profile-menu-content">
-                        <h4>32</h4>
-                        <p>Courses</p>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="d-flex align-items-center">
-                      <div className="instructor-profile-menu-img">
-                        <img src={Icon26} alt="" />
-                      </div>
-                      <div className="instructor-profile-menu-content">
-                        <h4>11,604</h4>
-                        <p>Total Students</p>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="d-flex align-items-center">
-                      <div className="instructor-profile-menu-img">
-                        <img src={Icon27} alt="" />
-                      </div>
-                      <div className="instructor-profile-menu-content">
-                        <h4>12,230</h4>
-                        <p>Reviews</p>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-12">
-              <div className="my-student-list">
-                <ul>
-                  <li>
-                    <Link className="active" to="/deposit-instructor-dashboard">
-                      Dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/instructor/instructor-dashboard">Courses</Link>
-                  </li>
-                  <li>
-                    <Link to="/withdrawal-instructor">Withdrawal</Link>
-                  </li>
-                  <li>
-                    <Link to="/deposit-instructor-dashboard">
-                      Purchase history
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/deposit-instructor">Deposit</Link>
-                  </li>
-                  <li className="mb-0">
-                    <Link to="/transactions-instructor">Transactions</Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* BreadCrumb */}
-      {/* Dashboard Students */}
+      <MenuInstructorDashboard instructorStatistics={instructorStatistics}/>
+      {/* Dashboard Instructors */}
       <div className="page-content">
         <div className="container">
           <div className="row">
@@ -127,7 +38,7 @@ export default function InstructorDepositDashboard() {
                       <div className="card-body">
                         <div className="view-all-grp d-flex">
                           <div className="student-ticket-view">
-                            <h3>50</h3>
+                            <h3>{instructorStatistics.totalPurchasedCourses}</h3>
                             <p>Purchased Courses</p>
                             <Link to="/instructor/instructor-dashboard">View All</Link>
                           </div>
@@ -143,9 +54,9 @@ export default function InstructorDepositDashboard() {
                       <div className="card-body">
                         <div className="view-all-grp d-flex">
                           <div className="student-ticket-view">
-                            <h3>30</h3>
+                            <h3>{instructorStatistics.totalTransactions}</h3>
                             <p>Total Transactions</p>
-                            <Link to="/transactions-instructor">View All</Link>
+                            <Link to="/instructor/transactions-instructor">View All</Link>
                           </div>
                           <div className="img-deposit-ticket">
                             <img src={ReceiptText} alt="" />
@@ -159,9 +70,9 @@ export default function InstructorDepositDashboard() {
                       <div className="card-body">
                         <div className="view-all-grp d-flex">
                           <div className="student-ticket-view">
-                            <h3>20</h3>
+                            <h3>{instructorStatistics.totalDeposits}</h3>
                             <p>Total Deposit</p>
-                            <Link to="/deposit-student">View All</Link>
+                            <Link to="/instructor/deposit-student">View All</Link>
                           </div>
                           <div className="img-deposit-ticket">
                             <img src={EmptyWalletTick} alt="" />
@@ -175,9 +86,9 @@ export default function InstructorDepositDashboard() {
                       <div className="card-body">
                         <div className="view-all-grp d-flex">
                           <div className="student-ticket-view">
-                            <h3>$2055</h3>
+                            <h3>{instructorStatistics.totalWithdrawals}</h3>
                             <p>Total Withdraw</p>
-                            <Link to="/withdrawal-instructor">View All</Link>
+                            <Link to="/instructor/withdrawal-instructor">View All</Link>
                           </div>
                           <div className="img-deposit-ticket">
                             <img src={EmptyWalletChange} alt="" />
@@ -191,7 +102,7 @@ export default function InstructorDepositDashboard() {
                       <div className="card-body">
                         <div className="view-all-grp d-flex">
                           <div className="student-ticket-view">
-                            <h3>30</h3>
+                            <h3>{instructorStatistics.totalStudents}</h3>
                             <p>Total Student</p>
                           </div>
                           <div className="img-deposit-ticket">
@@ -206,7 +117,7 @@ export default function InstructorDepositDashboard() {
                       <div className="card-body">
                         <div className="view-all-grp d-flex">
                           <div className="student-ticket-view">
-                            <h3>50</h3>
+                            <h3>{instructorStatistics.totalPublishedCourses}</h3>
                             <p>Total Approved Course</p>
                             <Link to="/instructor/instructor-dashboard">View All</Link>
                           </div>
@@ -349,7 +260,7 @@ export default function InstructorDepositDashboard() {
           </div>
         </div>
       </div>
-      {/* Dashboard Students */}
+      {/* Dashboard Instructors */}
       <Footer />
     </div>
   );

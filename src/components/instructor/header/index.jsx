@@ -3,7 +3,6 @@ import React, { useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Home, LogOut, Star } from "react-feather";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
 import { selectCurrentUser } from "../../../redux/slices/auth/authSlice";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
 import {
@@ -20,7 +19,7 @@ import { useInstructorAvatarQuery } from "../../../redux/slices/instructor/instr
 
 // eslint-disable-next-line react/prop-types
 
-export function InstructorHeader({ activeMenu }) {
+export function InstructorHeader() {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
   const accountId = useSelector((state) => state.auth.user.accountId);
@@ -364,14 +363,7 @@ export function InstructorHeader({ activeMenu }) {
                   </div>
                   <Link
                     className="dropdown-item text"
-                    to="/student/student-dashboard"
-                  >
-                    <Home size={14} color={"#FF875A"} className="headerIcon me-1" />{" "}
-                    Student Dashboard
-                  </Link>
-                  <Link
-                    className="dropdown-item"
-                    to="/instructor/instructor-dashboard"
+                    to="/instructor/deposit-instructor-dashboard"
                   >
                     <Home
                       size={14}
@@ -379,6 +371,17 @@ export function InstructorHeader({ activeMenu }) {
                       className="feather-home me-1"
                     />{" "}
                    Instructor Dashboard
+                  </Link>
+                  <Link
+                    className="dropdown-item text"
+                    to="/instructor/instructor-dashboard"
+                  >
+                    <Home
+                      size={14}
+                      color={"#FF875A"}
+                      className="feather-home me-1"
+                    />{" "}
+                   Course Dashboard
                   </Link>
                   <Link
                     className="dropdown-item text"
@@ -415,6 +418,4 @@ export function InstructorHeader({ activeMenu }) {
     </header>
   );
 }
-InstructorHeader.propTypes = {
-  activeMenu: PropTypes.string,
-};
+

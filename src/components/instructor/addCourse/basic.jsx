@@ -147,7 +147,7 @@ const Basic = ({ nextTab }) => {
             </form>
           </div>
           <div className="widget-btn">
-            <Link to="#" className="btn btn-black">
+            <Link to="/instructor/instructor-course" className="btn btn-black">
               Back
             </Link>
             <Link

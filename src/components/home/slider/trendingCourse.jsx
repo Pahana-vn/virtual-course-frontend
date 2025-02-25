@@ -103,7 +103,7 @@ const TrendingCourse = () => {
             <h2>TRENDING COURSES</h2>
           </div>
           <div className="all-btn all-category d-flex align-items-center">
-            <Link to="course-list" className="btn btn-primary">
+            <Link to="/course-grid" className="btn btn-primary">
               All Courses
             </Link>
           </div>
@@ -664,7 +664,7 @@ const TrendingCourse = () => {
                     <img
                       className="img-fluid"
                       alt={`${instructor.firstName} ${instructor.lastName}`}
-                      src={`http://localhost:8080${instructor.photo}`} // URL ảnh của instructor
+                      src={instructor.photo} // URL ảnh của instructor
                     />
                   </Link>
                 </div>
