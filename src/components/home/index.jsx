@@ -5,10 +5,8 @@ import CountUp from "react-countup";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Select from "react-select";
-import { selectCurrentRoles } from "../../redux/slices/auth/authSlice";
 import { fetchCourses } from "../../services/courseService";
 import Footer from "../footer";
-import Header from "../header";
 import {
   bannerimg,
   Become1,
@@ -27,6 +25,7 @@ import {
   Icon15,
   Icon16,
   Icon17,
+  Icon18,
   Icon7,
   Icon8,
   Icon9,
