@@ -1,11 +1,10 @@
+import PropTypes from "prop-types";
 import React from "react";
 import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { Link, useLocation } from "react-router-dom";
 import StickyBox from "react-sticky-box";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { useGetInstructorByIdQuery, useInstructorAvatarQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
+import { useGetInstructorByIdQuery, useInstructorAvatarQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 // eslint-disable-next-line react/prop-types
 export default function InstructorSidebar() {
   const location = useLocation();
@@ -15,8 +14,8 @@ export default function InstructorSidebar() {
     isLoading,
     isError,
   } = useGetInstructorByIdQuery({ id: instructorId });
-  const accountId = useSelector((state) => state.auth.user.accountId);
-  const { data } = useInstructorAvatarQuery({accountId});
+  const accountId = useSelector((state) => state.auth.user?.accountId);
+  const { data } = useInstructorAvatarQuery({ accountId });
   const avatarUrl = data?.url || "default-avatar.png";
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error loading instructor details.</p>;
@@ -58,11 +57,10 @@ export default function InstructorSidebar() {
             <h3>Instructor Dashboard</h3>
             <ul>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-dashboard"
+                className={`nav-item ${location.pathname === "/instructor/instructor-dashboard"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link
                   to="/instructor/instructor-dashboard"
@@ -73,11 +71,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-course"
+                className={`nav-item ${location.pathname === "/instructor/instructor-course"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link to="/instructor/instructor-course" className="nav-link ">
                   <i className="bx bxs-rocket" />
@@ -85,11 +82,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-profiles"
+                className={`nav-item ${location.pathname === "/instructor/instructor-profiles"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link to="/instructor/instructor-profile-settings" className="nav-link">
                   <i className="bx bxs-user" />
@@ -97,11 +93,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-reviews"
+                className={`nav-item ${location.pathname === "/instructor/instructor-reviews"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link to="/instructor/instructor-reviews" className="nav-link">
                   <i className="bx bxs-star" />
@@ -109,11 +104,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-qa"
+                className={`nav-item ${location.pathname === "/instructor/instructor-qa"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link to="/instructor/instructor-qa" className="nav-link">
                   <i className="bx bxs-bookmark-alt" />
@@ -121,11 +115,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-chat"
+                className={`nav-item ${location.pathname === "/instructor/instructor-chat"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link to="/instructor/instructor-chat" className="nav-link">
                   <i className="bx bxs-chat" />
@@ -133,11 +126,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-notifications"
+                className={`nav-item ${location.pathname === "/instructor/instructor-notifications"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link
                   to="/instructor/instructor-notifications"
@@ -148,11 +140,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-announcement"
+                className={`nav-item ${location.pathname === "/instructor/instructor-announcement"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link
                   to="/instructor/instructor-announcement"
@@ -163,11 +154,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-withdraw"
+                className={`nav-item ${location.pathname === "/instructor/instructor-withdraw"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link
                   to="/instructor/instructor-withdraw"
@@ -178,11 +168,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-assignment"
+                className={`nav-item ${location.pathname === "/instructor/instructor-assignment"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link
                   to="/instructor/instructor-assignment"
@@ -193,11 +182,10 @@ export default function InstructorSidebar() {
                 </Link>
               </li>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-earnings"
+                className={`nav-item ${location.pathname === "/instructor/instructor-earnings"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link to="/instructor/instructor-earnings" className="nav-link">
                   <i className="bx bxs-badge-dollar" />
@@ -208,18 +196,17 @@ export default function InstructorSidebar() {
             <h3>Account Settings</h3>
             <ul>
               <li
-                className={`nav-item ${
-                  location.pathname === "/instructor/instructor-settings" ||
-                  location.pathname ===
+                className={`nav-item ${location.pathname === "/instructor/instructor-settings" ||
+                    location.pathname ===
                     "/instructor/instructor-change-password" ||
-                  location.pathname ===
+                    location.pathname ===
                     "/instructor/instructor-setting-notifications" ||
-                  location.pathname ===
+                    location.pathname ===
                     "/instructor/instructor-setting-withdraw" ||
-                  location.pathname === "/instructor/instructor-delete-account"
+                    location.pathname === "/instructor/instructor-delete-account"
                     ? "active"
                     : ""
-                }`}
+                  }`}
               >
                 <Link
                   to="/instructor/instructor-settings"

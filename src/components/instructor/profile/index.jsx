@@ -1,11 +1,16 @@
-import React from "react";
 import DOMPurify from "dompurify";
+import React from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
-  selectCurrentUser,
   selectCurrentInstructor,
+  selectCurrentUser,
 } from "../../../redux/slices/auth/authSlice";
-import { InstructorHeader } from "../../instructor/header";
+import { useGetInstructorCoursesQuery } from "../../../redux/slices/course/courseApiSlice";
+import {
+  useInstructorAvatarQuery,
+  useInstructorDetailsQuery,
+} from "../../../redux/slices/instructor/instructorApiSlice";
 import Footer from "../../footer";
 import {
   AddressIcon,
@@ -18,17 +23,12 @@ import {
   TtlStudIcon,
   User1,
 } from "../../imagepath";
-import { Link } from "react-router-dom";
-import {
-  useInstructorAvatarQuery,
-  useInstructorDetailsQuery,
-} from "../../../redux/slices/instructor/instructorApiSlice";
-import { useGetInstructorCoursesQuery } from "../../../redux/slices/course/courseApiSlice";
+import { InstructorHeader } from "../../instructor/header";
 
 export default function InstructorProfile() {
   const id = useSelector(selectCurrentInstructor);
   const user = useSelector(selectCurrentUser);
-  const accountId = useSelector((state) => state.auth.user.accountId);
+  const accountId = useSelector((state) => state.auth.user?.accountId);
   const { data } = useInstructorAvatarQuery({ accountId });
   const avatarUrl = data?.url || "default-avatar.png";
   const {
@@ -37,7 +37,8 @@ export default function InstructorProfile() {
     isError,
   } = useInstructorDetailsQuery({ id: id });
 
-  const { data: courses } = useGetInstructorCoursesQuery({ instructorId:id,
+  const { data: courses } = useGetInstructorCoursesQuery({
+    instructorId: id,
     status: "PUBLISHED",
   });
 
@@ -191,7 +192,7 @@ export default function InstructorProfile() {
                 <div className="card-body">
                   <h5 className="subs-title">Experience</h5>
                   {instructor.experiences &&
-                  instructor.experiences.length > 0 ? (
+                    instructor.experiences.length > 0 ? (
                     instructor.experiences.map((exp, index) => (
                       <div className="edu-wrap" key={index}>
                         <div className="edu-name">
@@ -514,11 +515,10 @@ export default function InstructorProfile() {
                       {[...Array(5)].map((_, index) => (
                         <i
                           key={index}
-                          className={`fas fa-star ${
-                            index < Math.round(instructor.averageRating)
+                          className={`fas fa-star ${index < Math.round(instructor.averageRating)
                               ? "filled"
                               : ""
-                          }`}
+                            }`}
                         ></i>
                       ))}
                       <span className="d-inline-block average-rating">

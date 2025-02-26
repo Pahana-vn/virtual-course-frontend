@@ -84,6 +84,7 @@ import StudentViewTickets from "./components/student/viewTickets";
 import DashboardProfile from "./components/instructor/dashboardProfile";
 import InstructorAnnouncement from "./components/instructor/instructorAnnouncement/index.jsx";
 import InstructorAssignment from "./components/instructor/instructorAssignment/index.jsx";
+import InstructorCheckout from "./components/instructor/InstructorCheckout";
 import InstructorCourse from "./components/instructor/instructorCourse/index.jsx";
 import InstructorEnrolledCource from "./components/instructor/instructorEnrolledCourse";
 import InstructorNotification from "./components/instructor/instructorNotification/index.jsx";
@@ -133,7 +134,6 @@ import StudentReviews from "./components/student/studentReviews/index.jsx";
 import StudentStudy from "./components/student/studentStudy/index.jsx";
 import StudentTestResult from "./components/student/studentTestResult/StudentTestResult.jsx";
 import StudentTicket from "./components/student/studentTicket/index.jsx";
-import InstructorCheckout from "./components/instructor/InstructorCheckout";
 import StudentWishlist from "./components/student/studentWishlist/index.jsx";
 
 const Approuter = () => {

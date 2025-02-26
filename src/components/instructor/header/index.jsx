@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Home, LogOut, Star } from "react-feather";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { selectCurrentUser } from "../../../redux/slices/auth/authSlice";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
+import { logOut, selectCurrentUser } from "../../../redux/slices/auth/authSlice";
+import { useInstructorAvatarQuery } from "../../../redux/slices/instructor/instructorApiSlice";
+import DarkMode from "../../common/darkMode";
 import {
   logo,
   Messages,
@@ -13,16 +15,13 @@ import {
   User2,
   User3,
 } from "../../imagepath";
-import DarkMode from "../../common/darkMode";
-import { logOut } from "../../../redux/slices/auth/authSlice";
-import { useInstructorAvatarQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 
 // eslint-disable-next-line react/prop-types
 
 export function InstructorHeader() {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
-  const accountId = useSelector((state) => state.auth.user.accountId);
+  const accountId = useSelector((state) => state.auth.user?.accountId);
   const { data } = useInstructorAvatarQuery({accountId});
   const avatarUrl = data?.url || "default-avatar.png";
   const handleLogout = () => {

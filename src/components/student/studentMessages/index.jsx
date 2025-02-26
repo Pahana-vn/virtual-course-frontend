@@ -18,43 +18,34 @@ const StudentMessages = () => {
   const [messages, setMessages] = useState([]);
   const [currentMsg, setCurrentMsg] = useState('');
 
-  // Giả lập user hiện tại là student với accountId=3
-  const currentUserAccountId = 3;
-  // Giả lập đang chat với instructor accountId=1
-  const chatWithAccountId = 1;
+  // Get the studentId and instructorId from localStorage
+  const currentUserAccountId = localStorage.getItem('studentId');  // Get studentId from local storage
+  const chatWithAccountId = localStorage.getItem('instructorId');  // Get instructorId from local storage
 
   const stompClientRef = useRef(null);
 
-  // Hàm resize
+  // Resize handler
   const handleResize = () => {
     setIsSmallScreen(window.innerWidth < 992);
   };
 
   useEffect(() => {
-    // Mỗi khi messages thay đổi, cuộn xuống cuối
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    // Fetch lịch sử chat giữa 2 user
+    // Fetch chat history between student and instructor
     fetch(`http://localhost:8080/api/chat/history?user1Id=${currentUserAccountId}&user2Id=${chatWithAccountId}`)
       .then(res => res.json())
       .then(data => {
-        // data đã là ChatMessageDTO: { senderName, senderAvatar, timestamp, ... }
         setMessages(data);
       })
       .catch(error => console.error('Error fetching chat history:', error));
 
-    // Kết nối WebSocket
+    // Connect to WebSocket
     const socket = new SockJS('http://localhost:8080/ws-chat');
     const stompClient = Stomp.over(socket);
     stompClientRef.current = stompClient;
 
     stompClient.connect({}, (frame) => {
       console.log('Connected: ' + frame);
-      // Subscribe để nhận tin nhắn realtime
+      // Subscribe to receive messages in real-time
       stompClient.subscribe(`/queue/user.${currentUserAccountId}`, (messageOutput) => {
         const msg = JSON.parse(messageOutput.body);
         setMessages(prev => [...prev, msg]);
@@ -73,7 +64,6 @@ const StudentMessages = () => {
     }
   }, [currentUserAccountId, chatWithAccountId]);
 
-  // Gửi tin nhắn
   const sendMessage = (e) => {
     e.preventDefault();
     if (currentMsg.trim() !== '' && stompClientRef.current) {
@@ -85,12 +75,11 @@ const StudentMessages = () => {
       };
       stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
 
-      // Khi gửi xong, backend sẽ gửi lại cho người nhận. Người gửi thì tạm thời thêm vào UI:
+      // Temporarily add the message to UI for the sender
       setMessages(prev => [...prev, {
         ...chatMessageDTO,
         senderName: "You",
-        senderAvatar: "https://ibiettuot.com/wp-content/uploads/2021/10/avatar-mac-dinh.png", // Hoặc avatar của chính user
-        // timestamp: new Date().toISOString()
+        senderAvatar: "https://ibiettuot.com/wp-content/uploads/2021/10/avatar-mac-dinh.png", // Placeholder avatar
       }]);
       setCurrentMsg('');
     }
@@ -160,10 +149,9 @@ const StudentMessages = () => {
                                     </li>
                                   </ul>
                                   <div
-                                    className={
-                                      visible
-                                        ? "user-chat-search visible-chat"
-                                        : "user-chat-search"
+                                    className={visible
+                                      ? "user-chat-search visible-chat"
+                                      : "user-chat-search"
                                     }
                                   >
                                     <form>
@@ -200,7 +188,6 @@ const StudentMessages = () => {
                                     <Link to="#">
                                       <div>
                                         <div className="avatar avatar-online">
-                                          {/* Thay bằng avatar của đối phương nếu muốn */}
                                           <img
                                             src="path/to/receiver/avatar.jpg"
                                             className="rounded-circle"
@@ -210,7 +197,6 @@ const StudentMessages = () => {
                                       </div>
                                       <div className="users-list-body">
                                         <div>
-                                          {/* Hiển thị tên của đối phương nếu muốn */}
                                           <h5>Receiver Name</h5>
                                           <p>
                                             <i className="bx bx-video me-1" />
@@ -239,21 +225,7 @@ const StudentMessages = () => {
                         <div className="h-100">
                           <div className="chat-header">
                             <div className="user-details mb-0">
-                              <div className="d-lg-none">
-                                <ul className="list-inline mt-2 me-2">
-                                  <li className="list-inline-item">
-                                    <Link
-                                      className="text-muted px-0 left_sides"
-                                      to="#"
-                                      data-chat="open"
-                                    >
-                                      <i className="fas fa-arrow-left" />
-                                    </Link>
-                                  </li>
-                                </ul>
-                              </div>
                               <figure className="avatar mb-0">
-                                {/* Avatar của đối phương (receiver) */}
                                 <img
                                   src="path/to/receiver/avatar.jpg"
                                   className="rounded-circle"
@@ -261,7 +233,6 @@ const StudentMessages = () => {
                                 />
                               </figure>
                               <div className="mt-1">
-                                {/* Hiển thị tên người mà ta đang chat cùng */}
                                 <h5>Receiver Name</h5>
                                 <small className="last-seen">
                                   Last Seen at 07:15 PM
@@ -284,71 +255,7 @@ const StudentMessages = () => {
                                     </Link>
                                   </OverlayTrigger>
                                 </li>
-                                <li className="list-inline-item">
-                                  <Link
-                                    className="btn btn-outline-light no-bg"
-                                    to="#"
-                                    data-bs-toggle="dropdown"
-                                  >
-                                    <i className="fa-solid fa-ellipsis-vertical" />
-                                  </Link>
-                                  <div className="dropdown-menu dropdown-menu-end">
-                                    <Link to="/home" className="dropdown-item ">
-                                      <span>
-                                        <i className="bx bx-x" />
-                                      </span>
-                                      Close Chat{" "}
-                                    </Link>
-                                    <Link
-                                      to="#"
-                                      className="dropdown-item"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#clear-chat"
-                                    >
-                                      <span>
-                                        <i className="bx bx-brush-alt" />
-                                      </span>
-                                      Clear Message
-                                    </Link>
-                                    <Link
-                                      to="#"
-                                      className="dropdown-item"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#change-chat"
-                                    >
-                                      <span>
-                                        <i className="bx bx-trash" />
-                                      </span>
-                                      Delete Chat
-                                    </Link>
-                                  </div>
-                                </li>
                               </ul>
-                            </div>
-                            <div
-                              className={
-                                searchChat
-                                  ? "chat-search visible-chat"
-                                  : "chat-search"
-                              }
-                            >
-                              <form>
-                                <span className="form-control-feedback">
-                                  <i className="bx bx-search" />
-                                </span>
-                                <input
-                                  type="text"
-                                  name="chat-search"
-                                  placeholder="Search Chats"
-                                  className="form-control"
-                                />
-                                <div
-                                  className="close-btn-chat"
-                                  onClick={() => setSearchChat(!searchChat)}
-                                >
-                                  <i className="feather icon-x" />
-                                </div>
-                              </form>
                             </div>
                           </div>
                           <div className="chat-body chat-page-group slimscroll">
@@ -357,24 +264,12 @@ const StudentMessages = () => {
                                 {messages.map((m, index) => {
                                   const isMe = m.senderAccountId === currentUserAccountId;
 
-                                  // Tạo một đối tượng Date từ m.timestamp (chuỗi ISO: "2024-12-27T13:24:15.074930Z" chẳng hạn)
-                                  {/* const dateObj = m.timestamp ? new Date(m.timestamp) : null; */ }
-
-                                  // Hiển thị giờ phút ở dạng 12h kèm AM/PM (hoặc 24h tuỳ chỉnh)
-                                  //  - Muốn 24h: { hour: '2-digit', minute: '2-digit', hour12: false }
                                   const dateObj = new Date(m.timestamp);
-
-                                  console.log('dateObj =>', dateObj.toString());
-                                  console.log('locale =>', dateObj.toLocaleString());
-                                  // timestamp = "2024-12-29T08:25:33.164274Z" chẳng hạn
                                   const timeStr = dateObj.toLocaleTimeString('en-GB', {
                                     hour: '2-digit',
                                     minute: '2-digit',
-                                    second: '2-digit',   // Thêm nếu muốn thấy giây
                                     timeZone: 'Asia/Ho_Chi_Minh'
                                   });
-                                  console.log('Message index:', index, 'timestamp:', m.timestamp);
-                                  console.log('VN time =>', dateObj.toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' }));
 
                                   const avatar = m.senderAvatar
                                     ? m.senderAvatar
@@ -478,7 +373,7 @@ const StudentMessages = () => {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

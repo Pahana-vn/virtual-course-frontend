@@ -1,9 +1,12 @@
-import FeatherIcon from "feather-icons-react";
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import DOMPurify from "dompurify";
+import FeatherIcon from "feather-icons-react";
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import useLectureDurations from "../../../../hooks/useLectureDurations";
+import { useInstructorDetailsQuery } from "../../../../redux/slices/instructor/instructorApiSlice";
+import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../../services/studentService";
 import {
   Chapter,
   Chart,
@@ -21,10 +24,7 @@ import {
   Users,
   Video2,
 } from "../../../imagepath";
-import Rating from "./rating"
-import { useInstructorDetailsQuery } from "../../../../redux/slices/instructor/instructorApiSlice";
-import useLectureDurations from "../../../../hooks/useLectureDurations";
-import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../../services/studentService";
+import Rating from "./rating";
 
 
 const DetailsContent = ({ courseDetails }) => {
@@ -448,7 +448,7 @@ const DetailsContent = ({ courseDetails }) => {
                             </button>
                           </div>
                         </div>
-                        <Link to="/checkout" className="btn btn-enroll w-100">
+                        <Link to={`/checkout/${courseDetails.id}`} className="btn btn-enroll w-100">
                           Buy now
                         </Link>
                       </div>
