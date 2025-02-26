@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "../../footer";
@@ -6,16 +7,35 @@ import PageHeader from "../../student/header";
 const Success = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [status, setStatus] = useState("loading"); // loading, success, fail
+    const [status, setStatus] = useState("loading"); // "loading", "success", "fail"
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const paymentId = queryParams.get("paymentId");
-        const payerId = queryParams.get("PayerID");
+        const payerId = queryParams.get("PayerID"); // PayPal trả về "PayerID" (viết hoa)
 
         if (paymentId && payerId) {
-            setStatus("success");
+            // Bước 1: Gọi API /execute-paypal-payment để "chốt"
+            axios
+                .post(
+                    `http://localhost:8080/api/payment/execute-paypal-payment?paymentId=${paymentId}&payerId=${payerId}`,
+                    {},
+                    {
+                        // Nếu backend cần JWT, thêm header:
+                        // headers: { Authorization: `Bearer ${token}` }
+                    }
+                )
+                .then((res) => {
+                    // Nếu server cập nhật Payment = Completed thành công
+                    console.log("Execute PayPal success:", res.data);
+                    setStatus("success");
+                })
+                .catch((err) => {
+                    console.error("Execute PayPal error:", err);
+                    setStatus("fail");
+                });
         } else {
+            // Thiếu param => fail
             setStatus("fail");
         }
     }, [location.search]);
@@ -107,6 +127,5 @@ const styles = {
         textDecoration: "none",
     },
 };
-
 
 export default Success;

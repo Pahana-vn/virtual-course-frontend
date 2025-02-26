@@ -531,5 +531,3 @@ const StudentStudy = () => {
 };
 
 export default StudentStudy;
-
-//aaaaa

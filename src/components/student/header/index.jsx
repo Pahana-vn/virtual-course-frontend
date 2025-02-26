@@ -34,7 +34,7 @@ export default function StudentHeader() {
 
   const user = useSelector(selectCurrentUser);
 
-  const accountId = useSelector((state) => state.auth.user.accountId);
+  const accountId = useSelector((state) => state.auth.user?.accountId);
   const { data } = useStudentAvatarQuery({ accountId });
   const avatarUrl = data?.url || "default-avatar.png";
 
