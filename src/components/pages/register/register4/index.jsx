@@ -59,14 +59,12 @@ const RegisterFour = () => {
                   <img src={RegisterImg} className="img-fluid" alt="Logo" />
                 </div>
                 <div className="mentor-course text-center">
-                  <h2>
+                <h2>
                     Welcome to <br />
-                    DreamsLMS Courses.
+                    Virtual Course Network.
                   </h2>
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam.
+                    Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
                   </p>
                 </div>
               </div>
@@ -75,14 +73,12 @@ const RegisterFour = () => {
                   <img src={RegisterImg} className="img-fluid" alt="Logo" />
                 </div>
                 <div className="mentor-course text-center">
-                  <h2>
+                <h2>
                     Welcome to <br />
-                    DreamsLMS Courses.
+                    Virtual Course Network.
                   </h2>
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam.
+                    Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
                   </p>
                 </div>
               </div>
@@ -91,14 +87,12 @@ const RegisterFour = () => {
                   <img src={RegisterImg} className="img-fluid" alt="Logo" />
                 </div>
                 <div className="mentor-course text-center">
-                  <h2>
+                <h2>
                     Welcome to <br />
-                    DreamsLMS Courses.
+                    Virtual Course Network.
                   </h2>
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam.
+                    Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
                   </p>
                 </div>
               </div>

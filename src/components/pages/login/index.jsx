@@ -278,12 +278,12 @@ const Login = () => {
                   </ul>
                 </div>
                 <p className="mb-0">
-                  New User ? <Link to="/register">Create an Account</Link>
+                  New User ? <Link to="/register">Create an Student Account</Link>
+                </p>
+                <p className="mb-0">
+                  Become a Instructor ? <Link to="/register1">Create a Instructor Account</Link>
                 </p>
               </div>
-              <p className="mb-0">
-                New User ? <Link to="/register">Create an Account</Link>
-              </p>
             </div>
           </div>
           {/* /Login */}

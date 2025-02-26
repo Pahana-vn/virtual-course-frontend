@@ -18573,6 +18573,18 @@ input[type="password"]::-ms-clear {
   position: relative;
 }
 
+.course-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; /* Allow line breaks */
+  word-break: break-word; /* Break long words */
+  line-height: 1.4; /* Line height */
+  min-height: 45px; /* Minimum height */
+}
+
 .head-course-title {
   display: -webkit-box;
   display: -ms-flexbox;

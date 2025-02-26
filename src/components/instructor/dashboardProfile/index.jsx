@@ -5,9 +5,12 @@ import Footer from "../../footer";
 import InstructorSidebar from "../sidebar";
 import { Link } from "react-router-dom";
 import { useInstructorProfileQuery } from "../../../redux/slices/instructor/instructorApiSlice";
+import { useSelector } from "react-redux";
+import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
 
 const DashboardProfile = () => {
-  const { data: profile, isLoading, isError } = useInstructorProfileQuery();
+  const id = useSelector(selectCurrentInstructor);
+  const { data: profile, isLoading, isError } = useInstructorProfileQuery({ id: id });
   console.log(profile)
   if (isLoading) return <p>Loading profile...</p>;
   if (isError) return <p>Error loading profile.</p>;

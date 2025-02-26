@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { Icon25, Icon26, Icon27, ProfileAvatar } from "../../imagepath";
 import { useGetInstructorStatisticsQuery } from "../../../redux/slices/instructor/instructorStatisticsApiSlice";
 import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
+import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 
 export default function MenuInstructorDashboard() {
-
+  const formatCurrency = useCurrencyFormatter();
   const instructorId = useSelector(selectCurrentInstructor);
   const { data: instructorStatistics, isError, isLoading } = useGetInstructorStatisticsQuery({instructorId:instructorId});
 
@@ -19,13 +20,13 @@ export default function MenuInstructorDashboard() {
           <div className="col-lg-6 col-md-12">
             <div className="instructor-profile d-flex align-items-center">
               <div className="instructor-profile-pic">
-                <Link to="/instructor/instructor-profile">
+                <Link to={`/instructor/${instructorId}/instructor-profile`}>
                   <img src={instructorStatistics.avatarImage || ProfileAvatar} alt="" className="img-fluid" />
                 </Link>
               </div>
               <div className="instructor-profile-content">
                 <h4>
-                  <Link to="/instructor/instructor-profile">
+                  <Link to={`/instructor/${instructorId}/instructor-profile`}>
                   {instructorStatistics.instructorName}
                   </Link>
                 </h4>
@@ -64,11 +65,22 @@ export default function MenuInstructorDashboard() {
                       <img src={Icon27} alt="" />
                     </div>
                     <div className="instructor-profile-menu-content">
+                      <h4>{formatCurrency(instructorStatistics.balance)}</h4>
+                      <p>Total Balance</p>
+                    </div>
+                  </div>
+                </li>
+                {/* <li>
+                  <div className="d-flex align-items-center">
+                    <div className="instructor-profile-menu-img">
+                      <img src={Icon27} alt="" />
+                    </div>
+                    <div className="instructor-profile-menu-content">
                       <h4>{instructorStatistics.totalReviews}</h4>
                       <p>Reviews</p>
                     </div>
                   </div>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>
