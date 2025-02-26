@@ -101,7 +101,7 @@ const FeaturedCourses = () => {
                           </Link>
                         </div>
                       </div>
-                      <h3 className="title instructor-text">
+                      <h3 className="course-title instructor-text">
                         <Link to={`/course/${course.id}/course-details`}>
                           {course.titleCourse}
                         </Link>

@@ -60,13 +60,10 @@ export default function InstructorProfile() {
                       <Link to="/home">Home</Link>
                     </li>
                     <li className="breadcrumb-item" aria-current="page">
-                      Courses
-                    </li>
-                    <li className="breadcrumb-item" aria-current="page">
-                      All Courses
+                    Instructor
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      The Complete Web Developer Course 2.0
+                      Instructor Profile
                     </li>
                   </ol>
                 </nav>

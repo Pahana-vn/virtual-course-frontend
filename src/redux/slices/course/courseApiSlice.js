@@ -15,6 +15,19 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
           
         }),
 
+        getInstructorCoursesPurchasedByStudent: builder.query({
+            query: ({ instructorId }) => ({
+                url: `/courses/instructor/${instructorId}/purchased`,
+            }),
+            providesTags: (result) =>
+                result
+                    ? [
+                        ...result.map(({ id }) => ({ type: "InstructorCourses", id })),
+                        { type: "InstructorCourses", id: "LIST" },
+                    ]
+                    : [{ type: "InstructorCourses", id: "LIST" }],
+        }),
+
         getFilteredCourses: builder.query({
             query: ({ categoryId, instructorId, minPrice, maxPrice, search, page = 0, size = 10 }) => {
                 let queryParams = new URLSearchParams();
@@ -115,6 +128,7 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
 export const {
     useAllGetCoursesQuery,
     useGetFilteredCoursesQuery,
+    useGetInstructorCoursesPurchasedByStudentQuery,
     useGetInstructorCoursesQuery,
     useGetCoursesByInstructorIdQuery,
     useGetCourseByIdQuery,

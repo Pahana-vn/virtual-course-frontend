@@ -6,7 +6,7 @@ import { Icon1, Icon2 } from "../../imagepath";
 import InstructorSidebar from "../sidebar";
 import { Link } from "react-router-dom";
 import {
-  useGetCoursesByInstructorIdQuery,
+  useGetInstructorCoursesPurchasedByStudentQuery,
 } from "../../../redux/slices/course/courseApiSlice";
 import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
 import { useInstructorStatisticsQuery } from "../../../redux/slices/instructor/instructorApiSlice";
@@ -25,7 +25,7 @@ export const Dashboard = () => {
     data: instructorCourses,
     error,
     isLoading,
-  } = useGetCoursesByInstructorIdQuery({instructorId});
+  } = useGetInstructorCoursesPurchasedByStudentQuery({instructorId});
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -227,16 +227,16 @@ export const Dashboard = () => {
                             <div className="course-group d-flex">
                               <div className="course-group-img d-flex">
                                 <Link
-                                  to={`/instructor-profile/${course.instructorId}`} 
+                                  to={`/instructor/${course.instructorId}/instructor-profile`}
                                 >
                                   <img
                                     src={
-                                      course.instructorInfo.photo ||
+                                      course.instructorPhoto ||
                                       "default-avatar.jpg"
                                     }
                                     alt={
-                                      course.instructorInfo.firstName +
-                                      course.instructorInfo.lastName
+                                      course.instructorFirstName +
+                                      course.instructorLastName
                                     }
                                     className="img-fluid"
                                   />
@@ -244,9 +244,9 @@ export const Dashboard = () => {
                                 <div className="course-name">
                                   <h4>
                                     <Link
-                                      to={`/instructor-profile/${course.instructorId}`}
+                                      to={`/instructor/${course.instructorId}/instructor-profile`}
                                     >
-                                      {`${course.instructorInfo.firstName} ${course.instructorInfo.lastName}`}
+                                      {`${course.instructorFirstName} ${course.instructorLastName}`}
                                     </Link>
                                   </h4>
                                   <p>Instructor</p>
@@ -262,7 +262,7 @@ export const Dashboard = () => {
                                 </Link>
                               </div>
                             </div>
-                            <h3 className="title instructor-text">
+                            <h3 className="course-title instructor-text">
                               <Link to={`/course/${course.id}/course-details`}>
                                 {course.titleCourse}
                               </Link>

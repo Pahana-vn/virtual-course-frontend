@@ -88,7 +88,7 @@ const TopCategory = () => {
                 <div className="feature-header">
                   <div className="feature-icon">
                     <img
-                      src={`http://localhost:8080${category.image}`}
+                      src={category.image}
                       alt={category.name}
                       style={{ width: "100px", height: "100px" }} // Thêm style tùy chỉnh
                     />

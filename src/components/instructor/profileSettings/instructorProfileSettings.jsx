@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useSelector } from "react-redux";
 import { InstructorHeader } from "../header";
 import InstructorSidebar from "../sidebar";
@@ -19,13 +19,28 @@ const InstructorProfileSettings = () => {
 
   const [updateInstructorProfile, { isLoading: isUpdating }] = useUpdateInstructorProfileMutation();
   const [formData, setFormData] = useState({
-    firstName: instructorProfile?.firstName || "",
-    lastName: instructorProfile?.lastName || "",
-    title: instructorProfile?.title || "",
-    address: instructorProfile?.address || "",
-    phone: instructorProfile?.phone || "",
-    bio: instructorProfile?.bio || "",
+    firstName: "",
+    lastName: "",
+    title: "",
+    address: "",
+    phone: "",
+    gender: "",
+    bio: "",
   });
+
+  useEffect(() => {
+    if (instructorProfile) {
+      setFormData({
+        firstName: instructorProfile.firstName || "",
+        lastName: instructorProfile.lastName || "",
+        title: instructorProfile.title || "",
+        address: instructorProfile.address || "",
+        phone: instructorProfile.phone || "",
+        gender: instructorProfile.gender || "",
+        bio: instructorProfile.bio || "",
+      });
+    }
+  }, [instructorProfile]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -190,6 +205,18 @@ const InstructorProfileSettings = () => {
                               className="form-control"
                               name="phone"
                               value={formData.phone}
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="input-block">
+                            <label className="form-label">Gender</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              name="gender"
+                              value={formData.gender}
                               onChange={handleInputChange}
                             />
                           </div>

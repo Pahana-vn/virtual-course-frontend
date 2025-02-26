@@ -20,7 +20,7 @@ const StudentCourses = () => {
       try {
         const studentId = localStorage.getItem("studentId");
         if (studentId) {
-          const response = await fetch(`http://localhost:8080/api/courses/student-courses/${studentId}`);
+          const response = await fetch(`http://localhost:8080/api/student-courses-status/${studentId}`);
           if (!response.ok) {
             throw new Error("Failed to fetch courses");
           }

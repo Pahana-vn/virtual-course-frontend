@@ -135,6 +135,12 @@ import StudentTestResult from "./components/student/studentTestResult/StudentTes
 import StudentTicket from "./components/student/studentTicket/index.jsx";
 import InstructorCheckout from "./components/instructor/InstructorCheckout";
 import StudentWishlist from "./components/student/studentWishlist/index.jsx";
+import RegisterFive from "./components/pages/register/register5";
+import RegisterFour from "./components/pages/register/register4";
+import RegisterThree from "./components/pages/register/register3";
+import RegisterTwo from "./components/pages/register/register2";
+import RegisterOne from "./components/pages/register/register1";
+
 
 const Approuter = () => {
   return (
@@ -146,6 +152,12 @@ const Approuter = () => {
         <Route path="/logout" element={<Logout />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/register1" element={<RegisterOne />} />
+        <Route path="/register2" element={<RegisterTwo />} />
+        <Route path="/register3" element={<RegisterThree />} />
+        <Route path="/register4" element={<RegisterFour />} />
+        <Route path="/register5" element={<RegisterFive />} />
+
 
         {/* Blog */}
         <Route path="/blog-list" element={<BlogList />} />
@@ -286,6 +298,10 @@ const Approuter = () => {
             path="/instructor/instructor-chat"
             element={<InstructorChat />}
           />
+          <Route
+          path="/instructor/instructor-notifications"
+          element={<InstructorNotification />}
+        />
           <Route
             path="/instructor/instructor-delete-profile"
             element={<InstructorDeleteProfile />}
