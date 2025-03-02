@@ -32,7 +32,7 @@ const CourseDetails = () => {
                         Courses
                       </li>
                       <li className="breadcrumb-item" aria-current="page">
-                        All Courses
+                        <Link to="/course-grid">All Courses</Link>
                       </li>
                       <li className="breadcrumb-item" aria-current="page">
                         {courseDetails.titleCourse}
@@ -59,7 +59,7 @@ const CourseDetails = () => {
                 <div className="instructor-wrap border-bottom-0 m-0">
                   <div className="about-instructor align-items-center">
                     <div className="abt-instructor-img">
-                      <Link to="/instructor/instructor-profile">
+                      <Link to={`/instructor/${courseDetails.instructorId}/instructor-profile`}>
                         <img
                           src={courseDetails.instructorPhoto}
                           alt="img"
@@ -69,7 +69,8 @@ const CourseDetails = () => {
                     </div>
                     <div className="instructor-detail me-3">
                       <h5>
-                        <Link to="/instructor/instructor-profile">{`${courseDetails.instructorFirstName} ${courseDetails.instructorLastName}`}</Link>
+                        <Link to={`/instructor/${courseDetails.instructorId}/instructor-profile`}>
+                          {`${courseDetails.instructorFirstName} ${courseDetails.instructorLastName}`}</Link>
                       </h5>
                       <p>{courseDetails.instructorTitle}</p>
                     </div>
@@ -93,15 +94,15 @@ const CourseDetails = () => {
                 <div className="course-info d-flex align-items-center border-bottom-0 m-0 p-0">
                   <div className="cou-info">
                     <img src={Icon1} alt="" />
-                    <p>12+ Lesson</p>
+                    <p>{courseDetails.totalLectures}+ Lesson</p>
                   </div>
                   <div className="cou-info">
                     <img src={Timer} alt="" />
-                    <p>{`${courseDetails.duration} seconds`}</p>
+                    <p>{courseDetails.duration} Minutes</p>
                   </div>
                   <div className="cou-info">
                     <img src={People} alt="" />
-                    <p>32 students enrolled</p>
+                    <p>{courseDetails.totalPurchasedStudents} students enrolled</p>
                   </div>
                 </div>
               </div>

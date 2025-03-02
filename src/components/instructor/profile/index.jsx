@@ -1,14 +1,8 @@
 import DOMPurify from "dompurify";
 import React from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import {
-  selectCurrentInstructor,
-  selectCurrentUser,
-} from "../../../redux/slices/auth/authSlice";
+import { Link, useParams } from "react-router-dom";
 import { useGetInstructorCoursesQuery } from "../../../redux/slices/course/courseApiSlice";
 import {
-  useInstructorAvatarQuery,
   useInstructorDetailsQuery,
 } from "../../../redux/slices/instructor/instructorApiSlice";
 import Footer from "../../footer";
@@ -23,22 +17,20 @@ import {
   TtlStudIcon,
   User1,
 } from "../../imagepath";
-import { InstructorHeader } from "../../instructor/header";
+import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
+import RoleBasedHeader from "../../header/RoleBasedHeader";
 
 export default function InstructorProfile() {
-  const id = useSelector(selectCurrentInstructor);
-  const user = useSelector(selectCurrentUser);
-  const accountId = useSelector((state) => state.auth.user?.accountId);
-  const { data } = useInstructorAvatarQuery({ accountId });
-  const avatarUrl = data?.url || "default-avatar.png";
+  const formatCurrency = useCurrencyFormatter();
+  const { instructorId } = useParams();
   const {
     data: instructor,
     isLoading,
     isError,
-  } = useInstructorDetailsQuery({ id: id });
+  } = useInstructorDetailsQuery({ id: instructorId });
 
   const { data: courses } = useGetInstructorCoursesQuery({
-    instructorId: id,
+    instructorId: instructorId,
     status: "PUBLISHED",
   });
 
@@ -48,7 +40,7 @@ export default function InstructorProfile() {
   const sanitizedInstructorBio = DOMPurify.sanitize(instructor.bio);
   return (
     <div className="main-wrapper">
-      <InstructorHeader activeMenu={"Profile"} />
+      <RoleBasedHeader activeMenu={"Profile"} />
       {/* Breadcrumb */}
       <div className="breadcrumb-bar">
         <div className="container">
@@ -61,7 +53,7 @@ export default function InstructorProfile() {
                       <Link to="/home">Home</Link>
                     </li>
                     <li className="breadcrumb-item" aria-current="page">
-                    Instructor
+                      Instructor
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
                       Instructor Profile
@@ -82,7 +74,7 @@ export default function InstructorProfile() {
               <div className="profile-info-blk">
                 <Link to="#" className="profile-info-img">
                   <img
-                    src={avatarUrl || "https://via.placeholder.com/150"}
+                    src={instructor.photo || "https://via.placeholder.com/150"}
                     alt=""
                     className="img-fluid"
                   />
@@ -131,6 +123,16 @@ export default function InstructorProfile() {
                       </Link>
                     </li>
                   )}
+                  <li className="list-inline-item">
+                    <div className="all-btn all-category d-flex align-items-center">
+                      <Link
+                        to={`/chat/${instructorId}`}
+                        className="btn btn-primary bg-success"
+                      >
+                        CHAT NOW
+                      </Link>
+                    </div>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -167,9 +169,11 @@ export default function InstructorProfile() {
                         <div className="edu-detail">
                           <h6>{edu.degree}</h6>
                           <p className="edu-duration">
-                            {edu.university} {(edu.startYear || edu.endYear) && (
+                            {edu.university}{" "}
+                            {(edu.startYear || edu.endYear) && (
                               <>
-                                ({edu.startYear || "Past"} → {edu.endYear || "Present"})
+                                ({edu.startYear || "Past"} →{" "}
+                                {edu.endYear || "Present"})
                               </>
                             )}
                           </p>
@@ -189,7 +193,7 @@ export default function InstructorProfile() {
                 <div className="card-body">
                   <h5 className="subs-title">Experience</h5>
                   {instructor.experiences &&
-                    instructor.experiences.length > 0 ? (
+                  instructor.experiences.length > 0 ? (
                     instructor.experiences.map((exp, index) => (
                       <div className="edu-wrap" key={index}>
                         <div className="edu-name">
@@ -228,18 +232,16 @@ export default function InstructorProfile() {
                                 >
                                   <img
                                     className="img-fluid"
-                                    alt=""
+                                    style={{
+                                      objectFit: "cover",
+                                      height: "300px",
+                                    }}
+                                    alt={course.titleCourse}
                                     src={course.imageCover}
                                   />
                                 </Link>
                                 <div className="price">
-                                  <h3>
-                                    ${course.basePrice - 10}{" "}
-                                    <span>
-                                      {course.basePrice &&
-                                        `$${course.basePrice}`}
-                                    </span>
-                                  </h3>
+                                  <h3>{formatCurrency(course.basePrice)}</h3>
                                 </div>
                               </div>
                               <div className="product-content">
@@ -270,7 +272,7 @@ export default function InstructorProfile() {
                                     </div>
                                   </div>
                                 </div>
-                                <h3 className="title instructor-text">
+                                <h3 className="course-title instructor-text">
                                   <Link
                                     to={`/course/${course.id}/course-details`}
                                   >
@@ -280,11 +282,11 @@ export default function InstructorProfile() {
                                 <div className="course-info d-flex align-items-center border-0 m-0">
                                   <div className="rating-img d-flex align-items-center">
                                     <img src={Icon1} alt="" />
-                                    <p>{course.lessons} Lessons</p>
+                                    <p>{course.totalLectures}+ Lessons</p>
                                   </div>
                                   <div className="course-view d-flex align-items-center">
                                     <img src={Icon2} alt="" />
-                                    <p>{course.duration}</p>
+                                    <p>{course.duration} mins</p>
                                   </div>
                                 </div>
                                 <div className="rating">
@@ -512,10 +514,11 @@ export default function InstructorProfile() {
                       {[...Array(5)].map((_, index) => (
                         <i
                           key={index}
-                          className={`fas fa-star ${index < Math.round(instructor.averageRating)
+                          className={`fas fa-star ${
+                            index < Math.round(instructor.averageRating)
                               ? "filled"
                               : ""
-                            }`}
+                          }`}
                         ></i>
                       ))}
                       <span className="d-inline-block average-rating">
@@ -556,7 +559,7 @@ export default function InstructorProfile() {
                         <img src={ReviewIcon} alt="Reviews" />
                       </div>
                       <div className="list-content-blk flex-grow-1 ms-3">
-                        <h5>12,230</h5>
+                        <h5>3</h5>
                         <p>Reviews</p>
                       </div>
                     </div>
@@ -579,7 +582,7 @@ export default function InstructorProfile() {
                       <div className="edu-detail">
                         <h6>Email</h6>
                         <p>
-                          <Link to="#">{user.email}</Link>
+                          <Link to="#">{instructor.email}</Link>
                         </p>
                       </div>
                     </div>

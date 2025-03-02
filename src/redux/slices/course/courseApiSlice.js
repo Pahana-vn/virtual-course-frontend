@@ -15,6 +15,19 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
           
         }),
 
+        getAllCoursesByStatus: builder.query({
+            query: ({ status = "PUBLISHED" }) => ({
+                url: `/courses/status?status=${status}`,
+            }),
+            providesTags: (result) =>
+                result
+                    ? [
+                        ...result.map(({ id }) => ({ type: "Courses", id })),
+                        { type: "Courses", id: "LIST" },
+                    ]
+                    : [{ type: "Courses", id: "LIST" }],
+        }),
+
         getInstructorCoursesPurchasedByStudent: builder.query({
             query: ({ instructorId }) => ({
                 url: `/courses/instructor/${instructorId}/purchased`,
@@ -122,11 +135,32 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
             }),
             providesTags: (result, error, id) => [{ type: "Courses", id }],
         }),
+        getTotalCoursesByCategory: builder.query({
+            query: () => ({
+              url: `/courses/count-by-category`,
+            }),
+            providesTags: (result) =>
+              result
+                ? [{ type: "CategoryCourses", id: "LIST" }]
+                : [{ type: "CategoryCourses", id: "LIST" }],
+          }),
+      
+          // New API to get total courses by instructor sorted by number of courses
+          getTotalCoursesByInstructor: builder.query({
+            query: () => ({
+              url: `/courses/count-by-instructor`,
+            }),
+            providesTags: (result) =>
+              result
+                ? [{ type: "InstructorCourses", id: "LIST" }]
+                : [{ type: "InstructorCourses", id: "LIST" }],
+          }),
     })
 })
 
 export const {
     useAllGetCoursesQuery,
+    useGetAllCoursesByStatusQuery ,
     useGetFilteredCoursesQuery,
     useGetInstructorCoursesPurchasedByStudentQuery,
     useGetInstructorCoursesQuery,
@@ -135,5 +169,7 @@ export const {
     useCreateCourseMutation,
     useUpdateCourseMutation,
     useDeleteCourseMutation,
-    useGetCourseDetailsByIdQuery
+    useGetCourseDetailsByIdQuery,
+    useGetTotalCoursesByCategoryQuery,
+    useGetTotalCoursesByInstructorQuery,
 } = courseApiSlice

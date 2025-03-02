@@ -24188,7 +24188,11 @@ ul li {
   background: #fff;
   color: #ff4667;
 }
-
+.table-course-detail
+{
+  display: flex;
+  gap: 10px;
+}
 .table-course-detail .course-table-img {
   display: flex;
   align-items: center;

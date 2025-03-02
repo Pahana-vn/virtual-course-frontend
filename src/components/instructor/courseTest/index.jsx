@@ -213,7 +213,7 @@ export const InstructorCourseTests = () => {
                         test.
                       </li>
                       <li>
-                        Delete a test by clicking the &quot;Delete&quot; button
+                        Delete a test by clicking the &quot;✖&quot; button
                         next to it.
                       </li>
                       <li>
@@ -342,10 +342,10 @@ export const InstructorCourseTests = () => {
                       <li key={q.id}>
                         {q.content}
                         <button
-                          className="btn btn-danger btn-sm ml-2"
+                          className="btn btn-delete-article"
                           onClick={() => handleRemoveQuestion(q.id)}
                         >
-                          Remove
+                          ✖
                         </button>
                       </li>
                     ))}

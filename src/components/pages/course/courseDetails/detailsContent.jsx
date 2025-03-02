@@ -25,6 +25,7 @@ import {
   Video2,
 } from "../../../imagepath";
 import Rating from "./rating";
+import useCurrencyFormatter from "../../../../hooks/useCurrencyFormatter";
 
 
 const DetailsContent = ({ courseDetails }) => {
@@ -35,7 +36,7 @@ const DetailsContent = ({ courseDetails }) => {
   const [loading, setLoading] = useState(false);
   const [cartLoading, setCartLoading] = useState(false);
   const [studentId, setStudentId] = useState(() => localStorage.getItem("studentId") || "");
-
+  const formatCurrency = useCurrencyFormatter();
   // Derived states
   const instructorIdNumber = Number(courseDetails.instructorId);
   const durations = useLectureDurations(
@@ -163,9 +164,9 @@ const DetailsContent = ({ courseDetails }) => {
                 <div className="card-body">
                   <h5 className="subs-title">Overview</h5>
                   <h6>Course Description</h6>
-                  <div
+                  <p
                     dangerouslySetInnerHTML={{ __html: sanitizedCourseDescription }}
-                  ></div>
+                  ></p>
                   {courseDetails.sections &&
                     courseDetails.sections.length > 0 && (
                       <div>
@@ -177,7 +178,7 @@ const DetailsContent = ({ courseDetails }) => {
                         </ul>
                       </div>
                     )}
-                  <h6>Requirements</h6>
+                  {/* <h6>Requirements</h6>
                   <ul className="mb-0">
                     <li>
                       You will need a copy of Adobe XD 2019 or above. A free
@@ -187,7 +188,7 @@ const DetailsContent = ({ courseDetails }) => {
                     <li className="mb-0">
                       No previous Adobe XD skills are needed.
                     </li>
-                  </ul>
+                  </ul> */}
                 </div>
               </div>
               {/* /Overview */}
@@ -242,7 +243,7 @@ const DetailsContent = ({ courseDetails }) => {
                                       Preview
                                     </Link>
                                     <span>
-                                    Duration: {durations[lecture.id] || "N/A"}
+                                    Duration: {`${durations[lecture.id]} mm:ss` || "N/A"}
                                     </span>
                                   </div>
                                 </li>
@@ -267,7 +268,7 @@ const DetailsContent = ({ courseDetails }) => {
                   <div className="instructor-wrap">
                     <div className="about-instructor">
                       <div className="abt-instructor-img">
-                        <Link to="/instructor/instructor-profile">
+                        <Link to={`/instructor/${courseDetails.instructorId}/instructor-profile`}>
                           <img
                             src={instructorDetails.photo}
                             alt="img"
@@ -277,7 +278,7 @@ const DetailsContent = ({ courseDetails }) => {
                       </div>
                       <div className="instructor-detail">
                         <h5>
-                          <Link to="/instructor/instructor-profile">
+                          <Link to={`/instructor/${courseDetails.instructorId}/instructor-profile`}>
                             {`${instructorDetails.firstName} ${instructorDetails.lastName}`}
                           </Link>
                         </h5>
@@ -430,10 +431,8 @@ const DetailsContent = ({ courseDetails }) => {
 
                       <div className="video-details">
                         <div className="course-fee">
-                          <h2>FREE</h2>
-                          <p>
-                            <span>${courseDetails.basePrice}</span> 50% off
-                          </p>
+                          <h2>Price</h2>
+                          <h2>{formatCurrency(courseDetails.basePrice)}</h2>
                         </div>
                         <div className="row gx-2">
                           <div className="col-md-6 addHeart">
@@ -464,12 +463,11 @@ const DetailsContent = ({ courseDetails }) => {
                     </div>
                     <ul>
                       <li>
-                        <img src={Import} className="me-2" alt="" /> 11 hours
-                        on-demand video
+                        <img src={Import} className="me-2" alt="" /> {courseDetails.duration} minutes
+                        on-demand videos
                       </li>
                       <li>
-                        <img src={Play} className="me-2" alt="" /> 69
-                        downloadable resources
+                        <img src={Play} className="me-2" alt="" /> {courseDetails.totalArticles} downloadable resources
                       </li>
                       <li>
                         <img src={Key} className="me-2" alt="" /> Full lifetime
@@ -477,10 +475,10 @@ const DetailsContent = ({ courseDetails }) => {
                       </li>
                       <li>
                         <img src={Mobile} className="me-2" alt="" /> Access on
-                        mobile and TV
+                        mobile and website
                       </li>
                       <li>
-                        <img src={Cloud} className="me-2" alt="" /> Assignments
+                        <img src={Cloud} className="me-2" alt="" /> Assignments on articles
                       </li>
                       <li>
                         <img src={Teacher} className="me-2" alt="" />{" "}
@@ -499,23 +497,23 @@ const DetailsContent = ({ courseDetails }) => {
                     <ul>
                       <li>
                         <img src={Users} className="me-2" alt="" /> Enrolled:{" "}
-                        <span>32 students</span>
+                        <span>{courseDetails.totalPurchasedStudents} students</span>
                       </li>
                       <li>
                         <img src={Timer2} className="me-2" alt="" /> Duration:{" "}
-                        <span>20 hours</span>
+                        <span>{courseDetails.duration} minutes</span>
                       </li>
                       <li>
                         <img src={Chapter} className="me-2" alt="" /> Chapters:{" "}
-                        <span>15</span>
+                        <span>{courseDetails.totalSections}</span>
                       </li>
                       <li>
                         <img src={Video2} className="me-2" alt="" /> Video:
-                        <span> 12 hours</span>
+                        <span> {courseDetails.totalLectures} videos</span>
                       </li>
                       <li>
-                        <img src={Chart} className="me-2" alt="" /> Level:{" "}
-                        <span>Beginner</span>
+                        <img src={Chart} className="me-2" alt="" /> Level: 
+                        <span>{courseDetails.level}</span>
                       </li>
                     </ul>
                   </div>
@@ -538,7 +536,12 @@ DetailsContent.propTypes = {
     imageCover: PropTypes.string,
     basePrice: PropTypes.number,
     duration: PropTypes.number,
-    instructorId: PropTypes.string,
+    instructorId: PropTypes.number,
+    level:PropTypes.level,
+    totalPurchasedStudents:PropTypes.number,
+    totalSections:PropTypes.number,
+    totalLectures:PropTypes.number,
+    totalArticles:PropTypes.number,
     sections: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number,

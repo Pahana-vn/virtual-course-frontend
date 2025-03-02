@@ -1,35 +1,25 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 import { Link } from "react-router-dom";
 import {  Icon1, Icon2 } from "../../../components/imagepath";
+import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
+import { useGetAllCoursesByStatusQuery } from "../../../redux/slices/course/courseApiSlice";
 const FeaturedCourses = () => {
-  const [courses, setCourses] = useState([]);
-
-  // Gọi API
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/api/courses");
-        setCourses(response.data);
-        // console.log(response.data);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách khóa học:", error);
-      }
-    };
-
-    fetchCourses();
-  }, []);
+  const { data: courses, error, isLoading } = useGetAllCoursesByStatusQuery({status : "PUBLISHED"});
 
   const toggleClass = () => {
     // Thêm logic toggleClass ở đây nếu cần
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
+  const formatCurrency = useCurrencyFormatter();
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  // Nếu có lỗi khi gọi API
+  if (error) {
+    return <p>Error loading courses</p>;
+  }
 
   return (
     // What's new Featured Course
@@ -63,6 +53,7 @@ const FeaturedCourses = () => {
                       <Link to={`/course-details/${course.id}`}>
                         <img
                           className="img-fluid"
+                          style={{ objectFit: 'cover', height: '300px' }}
                           alt={course.titleCourse}
                           src={course.imageCover || "default-image.jpg"}
                         />
@@ -109,7 +100,7 @@ const FeaturedCourses = () => {
                       <div className="course-info d-flex align-items-center">
                         <div className="rating-img d-flex align-items-center">
                           <img src={ Icon1} alt="" />
-                          <p>12+ Lesson</p>
+                          <p>{course.totalLectures}+ Lessons</p>
                         </div>
                         <div className="course-view d-flex align-items-center">
                           <img src={ Icon2} alt="" />

@@ -16,7 +16,7 @@ import {
   removeCourseFromWishlist,
 } from "../../../services/studentService";
 import DarkMode from "../../common/darkMode";
-import { Cart, logo, Messages, User16, Wish } from "../../imagepath";
+import { Cart, logo, Messages, Wish } from "../../imagepath";
 import "./StudentHeader1.css";
 
 export default function StudentHeader() {
@@ -493,7 +493,7 @@ export default function StudentHeader() {
                         onClick={profileClick}
                       >
                         <span className="user-img">
-                          <img src={User16} alt="User" />
+                          <img src={avatarUrl} alt="User" />
                           <span className="status online"></span>
                         </span>
                       </Link>
@@ -504,7 +504,7 @@ export default function StudentHeader() {
                         <div className="user-header d-flex align-items-center p-2 border-bottom">
                           <div className="avatar avatar-sm">
                             <img
-                              src={User16}
+                              src={avatarUrl}
                               alt="User Image"
                               className="avatar-img rounded-circle"
                             />
