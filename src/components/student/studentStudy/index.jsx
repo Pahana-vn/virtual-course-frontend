@@ -5,11 +5,10 @@ import { Link } from "react-router-dom";
 import Select from "react-select";
 import { fetchStudentCourses } from "../../../services/studentService";
 import Footer from "../../footer";
-import { Course10 } from "../../imagepath";
+import { Course10, Icon1, Icon2 } from "../../imagepath";
 import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
 
-// ============ COMPONENT =============
 const StudentStudy = () => {
   const mobileSidebar = useSelector((state) => state.sidebarSlice.expandMenu);
 
@@ -20,10 +19,7 @@ const StudentStudy = () => {
     enrolled: [],
   });
 
-  // Nếu không dùng filter, có thể xoá hẳn:
-  // const [selectedFilter, setSelectedFilter] = useState(null);
 
-  // 1) Lưu số giờ học/ngày cho từng khoá: { courseId: number, ... }
   const [hoursPerDayForCourse, setHoursPerDayForCourse] = useState({});
 
   // 2) Lưu deadline (Date) cho từng khoá: { courseId: Date, ... }
@@ -331,8 +327,17 @@ const StudentStudy = () => {
                     {course.titleCourse}
                   </Link>
                 </h3>
+                <div className="course-info d-flex align-items-center">
+                  <div className="rating-img d-flex align-items-center">
+                    <img src={Icon1} alt="" />
+                    <p>{course.duration}+ Lessons</p>
+                  </div>
+                  <div className="course-view d-flex align-items-center">
+                    <img src={Icon2} alt="" />
+                    <p>{course.duration} hrs</p>
+                  </div>
+                </div>
 
-                {/* Gỡ bỏ phần rating - thay bằng input hours/day + reset */}
                 <div className="hours-day d-flex align-items-center">
                   <label style={{ marginRight: "5px" }}>Hours/Day:</label>
                   <input
@@ -362,11 +367,15 @@ const StudentStudy = () => {
                       handleHoursPerDayChange(course.id, course.duration, newHours);
                     }}
                   />
-                  {/* Nút Reset kế bên */}
                   <button
                     onClick={() => handleReset(course.id)}
-                    className="btn btn-primary"
-                    style={{ marginLeft: "10px" }}
+                    className="btn"
+                    style={{
+                      marginLeft: "10px",
+                      backgroundColor: "#F04261",
+                      color: "white",
+                      border: "none",
+                    }}
                   >
                     Reset
                   </button>

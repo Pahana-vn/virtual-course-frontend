@@ -7,8 +7,7 @@ import StudentSidebar from "../sidebar";
 
 const StudentOrderHistory = () => {
   const [orders, setOrders] = useState([]);
-  const studentId = localStorage.getItem("studentId"); // Lấy studentId từ localStorage
-
+  const studentId = localStorage.getItem("studentId");
   useEffect(() => {
     const loadOrders = async () => {
       try {
@@ -101,14 +100,8 @@ const StudentOrderHistory = () => {
                               <td>
                                 <Link
                                   to={`/view-invoice/${order.id}`}
-                                  className="btn btn-outline-primary btn-sm"
-                                  style={{
-                                    padding: "6px 12px",
-                                    borderRadius: "20px",
-                                    fontSize: "0.875rem",
-                                    fontWeight: "500",
-                                    transition: "all 0.3s ease",
-                                  }}
+                                  className="btn btn-light-danger quiz-view"
+                                  
                                 >
                                   View Invoice
                                 </Link>

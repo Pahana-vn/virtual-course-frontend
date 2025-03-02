@@ -2,7 +2,7 @@ import { baseApiSlice } from "../baseApiSlice";
 export const studentApiSlice = baseApiSlice.injectEndpoints({
     endpoints: builder => ({
         students: builder.query({
-            query: ({id}) => ({
+            query: ({ id }) => ({
                 url: `/students/${id}`
             }),
             serializeQueryArgs: ({ endpointName }) => {
@@ -16,7 +16,7 @@ export const studentApiSlice = baseApiSlice.injectEndpoints({
                 return currentArg !== previousArg
             },
         }),
-         // Thêm endpoint để lấy avatar
+        // Thêm endpoint để lấy avatar
         studentAvatar: builder.query({
             query: ({ id }) => ({
                 url: `/students/${id}/avatar`,
@@ -32,7 +32,7 @@ export const studentApiSlice = baseApiSlice.injectEndpoints({
             },
             providesTags: (result, error, { id }) => [{ type: "StudentAvatar", id }],
         }),
-        
+
     })
 })
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { fetchStudentCourses } from "../../../services/studentService";
 import Footer from "../../footer";
 import { Icon1, Icon2 } from "../../imagepath";
 import StudentHeader from "../header";
@@ -11,7 +12,6 @@ const StudentCourses = () => {
     active: [],
     completed: [],
   });
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("enrolled");
 
@@ -19,21 +19,19 @@ const StudentCourses = () => {
     const fetchCourses = async () => {
       try {
         const studentId = localStorage.getItem("studentId");
-        if (studentId) {
-          const response = await fetch(`http://localhost:8080/api/student-courses-status/${studentId}`);
-          if (!response.ok) {
-            throw new Error("Failed to fetch courses");
-          }
-          const data = await response.json();
-          setCourses(data);
-          setLoading(false);
-        } else {
-          setError("Student ID not found in localStorage.");
-          setLoading(false);
+        console.log("🔍 Student ID:", studentId);
+
+        if (!studentId) {
+          setError("⚠️ Student ID not found in localStorage.");
+          return;
         }
+
+        const response = await fetchStudentCourses(studentId);
+        console.log("📡 API Response:", response);
+        setCourses(response || { enrolled: [], active: [], completed: [] });
       } catch (err) {
-        setError(err.message);
-        setLoading(false);
+        console.error("❌ Fetch error:", err);
+        setError("Failed to fetch courses. Please try again.");
       }
     };
 
@@ -41,7 +39,7 @@ const StudentCourses = () => {
   }, []);
 
   const renderCourses = (courseList) => {
-    if (courseList.length === 0) {
+    if (!courseList || courseList.length === 0) {
       return <p>No courses available in this category.</p>;
     }
 
@@ -58,10 +56,7 @@ const StudentCourses = () => {
                 />
               </Link>
               <div className="price">
-                <h3>
-                  ${course.basePrice}{" "}
-                  <span>${course.discountedPrice || course.basePrice}</span>
-                </h3>
+                <h3>{course.basePrice.toLocaleString()} VND</h3>
               </div>
             </div>
             <div className="product-content">
@@ -85,9 +80,7 @@ const StudentCourses = () => {
                 </div>
               </div>
               <h3 className="title instructor-text">
-                <Link to={`/course-details/${course.id}`}>
-                  {course.titleCourse}
-                </Link>
+                <Link to={`/course-details/${course.id}`}>{course.titleCourse}</Link>
               </h3>
               <div className="course-info d-flex align-items-center">
                 <div className="rating-img d-flex align-items-center">
@@ -116,12 +109,8 @@ const StudentCourses = () => {
     ));
   };
 
-  if (loading) {
-    return <p>Loading courses...</p>;
-  }
-
   if (error) {
-    return <p>Error: {error}</p>;
+    return <p className="error-message">❌ {error}</p>;
   }
 
   return (
@@ -152,7 +141,6 @@ const StudentCourses = () => {
         <div className="container">
           <div className="row">
             <StudentSidebar />
-
             <div className="col-xl-9 col-lg-9">
               <div className="settings-widget card-info">
                 <div className="settings-menu p-0">
@@ -164,18 +152,15 @@ const StudentCourses = () => {
                       <ul className="nav">
                         <li className="nav-item">
                           <Link
-                            className={`nav-link ${activeTab === "enrolled" ? "active" : ""
-                              }`}
+                            className={`nav-link ${activeTab === "enrolled" ? "active" : ""}`}
                             onClick={() => setActiveTab("enrolled")}
                           >
                             Enrolled Courses ({courses.enrolled.length})
                           </Link>
                         </li>
-                        {/* Nếu không cần active và completed, có thể xóa 2 tab sau */}
                         <li className="nav-item">
                           <Link
-                            className={`nav-link ${activeTab === "active" ? "active" : ""
-                              }`}
+                            className={`nav-link ${activeTab === "active" ? "active" : ""}`}
                             onClick={() => setActiveTab("active")}
                           >
                             Uncompleted Courses ({courses.active.length})
@@ -183,8 +168,7 @@ const StudentCourses = () => {
                         </li>
                         <li className="nav-item">
                           <Link
-                            className={`nav-link ${activeTab === "completed" ? "active" : ""
-                              }`}
+                            className={`nav-link ${activeTab === "completed" ? "active" : ""}`}
                             onClick={() => setActiveTab("completed")}
                           >
                             Completed Courses ({courses.completed.length})

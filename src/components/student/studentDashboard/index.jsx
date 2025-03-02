@@ -6,42 +6,26 @@ import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
 
 const StudentDashboard = () => {
-    const [dashboardData, setDashboardData] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    // Lấy studentId từ localStorage
+    const [dashboardData, setDashboardData] = useState({});
     const studentId = localStorage.getItem("studentId");
 
     useEffect(() => {
-        // Nếu không có studentId trong localStorage, không thực hiện gọi API
         if (!studentId) {
             console.error("Student ID không tồn tại trong localStorage.");
-            setLoading(false);
             return;
         }
 
         const fetchData = async () => {
             try {
-                // Gọi API để lấy dữ liệu dashboard của student
                 const data = await fetchStudentDashboardData(studentId);
-                setDashboardData(data);
-                setLoading(false);
+                setDashboardData(data || {});
             } catch (error) {
                 console.error("Error loading dashboard data:", error);
-                setLoading(false);
             }
         };
 
         fetchData();
     }, [studentId]);
-
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
-    if (!dashboardData) {
-        return <div>Không tìm thấy dữ liệu dashboard!</div>;
-    }
 
     return (
         <div className="main-wrapper">
@@ -79,7 +63,7 @@ const StudentDashboard = () => {
                                     <div className="card dash-info flex-fill">
                                         <div className="card-body">
                                             <h5>Total Enrolled Courses</h5>
-                                            <h2>{dashboardData.totalCourses}</h2>
+                                            <h2>{dashboardData.totalCourses || 0}</h2>
                                         </div>
                                     </div>
                                 </div>
@@ -87,7 +71,7 @@ const StudentDashboard = () => {
                                     <div className="card dash-info flex-fill">
                                         <div className="card-body">
                                             <h5>Completed Courses</h5>
-                                            <h2>{dashboardData.completedCourses}</h2>
+                                            <h2>{dashboardData.completedCourses || 0}</h2>
                                         </div>
                                     </div>
                                 </div>
@@ -95,7 +79,7 @@ const StudentDashboard = () => {
                                     <div className="card dash-info flex-fill">
                                         <div className="card-body">
                                             <h5>Total Payments</h5>
-                                            <h2>${dashboardData.totalPaid}</h2>
+                                            <h2>${dashboardData.totalPaid ? dashboardData.totalPaid.toLocaleString() : "0"}</h2>
                                         </div>
                                     </div>
                                 </div>
@@ -106,8 +90,7 @@ const StudentDashboard = () => {
                                 <h4>Recently Enrolled Courses</h4>
                             </div>
                             <div className="row g-3">
-                                {dashboardData.recentCourses &&
-                                    dashboardData.recentCourses.length > 0 ? (
+                                {dashboardData.recentCourses && dashboardData.recentCourses.length > 0 ? (
                                     dashboardData.recentCourses.map((course, index) => (
                                         <div className="col-xxl-4 col-md-6 d-flex" key={index}>
                                             <div className="course-box flex-fill shadow-sm p-3">
@@ -134,29 +117,17 @@ const StudentDashboard = () => {
                                                     <div className="product-content">
                                                         <div className="course-group d-flex">
                                                             <div className="course-group-img d-flex">
-                                                                <Link
-                                                                    to={
-                                                                        course.instructorProfileUrl ||
-                                                                        "/instructor/instructor-profile"
-                                                                    }
-                                                                >
+                                                                <Link to={course.instructorProfileUrl || "/instructor/instructor-profile"}>
                                                                     <img
                                                                         src={course.instructorPhoto || User2}
                                                                         alt={course.instructorFirstName || "Instructor"}
                                                                         className="img-fluid"
-
                                                                     />
                                                                 </Link>
                                                                 <div className="course-name">
                                                                     <h4>
-                                                                        <Link
-                                                                            to={
-                                                                                course.instructorProfileUrl ||
-                                                                                "/instructor/instructor-profile"
-                                                                            }
-                                                                        >
-                                                                            {`${course.instructorFirstName || "Unknown"} ${course.instructorLastName || ""
-                                                                                }`}
+                                                                        <Link to={course.instructorProfileUrl || "/instructor/instructor-profile"}>
+                                                                            {`${course.instructorFirstName || "Unknown"} ${course.instructorLastName || ""}`}
                                                                         </Link>
                                                                     </h4>
                                                                     <p>Instructor</p>
@@ -171,19 +142,11 @@ const StudentDashboard = () => {
                                                         </h3>
                                                         <div className="course-info d-flex align-items-center justify-content-between">
                                                             <div className="rating-img d-flex align-items-center">
-                                                                <img
-                                                                    src={Icon1}
-                                                                    alt="Lesson Icon"
-                                                                    className="me-2"
-                                                                />
+                                                                <img src={Icon1} alt="Lesson Icon" className="me-2" />
                                                                 <p className="mb-0">{course.lessonCount || "0"}+ Lessons</p>
                                                             </div>
                                                             <div className="course-view d-flex align-items-center">
-                                                                <img
-                                                                    src={Icon2}
-                                                                    alt="Duration Icon"
-                                                                    className="me-2"
-                                                                />
+                                                                <img src={Icon2} alt="Duration Icon" className="me-2" />
                                                                 <p className="mb-0">{course.duration || "0hr"}</p>
                                                             </div>
                                                         </div>
@@ -191,13 +154,11 @@ const StudentDashboard = () => {
                                                             {[...Array(5)].map((_, i) => (
                                                                 <i
                                                                     key={i}
-                                                                    className={`fas fa-star ${i < (course.rating || 0) ? "filled" : ""
-                                                                        } me-1`}
+                                                                    className={`fas fa-star ${i < (course.rating || 0) ? "filled" : ""} me-1`}
                                                                 />
                                                             ))}
                                                             <span className="d-inline-block average-rating">
-                                                                <span>{course.rating || "0.0"}</span> (
-                                                                {course.ratingCount || "0"})
+                                                                <span>{course.rating || "0.0"}</span> ({course.ratingCount || "0"})
                                                             </span>
                                                         </div>
                                                     </div>
