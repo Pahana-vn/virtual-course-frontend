@@ -7,8 +7,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logoVirtual from "../../../assets/img/logo.png";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
-import { logOut, selectCurrentUser } from "../../../redux/slices/auth/authSlice";
-import { useStudentAvatarQuery } from "../../../redux/slices/student/studentApiSlice";
+import { logOut } from "../../../redux/slices/auth/authSlice";
 import {
   addCourseToCart,
   fetchCartItems,
@@ -18,7 +17,7 @@ import {
   removeCourseFromWishlist,
 } from "../../../services/studentService";
 import DarkMode from "../../common/darkMode";
-import { Cart, logo, Messages, Wish } from "../../imagepath";
+import { Cart, logo, Messages, Wish, User16 } from "../../imagepath";
 import "./StudentHeader1.css";
 
 export default function StudentHeader() {
@@ -34,12 +33,6 @@ export default function StudentHeader() {
   const [setShowNotification] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
-  const user = useSelector(selectCurrentUser);
-
-  const accountId = useSelector((state) => state.auth.user?.accountId);
-  const { data } = useStudentAvatarQuery({ accountId });
-  const avatarUrl = data?.url || "default-avatar.png";
-
   const handleLogout = () => {
     dispatch(logOut());
   };
@@ -52,7 +45,6 @@ export default function StudentHeader() {
   const wishRef = useRef();
   const notificationRef = useRef();
   const profileRef = useRef();
-  const navigate = useNavigate();
 
   useOnClickOutside(cartRef, () => setShowCart(false));
   useOnClickOutside(wishRef, () => setShowWish(false));
@@ -524,7 +516,7 @@ export default function StudentHeader() {
                         onClick={profileClick}
                       >
                         <span className="user-img">
-                          <img src={avatarUrl} alt="User" />
+                          <img src={User16} alt="User" />
                           <span className="status online"></span>
                         </span>
                       </Link>
@@ -535,7 +527,7 @@ export default function StudentHeader() {
                         <div className="user-header d-flex align-items-center p-2 border-bottom">
                           <div className="avatar avatar-sm">
                             <img
-                              src={avatarUrl}
+                              src={User16}
                               alt="User Image"
                               className="avatar-img rounded-circle"
                             />
