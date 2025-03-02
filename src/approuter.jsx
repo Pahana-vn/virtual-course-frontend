@@ -135,11 +135,11 @@ import StudentStudy from "./components/student/studentStudy/index.jsx";
 import StudentTestResult from "./components/student/studentTestResult/StudentTestResult.jsx";
 import StudentTicket from "./components/student/studentTicket/index.jsx";
 import StudentWishlist from "./components/student/studentWishlist/index.jsx";
-import RegisterFive from "./components/pages/register/register5";
-import RegisterFour from "./components/pages/register/register4";
-import RegisterThree from "./components/pages/register/register3";
-import RegisterTwo from "./components/pages/register/register2";
-import RegisterOne from "./components/pages/register/register1";
+import RegisterFive from "./components/pages/registerInstructor/register5";
+import RegisterFour from "./components/pages/registerInstructor/register4";
+import RegisterThree from "./components/pages/registerInstructor/register3";
+import RegisterTwo from "./components/pages/registerInstructor/register2";
+import RegisterOne from "./components/pages/registerInstructor/register1";
 
 
 const Approuter = () => {
@@ -189,6 +189,10 @@ const Approuter = () => {
           path="/student/test-result/:testId"
           element={<StudentTestResult />}
         />
+        <Route
+            path="/instructor/:instructorId/instructor-profile"
+            element={<InstructorProfile />}
+          />
         <Route path="/come-soon" element={<ComingSoon />} />
         <Route path="/error-404" element={<Error404 />} />
         <Route path="/error-500" element={<Error500 />} />
@@ -266,10 +270,6 @@ const Approuter = () => {
           <Route
             path="/instructor/instructor-payouts"
             element={<InstructorPayouts />}
-          />
-          <Route
-            path="/instructor/:instructorId/instructor-profile"
-            element={<InstructorProfile />}
           />
           <Route
             path="/instructor/instructor-enrolled-course"

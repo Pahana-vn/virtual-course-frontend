@@ -8,6 +8,7 @@ import authReducer from './slices/auth/authSlice';
 import categorySlice from "./slices/course/categorySlice";
 import courseReducer from "./slices/course/courseSlice";
 import { questionApiSlice } from "./slices/course/questionApiSlice";
+import registerReducer from "./slices/instructor/registerSlice";
 
 const persistConfig = {
   key: "root",
@@ -24,6 +25,7 @@ const store = configureStore({
     sidebarSlice: sidebarSlice,
     categories: categorySlice,
     course: courseReducer,
+    register: registerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(baseApiSlice.middleware),  // Thêm middleware của baseApiSlice

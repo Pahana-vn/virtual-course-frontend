@@ -126,6 +126,7 @@ const InstructorCourse = () => {
                                       >
                                         <img
                                           className="img-fluid"
+                                          style={{ objectFit: 'cover', height: '200px' }}
                                           alt={course.titleCourse}
                                           src={course.imageCover}
                                         />
@@ -137,7 +138,7 @@ const InstructorCourse = () => {
                                       </div>
                                     </div>
                                     <div className="product-content">
-                                      <h3 className="title instructor-text">
+                                      <h3 className="course-title instructor-text">
                                         <Link
                                           to={`/course/${course.id}/course-details`}
                                         >
@@ -148,12 +149,12 @@ const InstructorCourse = () => {
                                         <div className="rating-img d-flex align-items-center">
                                           <img src={Icon1} alt="Lessons" />
                                           <p>
-                                            {course.lessonsCount} Lessons
+                                            {course.totalLectures}+ Lessons
                                           </p>
                                         </div>
                                         <div className="course-view d-flex align-items-center">
                                           <img src={Icon2} alt="Duration" />
-                                          <p>{course.duration} min</p>
+                                          <p>{course.duration} mins</p>
                                         </div>
                                       </div>
                                       <div className="course-edit-btn d-flex align-items-center justify-content-between">

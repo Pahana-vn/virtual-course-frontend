@@ -7,17 +7,36 @@ import Footer from "../../../footer";
 import { Blog1, Blog2, Blog3 } from "../../../imagepath";
 import GridInnerPage from "./gridInnerPage";
 import { useGetFilteredCoursesQuery } from "../../../../redux/slices/course/courseApiSlice";
-import { selectCurrentRoles } from "../../../../redux/slices/auth/authSlice";
-import { InstructorHeader } from "../../../instructor/header";
-import StudentHeader from "../../../student/header";
-import Header from "../../../header/index";
 import { useGetCategoriesQuery } from "../../../../redux/slices/course/categoryApiSlice";
 import { useGetAllInstructorsQuery } from "../../../../redux/slices/instructor/instructorApiSlice";
+import RoleBasedHeader from "../../../header/RoleBasedHeader";
+
+const option = [
+  { label: "Newly published", value: "Newly published" },
+  { label: "Featured", value: "Featured" },
+  { label: "Trending", value: "Trending" },
+  { label: "Hot Category", value: "Hot Category" },
+];
+
+const priceOptions = [
+  { label: "All", min: 0, max: 10000000 },
+  { label: "Free", min: 0, max: 0 },
+  { label: "< 500,000 đ", min: 0, max: 500000 },
+  { label: "< 1,000,000 đ", min: 0, max: 1000000 },
+  { label: "< 2,000,000 đ", min: 0, max: 2000000 },
+];
+
 const CourseGrid = () => {
-  const role = useSelector(selectCurrentRoles);
   const mobileSidebar = useSelector((state) => state.sidebarSlice.expandMenu);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [input, setInput] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedInstructors, setSelectedInstructors] = useState([]);
+  const [priceRange, setPriceRange] = useState([0, 1000000]);
+  const [selectedPrice, setSelectedPrice] = useState(priceOptions[0]);
+  const [page, setPage] = useState(0);
+  const size = 6;
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -26,56 +45,6 @@ const CourseGrid = () => {
   
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
-
-  const renderHeader = () => {
-    if (role?.includes("ROLE_INSTRUCTOR")) {
-      return <InstructorHeader activeMenu={"CourseGrid"} />;
-    }
-    if (role?.includes("ROLE_STUDENT")) {
-      return <StudentHeader activeMenu={"CourseGrid"} />;
-    }
-    return <Header activeMenu={"CourseGrid"} />;
-  };
-  const customStyles = {
-    option: (provided) => ({
-      ...provided,
-      backgroundColor: mobileSidebar === "disabled" ? "#fff" : "#000",
-      color: mobileSidebar === "disabled" ? "#000" : "#fff",
-      fontSize: "14px",
-      "&:hover": {
-        backgroundColor: mobileSidebar === "disabled" ? "#FFDEDA" : "#2b2838",
-        // #dddddd
-      },
-    }),
-    dropdownIndicator: (base, state) => ({
-      ...base,
-      transform: state.selectProps.menuIsOpen ? "rotate(-180deg)" : "rotate(0)",
-      transition: "300ms",
-    }),
-  };
-
-  const option = [
-    { label: "Newly published", value: "Newly published" },
-    { label: "Featured", value: "Featured" },
-    { label: "Trending", value: "Trending" },
-    { label: "Hot Category", value: "Hot Category" },
-  ];
-
-  const priceOptions = [
-    { label: "All", min: 0, max: 10000000 },
-    { label: "Free", min: 0, max: 0 },
-    { label: "< 500,000 đ", min: 0, max: 500000 },
-    { label: "< 1,000,000 đ", min: 0, max: 1000000 },
-    { label: "< 2,000,000 đ", min: 0, max: 2000000 },
-  ];
-
-  const [input, setInput] = useState(null);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedInstructors, setSelectedInstructors] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 1000000]);
-  const [selectedPrice, setSelectedPrice] = useState(priceOptions[0]);
-  const [page, setPage] = useState(0);
-  const size = 6;
 
   const queryParams = {
     categoryId:
@@ -113,11 +82,24 @@ const CourseGrid = () => {
     isLoading: isLoadingCategories,
     isError: isErrorCategories,
   } = useGetCategoriesQuery();
+
+  const sortedCategories = categories && Array.isArray(categories)
+  ? [...categories].sort((a, b) => b.totalCourses - a.totalCourses)
+  : [];
+
+  const filteredCategories = sortedCategories.filter((category) => category.totalCourses > 0);
+
   const {
     data: instructors,
     isLoading: isLoadingInstructors,
     isError: isErrorInstructors,
   } = useGetAllInstructorsQuery();
+
+  const sortedInstructors = instructors && Array.isArray(instructors)
+  ? [...instructors].sort((a, b) => b.totalCourses - a.totalCourses)
+  : [];
+
+  const filteredInstructors = sortedInstructors.filter((instructor) => instructor.totalCourses > 0);
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategories((prev) =>
@@ -156,10 +138,28 @@ const CourseGrid = () => {
     return <div>Error loading data!</div>;
   }
 
+  const customStyles = {
+    option: (provided) => ({
+      ...provided,
+      backgroundColor: mobileSidebar === "disabled" ? "#fff" : "#000",
+      color: mobileSidebar === "disabled" ? "#000" : "#fff",
+      fontSize: "14px",
+      "&:hover": {
+        backgroundColor: mobileSidebar === "disabled" ? "#FFDEDA" : "#2b2838",
+        // #dddddd
+      },
+    }),
+    dropdownIndicator: (base, state) => ({
+      ...base,
+      transform: state.selectProps.menuIsOpen ? "rotate(-180deg)" : "rotate(0)",
+      transition: "300ms",
+    }),
+  };
+
   return (
     <>
       <div className="main-wrapper">
-        {renderHeader()}
+      <RoleBasedHeader />
 
         <div className="breadcrumb-bar">
           <div className="container">
@@ -341,8 +341,8 @@ const CourseGrid = () => {
                             <h4>Course categories</h4>
                             <i className="fas fa-angle-down" />
                           </div>
-                          {categories &&
-                            categories.map((category) => (
+                          {filteredCategories &&
+                            filteredCategories.map((category) => (
                               <div key={category.id}>
                                 <label className="custom_check">
                                   <input
@@ -355,7 +355,7 @@ const CourseGrid = () => {
                                     }
                                   />
                                   <span className="checkmark" /> {category.name}{" "}
-                                  ({category.courseCount || 0})
+                                  ({category.totalCourses || 0})
                                 </label>
                               </div>
                             ))}
@@ -371,8 +371,8 @@ const CourseGrid = () => {
                             <h4>Instructors</h4>
                             <i className="fas fa-angle-down" />
                           </div>
-                          {instructors &&
-                            instructors.map((instructor) => (
+                          {filteredInstructors &&
+                            filteredInstructors.map((instructor) => (
                               <div key={instructor.id}>
                                 <label className="custom_check">
                                   <input
@@ -386,7 +386,7 @@ const CourseGrid = () => {
                                   />
                                   <span className="checkmark" />{" "}
                                   {instructor.firstName} {instructor.lastName} (
-                                  {instructor.courseCount || 0})
+                                  {instructor.totalCourses || 0})
                                 </label>
                               </div>
                             ))}

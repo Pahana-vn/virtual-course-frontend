@@ -194,7 +194,10 @@ const Register = () => {
                   <Link to="/home">Back to Home</Link>
                 </div>
               </div>
+              <div className="d-flex justify-content-between">
               <h1>Sign up</h1>
+              <Link to="/register1" className="text-success fw-bold fs-4">Become an Instructor ?</Link>
+              </div>
               <form onSubmit={handleSubmit}>
                 {/* Full Name */}
                 <div className="input-block">

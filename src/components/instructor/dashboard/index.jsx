@@ -6,6 +6,7 @@ import { Icon1, Icon2 } from "../../imagepath";
 import InstructorSidebar from "../sidebar";
 import { Link } from "react-router-dom";
 import {
+  useGetCoursesByInstructorIdQuery,
   useGetInstructorCoursesPurchasedByStudentQuery,
 } from "../../../redux/slices/course/courseApiSlice";
 import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
@@ -20,12 +21,18 @@ export const Dashboard = () => {
   
   const instructorId = useSelector(selectCurrentInstructor);
 
-  const { data: instructorStatistics } = useInstructorStatisticsQuery({ id: instructorId });
   const {
     data: instructorCourses,
     error,
     isLoading,
-  } = useGetInstructorCoursesPurchasedByStudentQuery({instructorId});
+  } = useGetInstructorCoursesPurchasedByStudentQuery({instructorId:instructorId});
+
+  const { data: instructorStatistics } = useInstructorStatisticsQuery({ id: instructorId });
+
+  const {
+    data: Icourses,
+  } = useGetCoursesByInstructorIdQuery({instructorId});
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -41,8 +48,8 @@ export const Dashboard = () => {
   // Pagination state
   const itemsPerPage = 6;
   const totalPages =
-    instructorCourses && instructorCourses.length
-      ? Math.ceil(instructorCourses.length / itemsPerPage + 1)
+    instructorCourses?.length
+      ? Math.ceil(instructorCourses?.length / itemsPerPage + 1)
       : 1;
 
   const handlePageChange = (pageNumber) => {
@@ -101,7 +108,7 @@ export const Dashboard = () => {
                   <div className="card dash-info flex-fill">
                     <div className="card-body">
                       <h5>Total Courses</h5>
-                      <h2>{instructorStatistics.totalCourses}</h2>
+                      <h2>{instructorStatistics?.totalCourses}</h2>
                     </div>
                   </div>
                 </div>
@@ -109,7 +116,7 @@ export const Dashboard = () => {
                   <div className="card dash-info flex-fill">
                     <div className="card-body">
                       <h5>Published Courses</h5>
-                      <h2>{instructorStatistics.totalPublishedCourses}</h2>
+                      <h2>{instructorStatistics?.totalPublishedCourses}</h2>
                     </div>
                   </div>
                 </div>
@@ -117,7 +124,7 @@ export const Dashboard = () => {
                   <div className="card dash-info flex-fill">
                     <div className="card-body">
                       <h5>Pending Courses</h5>
-                      <h2>{instructorStatistics.totalPendingCourses}</h2>
+                      <h2>{instructorStatistics?.totalPendingCourses}</h2>
                     </div>
                   </div>
                 </div>
@@ -125,7 +132,7 @@ export const Dashboard = () => {
                   <div className="card dash-info flex-fill">
                     <div className="card-body">
                       <h5>Total Students</h5>
-                      <h2>{instructorStatistics.totalStudents}</h2>
+                      <h2>{instructorStatistics?.totalStudents}</h2>
                     </div>
                   </div>
                 </div>
@@ -133,7 +140,7 @@ export const Dashboard = () => {
                   <div className="card dash-info flex-fill">
                     <div className="card-body">
                       <h5>Total Earnings</h5>
-                      <h2>{instructorStatistics.balance} VND</h2>
+                      <h2>{formatCurrency(instructorStatistics?.balance)}</h2>
                     </div>
                   </div>
                 </div>
@@ -155,22 +162,27 @@ export const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {instructorCourses.length > 0 ? (
-                        instructorCourses.map((course, index) => (
+                      {Icourses?.length > 0 ? (
+                        Icourses.map((course, index) => (
                           <tr key={index}>
                             <td>
                               <div className="table-course-detail">
-                                <Link to={`/course/${course.id}/course-details`} className="course-table-img">
+                                <Link 
+                                to={`/course/${course.id}/course-details`} 
+                                className="course-table-img">
                                   <span>
                                     <img
+                                    style={{ objectFit: 'cover',width:'110px', height: '80px' }}
                                       src={
                                         course.imageCover || "default-image-url"
-                                      } // Đường dẫn ảnh, thay thế bằng ảnh mặc định nếu không có
+                                      }
                                       alt={course.titleCourse}
                                     />
                                   </span>
                                 </Link>
-                                  <Link to={`/course/${course.id}/course-details`} className="course-title">
+                                  <Link 
+                                  to={`/course/${course.id}/course-details`} className="course-title d-flex align-items-center justify-content-center"
+                                  style={{}}>
                                     {course.titleCourse}
                                   </Link>
                               </div>
@@ -201,7 +213,7 @@ export const Dashboard = () => {
               </div>
               {/* Course Grid */}
               <div className="row">
-                {paginatedCourses.length > 0 ? (
+                {paginatedCourses?.length > 0 ? (
                   paginatedCourses.map((course, index) => (
                     <div className="col-xxl-4 col-md-6 d-flex" key={index}>
                       <div className="course-box flex-fill">
@@ -210,6 +222,7 @@ export const Dashboard = () => {
                             <Link to={`/course/${course.id}/course-details`}>
                               <img
                                 className="img-fluid"
+                                style={{ objectFit: 'cover', height: '200px' }}
                                 alt={course.titleCourse}
                                 src={
                                   course.imageCover ||
@@ -270,11 +283,11 @@ export const Dashboard = () => {
                             <div className="course-info d-flex align-items-center">
                               <div className="rating-img d-flex align-items-center">
                                 <img src={Icon1} alt="Icon" />
-                                <p>{course.lessonCount}+ Lessons</p>
+                                <p>{course.totalLectures}+ Lessons</p>
                               </div>
                               <div className="course-view d-flex align-items-center">
                                 <img src={Icon2} alt="Icon" />
-                                <p>{course.duration}h</p>
+                                <p>{course.duration} mins</p>
                               </div>
                             </div>
                             <div className="rating mb-0">

@@ -2,14 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Icon1, Icon2 } from "../../../imagepath";
+import useCurrencyFormatter from "../../../../hooks/useCurrencyFormatter";
 
 const GridInnerPage = ({ courses }) => {
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
+  const formatCurrency = useCurrencyFormatter();
   return (
     <>
       <div className="row">
@@ -21,6 +17,7 @@ const GridInnerPage = ({ courses }) => {
                 <Link to={`/course-details/${course.id}`}>
                   <img
                     className="img-fluid"
+                    style={{ objectFit: 'cover', height: '200px' }}
                     alt={course.titleCourse}
                     src={course.imageCover || "/default-image.png"}
                   />
@@ -54,7 +51,7 @@ const GridInnerPage = ({ courses }) => {
                     </Link>
                   </div>
                 </div>
-                <h3 className="title">
+                <h3 className="course-title">
                   <Link to={`/course-details/${course.id}`}>
                   {course.titleCourse}
                   </Link>
@@ -62,11 +59,11 @@ const GridInnerPage = ({ courses }) => {
                 <div className="course-info d-flex align-items-center">
                   <div className="rating-img d-flex align-items-center">
                     <img src={Icon1} alt="" />
-                    <p>{course.duration}+ Lessons</p>
+                    <p>{course.totalLectures}+ Lessons</p>
                   </div>
                   <div className="course-view d-flex align-items-center">
                     <img src={Icon2} alt="" />
-                    <p>{course.duration} hrs</p>
+                    <p>{course.duration} mins</p>
                   </div>
                 </div>
                 <div className="rating">
@@ -108,6 +105,7 @@ GridInnerPage.propTypes = {
       imageCover: PropTypes.string,
       basePrice: PropTypes.number,
       status: PropTypes.string,
+      instructorId: PropTypes.number,
       instructorName: PropTypes.string,
       instructorPhoto: PropTypes.string,
     })

@@ -1,5 +1,5 @@
 import { baseApiSlice } from "../baseApiSlice";
-import { setCredentials, logOut } from './authSlice';
+import { setCredentials, logOut } from "./authSlice";
 
 export const authApiSlice = baseApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,16 +19,24 @@ export const authApiSlice = baseApiSlice.injectEndpoints({
           const { data } = await queryFulfilled;
           dispatch(setCredentials(data));
         } catch (error) {
-          console.error('Login error:', error);
+          console.error("Login error:", error);
         }
       },
     }),
 
     register: builder.mutation({
       query: (credentials) => ({
-        url: "/auth/signup",
+        url: "/auth/register",
         method: "POST",
         body: { ...credentials },
+      }),
+    }),
+
+    instructorRegister: builder.mutation({
+      query: (instructorData) => ({
+        url: "/auth/instructor/register",
+        method: "POST",
+        body: { ...instructorData },
       }),
     }),
 
@@ -36,7 +44,7 @@ export const authApiSlice = baseApiSlice.injectEndpoints({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
-        credentials: 'include',
+        credentials: "include",
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
@@ -44,12 +52,26 @@ export const authApiSlice = baseApiSlice.injectEndpoints({
           dispatch(logOut());
           dispatch(baseApiSlice.util.resetApiState());
         } catch (error) {
-          console.error('Logout error:', error);
+          console.error("Logout error:", error);
         }
       },
+    }),
+
+    checkEmailExist: builder.query({
+      query: (email) => `/auth/check-email?email=${email}`,
+    }),
+
+    checkUsernameExist: builder.query({
+      query: (username) => `/auth/check-username?username=${username}`,
     }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation } =
-  authApiSlice;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useInstructorRegisterMutation,
+  useLogoutMutation,
+  useLazyCheckEmailExistQuery, 
+  useLazyCheckUsernameExistQuery, 
+} = authApiSlice;

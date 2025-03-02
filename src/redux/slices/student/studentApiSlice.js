@@ -18,8 +18,8 @@ export const studentApiSlice = baseApiSlice.injectEndpoints({
         }),
         // Thêm endpoint để lấy avatar
         studentAvatar: builder.query({
-            query: ({ id }) => ({
-                url: `/students/${id}/avatar`,
+            query: ({ accountId }) => ({
+                url: `/auth/${accountId}/student-avatar`,
             }),
             serializeQueryArgs: ({ endpointName }) => {
                 return endpointName;

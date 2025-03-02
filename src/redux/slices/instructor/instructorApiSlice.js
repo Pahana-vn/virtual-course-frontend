@@ -29,6 +29,13 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
         return currentArg !== previousArg;
       },
     }),
+    createInstructor: builder.mutation({
+      query: (instructorData) => ({
+        url: `/instructors`,
+        method: "POST",
+        body: instructorData,
+      }),
+    }),
     instructorStatistics: builder.query({
       query: ({ id }) => ({
         url: `/instructors/${id}/instructor-statistics`,
@@ -102,6 +109,7 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
 export const {
   useGetAllInstructorsQuery,
   useGetInstructorByIdQuery,
+  useCreateInstructorMutation,
   useInstructorStatisticsQuery,
   useInstructorAvatarQuery,
   useInstructorDetailsQuery,

@@ -29,6 +29,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-apexcharts": "^1.4.1",
+    "react-avatar-editor": "^13.0.2",
     "react-bootstrap": "^2.10.4",
     "react-bootstrap-daterangepicker": "^8.0.0",
     "react-circular-progressbar": "^2.1.0",
