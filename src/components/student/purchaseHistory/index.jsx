@@ -288,7 +288,6 @@ export default function PurchaseHistory() {
           </div>
         </div>
       </section>
-
       <Footer />
     </div>
   );

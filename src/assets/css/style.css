@@ -1036,6 +1036,11 @@ button.bg-danger:hover {
 	3. Header
 -----------------------*/
 
+
+.main-wrapper {
+  padding-top: 70px; /* Điều chỉnh theo chiều cao của header */
+}
+
 .header-nav {
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -16588,6 +16593,7 @@ input[type="password"]::-ms-clear {
 
 .contact-info h6 {
   color: #002058;
+  font-weight: bold;
   margin-bottom: 5px;
 }
 
@@ -18565,6 +18571,18 @@ input[type="password"]::-ms-clear {
   margin-right: 24px;
   width: 240px;
   position: relative;
+}
+
+.course-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; /* Allow line breaks */
+  word-break: break-word; /* Break long words */
+  line-height: 1.4; /* Line height */
+  min-height: 45px; /* Minimum height */
 }
 
 .head-course-title {
@@ -23314,6 +23332,70 @@ input[type="password"]::-ms-clear {
   border: 1px solid #1d9cfd;
 }
 
+.add-course-quiz {
+  padding: 0 40px 40px;
+}
+
+.add-course-quiz .btn {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1d9cfd;
+  background: #ffffff;
+  border: 1px solid #1d9cfd;
+  border-radius: 5px;
+  min-width: 105px;
+  padding: 7px 10px;
+}
+
+.add-course-quiz .btn:hover {
+  color: #ffffff;
+  background: #1d9cfd;
+  border: 1px solid #1d9cfd;
+}
+
+.quiz-grid {
+  padding: 20px;
+  margin-bottom: 30px;
+  background: rgba(227, 227, 227, 0.41);
+  border-radius: 10px;
+}
+
+.quiz-head {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: space-between;
+  padding-bottom: 20px;
+}
+
+.quiz-head p {
+  font-size: 16px;
+  margin-bottom: 0;
+  color: #000000;
+}
+
+.quiz-head .btn {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1d9cfd;
+  background: #ffffff;
+  border: 1px solid #1d9cfd;
+  border-radius: 5px;
+  min-width: 105px;
+  padding: 7px 10px;
+}
+
+.quiz-head .btn:hover {
+  color: #ffffff;
+  background: #1d9cfd;
+  border: 1px solid #1d9cfd;
+}
+
 .faq-grid {
   background: #ffffff;
   border: 1px solid #f0f0f0;
@@ -24106,7 +24188,11 @@ ul li {
   background: #fff;
   color: #ff4667;
 }
-
+.table-course-detail
+{
+  display: flex;
+  gap: 10px;
+}
 .table-course-detail .course-table-img {
   display: flex;
   align-items: center;
@@ -35833,5 +35919,22 @@ a.ck.ck-button:not(.ck-disabled):hover {
 
   .settings-pg-links li {
     width: 100%;
+  }
+}
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

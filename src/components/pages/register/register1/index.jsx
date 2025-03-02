@@ -51,15 +51,13 @@ const RegisterOne = () => {
                 <img src={RegisterImg} className="img-fluid" alt="Logo" />
               </div>
               <div className="mentor-course text-center">
-                <h2>
-                  Welcome to <br />
-                  DreamsLMS Courses.
-                </h2>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam.
-                </p>
+              <h2>
+                    Welcome to <br />
+                    Virtual Course Network.
+                  </h2>
+                  <p>
+                    Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                  </p>
               </div>
             </div>
             <div className="welcome-login register-step">
@@ -67,15 +65,13 @@ const RegisterOne = () => {
                 <img src={RegisterImg} className="img-fluid" alt="Logo" />
               </div>
               <div className="mentor-course text-center">
-                <h2>
-                  Welcome to <br />
-                  DreamsLMS Courses.
-                </h2>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam.
-                </p>
+              <h2>
+                    Welcome to <br />
+                    Virtual Course Network.
+                  </h2>
+                  <p>
+                    Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                  </p>
               </div>
             </div>
             <div className="welcome-login register-step">
@@ -83,15 +79,13 @@ const RegisterOne = () => {
                 <img src={RegisterImg} className="img-fluid" alt="Logo" />
               </div>
               <div className="mentor-course text-center">
-                <h2>
-                  Welcome to <br />
-                  DreamsLMS Courses.
-                </h2>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam.
-                </p>
+              <h2>
+                    Welcome to <br />
+                    Virtual Course Network.
+                  </h2>
+                  <p>
+                    Where knowledge knows no boundaries. Explore a wide range of flexible online courses that help you learn and grow anytime, anywhere.
+                  </p>
               </div>
             </div>
           </OwlCarousel>

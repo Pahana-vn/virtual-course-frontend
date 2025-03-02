@@ -4,7 +4,7 @@ import { InstructorHeader } from "../header";
 import InstructorSidebar from "../sidebar";
 import { Link } from "react-router-dom";
 import Select from "react-select";
-import TextEditor from "../../pages/course/addCourse/editor";
+import TextEditor from "../addCourse/editor";
 import { useSelector } from "react-redux";
 const InstructorTicket= () => {
   const mobileSidebar = useSelector(

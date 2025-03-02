@@ -18,7 +18,6 @@ import {
   Icon02,
   Icon03,
   Icon04,
-  Icon1,
   Icon10,
   Icon12,
   Icon13,
@@ -27,40 +26,39 @@ import {
   Icon16,
   Icon17,
   Icon18,
-  Icon2,
   Icon7,
   Icon8,
   Icon9,
   Join,
   PencilIcon,
-  Share
+  Share,
 } from "../imagepath";
-import Header from "../student/header/index";
 import Blog from "./slider/blog";
 import Companies from "./slider/companies";
 import Testimonial from "./slider/testimonial";
 import TopCategory from "./slider/topCategory";
 import TrendingCourse from "./slider/trendingCourse";
-
-const options = [
-  { label: "Category", value: "Category" },
-  { label: "Angular", value: "Angular" },
-  { label: "Node Js", value: "Node Js" },
-  { label: "React", value: "React" },
-  { label: "Python", value: "Python" },
-];
+import RoleBasedHeader from "../header/RoleBasedHeader";
+import { useGetCategoriesQuery } from "../../redux/slices/course/categoryApiSlice";
+import FeaturedCourses from "./components/featuredCourses";
 
 export const Home = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const mobileSidebar = useSelector((state) => state.sidebarSlice.expandMenu);
 
-
+  const { data: categories } = useGetCategoriesQuery();
+  const categoryOptions = categories
+    ? categories.map(category => ({
+        value: category.id,
+        label: category.name
+      }))
+    : [];
+      
   useEffect(() => {
     const loadCourses = async () => {
       try {
         const data = await fetchCourses();
-        console.log("Courses data:", data); // Xem cấu trúc dữ liệu ở đây
         setCourses(data);
       } catch (error) {
         console.error("Failed to load courses:", error);
@@ -73,7 +71,6 @@ export const Home = () => {
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
-    console.log(mobileSidebar, "gg");
   }, [mobileSidebar]);
 
   if (loading) return <p>Loading...</p>;
@@ -112,11 +109,9 @@ export const Home = () => {
   return (
     <>
       <div className="main-wrapper">
-        <Header />
+      <RoleBasedHeader />
         {/* banner */}
-        <section
-          className="home-slide d-flex align-items-center"
-        >
+        <section className="home-slide d-flex align-items-center">
           <div className="container">
             <div className="row ">
               <div className="col-md-7">
@@ -127,7 +122,7 @@ export const Home = () => {
                     <p>Own your future learning new skills online</p>
                   </div>
                   <div className="banner-content">
-                    <form className="form" action="/course-list">
+                    <form className="form" action="/course-grid">
                       <div className="form-inner">
                         <div className="input-group homeSearch">
                           <i className="fa-solid fa-magnifying-glass search-icon" />
@@ -138,12 +133,11 @@ export const Home = () => {
                           />
                           <span className="drop-detail">
                             <Select
-                              // className="select2-container"
-                              options={options}
-                              value={options.value}
-                              defaultValue={options[0]}
+                              className="select2-container"
+                              options={categoryOptions}
+                              value={categoryOptions.value}
+                              defaultValue={categoryOptions[0]}
                               placeholder="Category"
-
                               styles={style}
                             ></Select>
                           </span>
@@ -318,107 +312,7 @@ export const Home = () => {
         {/* Top Category with Owl Carousel */}
 
         {/* What's new Featured Course */}
-        <section className="section new-course">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-sub-head">
-                <span>What’s New</span>
-                <h2>Featured Courses</h2>
-              </div>
-              <div className="all-btn all-category d-flex align-items-center">
-                <Link to="/course-list" className="btn btn-primary">
-                  All Courses
-                </Link>
-              </div>
-            </div>
-            <div className="course-feature">
-              <div className="row">
-                {courses.map((course) => (
-                  <div className="col-lg-4 col-md-6 d-flex" key={course.id}>
-                    <div className="course-box d-flex">
-                      <div className="product">
-                        <div className="product-img">
-                          <Link to={`/course-details/${course.id}`}>
-                            <img
-                              className="img-fluid"
-                              alt={course.titleCourse || "Course"}
-                              src={course.imageCover} // Đây là URL ảnh từ API
-                            />
-                          </Link>
-                          <div className="price">
-                            <h3>
-                              ${course.price || "N/A"}{" "}
-                              <span>${course.discountedPrice || course.price || "N/A"}</span>
-                            </h3>
-                          </div>
-                        </div>
-                        <div className="product-content">
-                          <div className="course-group d-flex">
-                            <div className="course-group-img d-flex">
-                              {/* Nếu API không có instructor, hiển thị mặc định */}
-                              <img
-                                src="https://imgcdn.stablediffusionweb.com/2024/9/15/8d3d6426-872a-4c1a-8516-aecffa9b710e.jpg"
-                                alt="Unknown Instructor"
-                                className="img-fluid"
-                              />
-                              <div className="course-name">
-                                <h4>
-                                  <Link>
-                                    {course.instructorFirstName}
-                                  </Link>
-                                </h4>
-                                <p>Instructor</p>
-                              </div>
-                            </div>
-                            <div className="course-share d-flex align-items-center justify-content-center">
-                              <Link to="#">
-                                <i className="fa-regular fa-heart"></i>
-                              </Link>
-                            </div>
-                          </div>
-                          <h3 className="title instructor-text">
-                            <Link to={`/course-details/${course.id}`}>
-                              {course.titleCourse || "Untitled Course"}
-                            </Link>
-                          </h3>
-                          <div className="course-info d-flex align-items-center">
-                            <div className="rating-img d-flex align-items-center">
-                              <img src={Icon1} alt="" />
-                              <p>{course.lessons || "0"}+ Lesson</p>
-                            </div>
-                            <div className="course-view d-flex align-items-center">
-                              <img src={Icon2} alt="" />
-                              <p>{course.duration || "N/A"}</p>
-                            </div>
-                          </div>
-                          <div className="d-flex align-items-center justify-content-between">
-                            <div className="rating">
-                              {[...Array(5)].map((_, i) => (
-                                <i
-                                  key={i}
-                                  className={`fas fa-star ${i < course.rating ? "filled" : ""}`}
-                                />
-                              ))}
-                              <span className="d-inline-block average-rating">
-                                {course.rating || "0"}
-                              </span>
-                            </div>
-                            <div className="all-btn all-category d-flex align-items-center">
-                              <Link to="/checkout" className="btn btn-primary">
-                                BUY NOW
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
+        <FeaturedCourses />
         {/* What's new Featured Course */}
 
         {/* Master Skills */}
@@ -524,9 +418,7 @@ export const Home = () => {
         {/* Companies */}
 
         {/* Share knowledge */}
-        <section
-          className="section share-knowledge"
-        >
+        <section className="section share-knowledge">
           <div className="container">
             <div className="row">
               <div className="col-md-6">
@@ -554,7 +446,10 @@ export const Home = () => {
                     </li>
                   </ul>
                   <div className="all-btn all-category d-flex align-items-center">
-                    <Link to="/instructor/instructor-list" className="btn btn-primary">
+                    <Link
+                      to="/instructor/instructor-list"
+                      className="btn btn-primary"
+                    >
                       Read More
                     </Link>
                   </div>
@@ -565,9 +460,7 @@ export const Home = () => {
         </section>
         {/* /Share knowledge */}
 
-        <section
-          className="section user-love"
-        >
+        <section className="section user-love">
           <div className="container">
             <div className="section-header white-header aos" data-aos="fade-up">
               <div className="section-sub-head feature-head text-center">
@@ -631,9 +524,7 @@ export const Home = () => {
         {/* /Become a instructor */}
 
         {/* Blog */}
-        <section
-          className="section latest-blog"
-        >
+        <section className="section latest-blog">
           <div className="container">
             <div className="section-header aos" data-aos="fade-up">
               <div className="section-sub-head feature-head text-center mb-0">

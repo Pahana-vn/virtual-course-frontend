@@ -1,29 +1,28 @@
-import React from "react";
-import { Blog1, Blog2, Blog3 } from "../../../imagepath";
-import CourseHeader from "../header";
-import InnerPage from "./innerPage";
 import FeatherIcon from "feather-icons-react";
-import Footer from "../../../footer";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Select from "react-select";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import Footer from "../../../footer";
+import { Blog1, Blog2, Blog3 } from "../../../imagepath";
+import CourseHeader from "../../../student/header";
+import InnerPage from "./innerPage";
 
 const CourseList = () => {
   const mobileSidebar = useSelector(
     (state) => state.sidebarSlice.expandMenu
   );
   const customStyles = {
-  
+
     menu: (base) => ({ ...base, marginTop: "0px" }),
     menuList: (base) => ({ ...base, padding: "0" }),
     option: (provided) => ({
       ...provided,
-      backgroundColor:  mobileSidebar === 'disabled' ? "#fff" : "#000",
-      color:mobileSidebar === 'disabled'? '#000':'#fff',
+      backgroundColor: mobileSidebar === 'disabled' ? "#fff" : "#000",
+      color: mobileSidebar === 'disabled' ? '#000' : '#fff',
       fontSize: "14px",
       "&:hover": {
-        backgroundColor:mobileSidebar === 'disabled'? "#FFDEDA":"#2b2838",
+        backgroundColor: mobileSidebar === 'disabled' ? "#FFDEDA" : "#2b2838",
         // #dddddd
       },
     }),
@@ -38,7 +37,7 @@ const CourseList = () => {
       transition: "250ms",
       display: "none"
     }),
-    }
+  }
 
   const option = [
     { label: "Newly published", value: "Newly published" },
@@ -52,7 +51,7 @@ const CourseList = () => {
   return (
     <>
       <div className="main-wrapper">
-        <CourseHeader activeMenu={"CourseList"}/>
+        <CourseHeader activeMenu={"CourseList"} />
         <div className="breadcrumb-bar">
           <div className="container">
             <div className="row">
@@ -61,7 +60,7 @@ const CourseList = () => {
                   <nav aria-label="breadcrumb" className="page-breadcrumb">
                     <ol className="breadcrumb">
                       <li className="breadcrumb-item">
-                        <Link to="/home">Home</Link> 
+                        <Link to="/home">Home</Link>
                       </li>
                       <li className="breadcrumb-item" aria-current="page">
                         Courses
@@ -93,14 +92,14 @@ const CourseList = () => {
                           <Link to="/course-grid" className="grid-view">
                             {/* <i className="feather-grid" /> */}
                             <FeatherIcon icon="grid" />
-                          </Link> 
+                          </Link>
                           <Link
                             to="/course-list"
                             className="list-view active"
                           >
                             {/* <i className="feather-list" /> */}
                             <FeatherIcon icon="list" />
-                          </Link> 
+                          </Link>
                         </div>
                         <div className="show-result">
                           <h4>Showing 1-9 of 50 results</h4>
@@ -114,7 +113,7 @@ const CourseList = () => {
                             <div className="col-md-6 col-item">
                               <div className=" search-group">
                                 <i className="feather-search me-2">
-                                  <FeatherIcon icon="search"/>
+                                  <FeatherIcon icon="search" />
                                 </i>
                                 <input
                                   type="text"
@@ -125,13 +124,13 @@ const CourseList = () => {
                             </div>
                             <div className="col-md-6 col-lg-6 col-item">
                               <div className="input-block select-form mb-0">
-                              <Select
+                                <Select
                                   options={option}
                                   defaultValue={input}
                                   onChange={setInput}
                                   placeholder="Newly Published"
                                   styles={customStyles}
-                              ></Select>
+                                ></Select>
                               </div>
                             </div>
                           </div>
@@ -151,288 +150,288 @@ const CourseList = () => {
                       <li className="page-item prev">
                         <Link className="page-link" to="#" >
                           <i className="fas fa-angle-left" />
-                        </Link> 
+                        </Link>
                       </li>
                       <li className="page-item first-page active">
                         <Link className="page-link" to="#">
                           1
-                        </Link> 
+                        </Link>
                       </li>
                       <li className="page-item">
                         <Link className="page-link" to="#">
                           2
-                        </Link> 
+                        </Link>
                       </li>
                       <li className="page-item">
                         <Link className="page-link" to="#">
                           3
-                        </Link> 
+                        </Link>
                       </li>
                       <li className="page-item">
                         <Link className="page-link" to="#">
                           4
-                        </Link> 
+                        </Link>
                       </li>
                       <li className="page-item">
                         <Link className="page-link" to="#">
                           5
-                        </Link> 
+                        </Link>
                       </li>
                       <li className="page-item next">
                         <Link className="page-link" to="#">
                           <i className="fas fa-angle-right" />
-                        </Link> 
+                        </Link>
                       </li>
                     </ul>
                   </div>
                 </div>
                 {/* /pagination */}
               </div>
-              
+
               <div className="col-lg-3 theiaStickySidebar">
-              <div className="stickysidebar">
-                <div className="filter-clear">
-                  <div className="clear-filter d-flex align-items-center">
-                    <h4>
-                      {/* <i className="feather-filter" /> */}
-                      <FeatherIcon icon="filter" />
-                      Filters
-                    </h4>
-                    <div className="clear-text">
-                      <p>CLEAR</p>
+                <div className="stickysidebar">
+                  <div className="filter-clear">
+                    <div className="clear-filter d-flex align-items-center">
+                      <h4>
+                        {/* <i className="feather-filter" /> */}
+                        <FeatherIcon icon="filter" />
+                        Filters
+                      </h4>
+                      <div className="clear-text">
+                        <p>CLEAR</p>
+                      </div>
                     </div>
-                  </div>
-                  {/* Search Filter */}
-                  <div className="card search-filter categories-filter-blk">
-                    <div className="card-body">
-                      <div className="filter-widget mb-0">
-                        <div className="categories-head d-flex align-items-center">
-                          <h4>Course categories</h4>
-                          <i className="fas fa-angle-down" />
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input type="checkbox" name="select_specialist" />
-                            <span className="checkmark" /> Backend (3)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input type="checkbox" name="select_specialist" />
-                            <span className="checkmark" /> CSS (2)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input type="checkbox" name="select_specialist" />
-                            <span className="checkmark" /> Frontend (2)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input
-                              type="checkbox"
-                              name="select_specialist"
-                              defaultChecked="true"
-                            />
-                            <span className="checkmark" /> General (2)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input
-                              type="checkbox"
-                              name="select_specialist"
-                              defaultChecked="true"
-                            />
-                            <span className="checkmark" /> IT &amp; Software (2)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input type="checkbox" name="select_specialist" />
-                            <span className="checkmark" /> Photography (2)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input type="checkbox" name="select_specialist" />
-                            <span className="checkmark" /> Programming Language
-                            (3)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check mb-0">
-                            <input type="checkbox" name="select_specialist" />
-                            <span className="checkmark" /> Technology (2)
-                          </label>
+                    {/* Search Filter */}
+                    <div className="card search-filter categories-filter-blk">
+                      <div className="card-body">
+                        <div className="filter-widget mb-0">
+                          <div className="categories-head d-flex align-items-center">
+                            <h4>Course categories</h4>
+                            <i className="fas fa-angle-down" />
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input type="checkbox" name="select_specialist" />
+                              <span className="checkmark" /> Backend (3)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input type="checkbox" name="select_specialist" />
+                              <span className="checkmark" /> CSS (2)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input type="checkbox" name="select_specialist" />
+                              <span className="checkmark" /> Frontend (2)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input
+                                type="checkbox"
+                                name="select_specialist"
+                                defaultChecked="true"
+                              />
+                              <span className="checkmark" /> General (2)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input
+                                type="checkbox"
+                                name="select_specialist"
+                                defaultChecked="true"
+                              />
+                              <span className="checkmark" /> IT &amp; Software (2)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input type="checkbox" name="select_specialist" />
+                              <span className="checkmark" /> Photography (2)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input type="checkbox" name="select_specialist" />
+                              <span className="checkmark" /> Programming Language
+                              (3)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check mb-0">
+                              <input type="checkbox" name="select_specialist" />
+                              <span className="checkmark" /> Technology (2)
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  {/* /Search Filter */}
-                  {/* Search Filter */}
-                  <div className="card search-filter">
-                    <div className="card-body">
-                      <div className="filter-widget mb-0">
-                        <div className="categories-head d-flex align-items-center">
-                          <h4>Instructors</h4>
-                          <i className="fas fa-angle-down" />
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input type="checkbox" name="select_specialist" />
-                            <span className="checkmark" /> Keny White (10)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input type="checkbox" name="select_specialist" />
-                            <span className="checkmark" /> Hinata Hyuga (5)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check">
-                            <input type="checkbox" name="select_specialist" />
-                            <span className="checkmark" /> John Doe (3)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check mb-0">
-                            <input
-                              type="checkbox"
-                              name="select_specialist"
-                              defaultChecked="true"
-                            />
-                            <span className="checkmark" /> Nicole Brown
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* /Search Filter */}
-                  {/* Search Filter */}
-                  <div className="card search-filter ">
-                    <div className="card-body">
-                      <div className="filter-widget mb-0">
-                        <div className="categories-head d-flex align-items-center">
-                          <h4>Price</h4>
-                          <i className="fas fa-angle-down" />
-                        </div>
-                        <div>
-                          <label className="custom_check custom_one">
-                            <input type="radio" name="select_specialist" />
-                            <span className="checkmark" /> All (18)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check custom_one">
-                            <input type="radio" name="select_specialist" />
-                            <span className="checkmark" /> Free (3)
-                          </label>
-                        </div>
-                        <div>
-                          <label className="custom_check custom_one mb-0">
-                            <input
-                              type="radio"
-                              name="select_specialist"
-                              defaultChecked="true"
-                            />
-                            <span className="checkmark" /> Paid (15)
-                          </label>
+                    {/* /Search Filter */}
+                    {/* Search Filter */}
+                    <div className="card search-filter">
+                      <div className="card-body">
+                        <div className="filter-widget mb-0">
+                          <div className="categories-head d-flex align-items-center">
+                            <h4>Instructors</h4>
+                            <i className="fas fa-angle-down" />
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input type="checkbox" name="select_specialist" />
+                              <span className="checkmark" /> Keny White (10)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input type="checkbox" name="select_specialist" />
+                              <span className="checkmark" /> Hinata Hyuga (5)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check">
+                              <input type="checkbox" name="select_specialist" />
+                              <span className="checkmark" /> John Doe (3)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check mb-0">
+                              <input
+                                type="checkbox"
+                                name="select_specialist"
+                                defaultChecked="true"
+                              />
+                              <span className="checkmark" /> Nicole Brown
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  {/* /Search Filter */}
-                  {/* Latest Posts */}
-                  <div className="card post-widget ">
-                    <div className="card-body">
-                      <div className="latest-head">
-                        <h4 className="card-title">Latest Courses</h4>
+                    {/* /Search Filter */}
+                    {/* Search Filter */}
+                    <div className="card search-filter ">
+                      <div className="card-body">
+                        <div className="filter-widget mb-0">
+                          <div className="categories-head d-flex align-items-center">
+                            <h4>Price</h4>
+                            <i className="fas fa-angle-down" />
+                          </div>
+                          <div>
+                            <label className="custom_check custom_one">
+                              <input type="radio" name="select_specialist" />
+                              <span className="checkmark" /> All (18)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check custom_one">
+                              <input type="radio" name="select_specialist" />
+                              <span className="checkmark" /> Free (3)
+                            </label>
+                          </div>
+                          <div>
+                            <label className="custom_check custom_one mb-0">
+                              <input
+                                type="radio"
+                                name="select_specialist"
+                                defaultChecked="true"
+                              />
+                              <span className="checkmark" /> Paid (15)
+                            </label>
+                          </div>
+                        </div>
                       </div>
-                      <ul className="latest-posts">
-                        <li>
-                          <div className="post-thumb">
-                            <Link to="/course-details">
-                              <img className="img-fluid" src={Blog1} alt="" />
-                            </Link> 
-                          </div>
-                          <div className="post-info free-color">
-                            <h4>
-                              <Link to="/course-details">
-                                Introduction LearnPress – LMS plugin
-                              </Link> 
-                            </h4>
-                            <p>FREE</p>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="post-thumb">
-                            <Link to="/course-details">
-                              <img className="img-fluid" src={Blog2} alt="" />
-                            </Link> 
-                          </div>
-                          <div className="post-info">
-                            <h4>
-                              <Link to="/course-details">
-                                Become a PHP Master and Make Money
-                              </Link> 
-                            </h4>
-                            <p>$200</p>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="post-thumb">
-                            <Link to="#">
-                              <img className="img-fluid" src={Blog3} alt="" />
-                            </Link> 
-                          </div>
-                          <div className="post-info free-color">
-                            <h4>
-                              <Link to="/blog-details">
-                                Learning jQuery Mobile for Beginners
-                              </Link> 
-                            </h4>
-                            <p>FREE</p>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="post-thumb">
-                            <Link to="/course-details">
-                              <img className="img-fluid" src={Blog1} alt="" />
-                            </Link> 
-                          </div>
-                          <div className="post-info">
-                            <h4>
-                              <Link to="/course-details">
-                                Improve Your CSS Workflow with SASS
-                              </Link> 
-                            </h4>
-                            <p>$200</p>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="post-thumb ">
-                            <Link to="/course-details">
-                              <img className="img-fluid" src={Blog2} alt="" />
-                            </Link> 
-                          </div>
-                          <div className="post-info free-color">
-                            <h4>
-                              <Link to="/course-details">
-                                HTML5/CSS3 Essentials in 4-Hours
-                              </Link> 
-                            </h4>
-                            <p>FREE</p>
-                          </div>
-                        </li>
-                      </ul>
                     </div>
+                    {/* /Search Filter */}
+                    {/* Latest Posts */}
+                    <div className="card post-widget ">
+                      <div className="card-body">
+                        <div className="latest-head">
+                          <h4 className="card-title">Latest Courses</h4>
+                        </div>
+                        <ul className="latest-posts">
+                          <li>
+                            <div className="post-thumb">
+                              <Link to="/course-details">
+                                <img className="img-fluid" src={Blog1} alt="" />
+                              </Link>
+                            </div>
+                            <div className="post-info free-color">
+                              <h4>
+                                <Link to="/course-details">
+                                  Introduction LearnPress – LMS plugin
+                                </Link>
+                              </h4>
+                              <p>FREE</p>
+                            </div>
+                          </li>
+                          <li>
+                            <div className="post-thumb">
+                              <Link to="/course-details">
+                                <img className="img-fluid" src={Blog2} alt="" />
+                              </Link>
+                            </div>
+                            <div className="post-info">
+                              <h4>
+                                <Link to="/course-details">
+                                  Become a PHP Master and Make Money
+                                </Link>
+                              </h4>
+                              <p>$200</p>
+                            </div>
+                          </li>
+                          <li>
+                            <div className="post-thumb">
+                              <Link to="#">
+                                <img className="img-fluid" src={Blog3} alt="" />
+                              </Link>
+                            </div>
+                            <div className="post-info free-color">
+                              <h4>
+                                <Link to="/blog-details">
+                                  Learning jQuery Mobile for Beginners
+                                </Link>
+                              </h4>
+                              <p>FREE</p>
+                            </div>
+                          </li>
+                          <li>
+                            <div className="post-thumb">
+                              <Link to="/course-details">
+                                <img className="img-fluid" src={Blog1} alt="" />
+                              </Link>
+                            </div>
+                            <div className="post-info">
+                              <h4>
+                                <Link to="/course-details">
+                                  Improve Your CSS Workflow with SASS
+                                </Link>
+                              </h4>
+                              <p>$200</p>
+                            </div>
+                          </li>
+                          <li>
+                            <div className="post-thumb ">
+                              <Link to="/course-details">
+                                <img className="img-fluid" src={Blog2} alt="" />
+                              </Link>
+                            </div>
+                            <div className="post-info free-color">
+                              <h4>
+                                <Link to="/course-details">
+                                  HTML5/CSS3 Essentials in 4-Hours
+                                </Link>
+                              </h4>
+                              <p>FREE</p>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    {/* /Latest Posts */}
                   </div>
-                  {/* /Latest Posts */}
                 </div>
-              </div>
               </div>
             </div>
           </div>

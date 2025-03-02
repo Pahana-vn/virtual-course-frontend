@@ -1,18 +1,33 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState } from "react";
-import { Home, LogOut, Moon, Star } from "react-feather";
+import { Home, LogOut, Star } from "react-feather";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
-import {
-  logo,
-  ProfileAvatar,
-  User15,
-  User17,
-} from "../../imagepath";
+import { logOut, selectCurrentUser } from "../../../redux/slices/auth/authSlice";
+import { useInstructorAvatarQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 import DarkMode from "../../common/darkMode";
+import {
+  Messages,
+  Notification,
+  User1,
+  User2,
+  User3,
+} from "../../imagepath";
+import logoVirtual from "../../../assets/img/logo.png";
+
 // eslint-disable-next-line react/prop-types
-export function InstructorHeader({ activeMenu }) {
-  console.log(activeMenu === "Dashboard", "activeMenu");
+
+export function InstructorHeader() {
+  const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser);
+  const accountId = useSelector((state) => state.auth.user?.accountId);
+  const { data } = useInstructorAvatarQuery({accountId});
+  const avatarUrl = data?.url || "default-avatar.png";
+  const handleLogout = () => {
+    dispatch(logOut());
+  };
+
   const [navbar, setNavbar] = useState(false);
 
   const [showCart, setShowCart] = useState(false);
@@ -138,11 +153,7 @@ export function InstructorHeader({ activeMenu }) {
         >
           <div className="container ">
             <div className="navbar-header">
-              <Link
-                id="mobile_btn"
-                to="#"
-                onClick={openMobileMenu}
-              >
+              <Link id="mobile_btn" to="#" onClick={openMobileMenu}>
                 <span className="bar-icon">
                   <span></span>
                   <span></span>
@@ -150,536 +161,169 @@ export function InstructorHeader({ activeMenu }) {
                 </span>
               </Link>
               <Link to="/home" className="navbar-brand logo">
-                <img src={logo} className="img-fluid" alt="Logo" />
-              </Link>
-            </div>
-            <div className="main-menu-wrapper">
-              <div className="menu-header">
-                <Link to="/home" className="menu-logo">
-                  <img src={logo} className="img-fluid" alt="Logo" />
+                  <img src={logoVirtual} className="img-fluid" alt="Logo" />
                 </Link>
-                <Link
-                  id="menu_close"
-                  className="menu-close"
-                  to="#"
-                  onClick={hideMobileMenu}
+            </div>
+            <ul className="main-nav">
+              <li className="has-submenu">
+                <Link to="/home" className={mobileSubMenu ? "submenu" : ""}>
+                  Home{" "}
+                </Link>
+              </li>
+              <li>
+                <Link to="/course-grid" onClick={hideMobileMenu}>
+                  Course
+                </Link>
+              </li>
+
+              <li className="has-submenu">
+                <Link to="">
+                  Pages
+                  <i
+                    className="fas fa-chevron-down"
+                    onClick={openMobileSubMenu4}
+                  ></i>
+                </Link>
+                <ul
+                  className={mobileSubMenu4 ? "submenu submenuShow" : "submenu"}
                 >
-                  <i className="fas fa-times"></i>
-                </Link>
-              </div>
-              <ul className="main-nav">
-                <li className="has-submenu">
-                  <Link to="/home" className={mobileSubMenu ? "submenu" : ""}>
-                    Home{" "}
-                    <i
-                      className="fas fa-chevron-down"
-                      onClick={openMobileSubMenu}
-                    ></i>
-                  </Link>
-                  <ul
-                    className={
-                      mobileSubMenu ? "submenu submenuShow" : "submenu"
-                    }
-                  >
-                    <li>
-                      <Link to="/home">Home</Link>
-                    </li>
-                    <li>
-                      <Link to="/home2">Home Two</Link>
-                    </li>
-                    <li>
-                      <Link to="/home3">Home Three</Link>
-                    </li>
-                    <li>
-                      <Link to="/home4">Home Four</Link>
-                    </li>
-                  </ul>
-                </li>
-                <li className="has-submenu active">
-                  <Link to="/instructor/instructor-dashboard">
-                    Instructor{" "}
-                    <i
-                      className="fas fa-chevron-down "
-                      onClick={openMobileSubMenu2}
-                    ></i>
-                  </Link>
-                  <ul
-                    className={
-                      mobileSubMenu2 ? "submenu submenuShow" : "submenu"
-                    }
-                  >
+                  <li>
+                    <Link to="/job-category">Category</Link>
+                  </li>
 
-                    <li
-                      className={
-                        activeMenu === "List" || activeMenu === "Grid"
-                          ? "has-submenu active"
-                          : "has-submenu"
-                      }
-                    >
-                      <Link to="/instructor/instructor-list">
-                        Instructor
-                        <i
-                          className=""
-                          onClick={openMobileSubMenu22}
-                        ></i>
-                      </Link>
-                      <ul
-                        className={
-                          mobileSubMenu22 ? "submenu submenuShow" : "submenu"
-                        }
-                      >
-                        <li className={activeMenu === "List" ? "active" : ""}>
-                          <Link to="/instructor/instructor-list" onClick={hideMobileMenu}>
-                            List
-                          </Link>
-                        </li>
-                        <li className={activeMenu === "Grid" ? "active" : ""}>
-                          <Link to="/instructor/instructor-grid" onClick={hideMobileMenu}>
-                            Grid
-                          </Link>
-                        </li>
-                      </ul>
-                    </li>
-                    <li className={activeMenu === "Dashboard" ? "active" : ""}>
-                      <Link to="/instructor/instructor-dashboard" onClick={hideMobileMenu}>
-                        Dashboard
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "My Profile" ? "active" : ""}>
-                      <Link to="/instructor/instructor-profiles" onClick={hideMobileMenu}>
-                        My Profile
-                      </Link>
-                    </li>
-                   
-                    <li className={activeMenu === "My Course" ? "active" : ""}>
-                      <Link to="/instructor/instructor-enrolled-course" onClick={hideMobileMenu}>
-                        My Course
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Wishlist" ? "active" : ""}>
-                      <Link to="/instructor/instructor-wishlist" onClick={hideMobileMenu}>
-                        Wishlist
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Reviews" ? "active" : ""}>
-                      <Link to="/instructor/instructor-reviews" onClick={hideMobileMenu}>
-                        Reviews
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "My Quiz Attempts" ? "active" : ""}>
-                      <Link to="/instructor/instructor-quiz" onClick={hideMobileMenu}>
-                        My Quiz Attempts
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Orders" ? "active" : ""}>
-                      <Link
-                        to="/instructor/instructor-orders"
-                        onClick={hideMobileMenu}
-                      >
-                        Orders
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Question & Answer" ? "active" : ""}>
-                      <Link to="/instructor/instructor-qa" onClick={hideMobileMenu}>
-                        Question & Answer
-                      </Link>
-                    </li>
-                    <li
-                      className={activeMenu === "Referrals" ? "active" : ""}
-                    >
-                      <Link
-                        to="/instructor/instructor-referral"
-                        onClick={hideMobileMenu}
-                      >
-                        Referrals
-                      </Link>
-                    </li>
-                    <li
-                      className={activeMenu === "Message" ? "active" : ""}
-                    >
-                      <Link
-                        to="/instructor/instructor-chat"
-                        onClick={hideMobileMenu}
-                      >
-                        Message
-                      </Link>
-                    </li>
-                    <li
-                    className={activeMenu === "Support Ticket" ? "active" : ""}
-                  >
-                      <Link
-                        to="/instructor/instructor-ticket"
-                        onClick={hideMobileMenu}
-                      >
-                        Support Ticket
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Notifications" ? "active" : ""}>
-                      <Link
-                        to="/instructor/instructor-notifications"
-                        onClick={hideMobileMenu}
-                      >
-                        Notifications
-                      </Link>
-                    </li>
-                    <li
-                      className={activeMenu === "Settings" ? "active" : ""}
-                    >
-                      <Link
-                        to="/instructor/instructor-settings"
-                        onClick={hideMobileMenu}
-                      >
-                        Settings
-                      </Link>
-                    </li>
-                  </ul>
-                </li>
-                <li className="has-submenu">
-                  <Link to="/student/students-list">
-                    Student{" "}
-                    <i
-                      className="fas fa-chevron-down"
-                      onClick={openMobileSubMenu3}
-                    ></i>
-                  </Link>
-                  <ul
-                    className={
-                      mobileSubMenu3
-                        ? "submenu first-submenu submenuShow"
-                        : "submenu first-submenu"
-                    }
-                  >
-                    <li
-                      className={
-                        activeMenu === "List" || activeMenu === "Grid1"
-                          ? "has-submenu active"
-                          : "has-submenu"
-                      }
-                    >
-                      <Link to="/student/students-list">
-                        Student
-                        <i
-                          className=""
-                          onClick={openMobileSubMenu32}
-                        ></i>
-                      </Link>
-                      <ul
-                        className={
-                          mobileSubMenu32 ? "submenu submenuShow" : "submenu"
-                        }
-                      >
-                        <li className={activeMenu === "List" ? "active" : ""}>
-                          <Link to="/student/students-list" onClick={hideMobileMenu}>
-                            List
-                          </Link>
-                        </li>
-                        <li className={activeMenu === "Grid1" ? "active" : ""}>
-                          <Link to="/student/students-grid" onClick={hideMobileMenu}>
-                            Grid
-                          </Link>
-                        </li>
-                      </ul>
-                    </li>
-                    <li className={activeMenu === "Dashboard" ? "active" : ""}>
-                      <Link to="/student/student-dashboard" onClick={hideMobileMenu}>
-                        Student Dashboard
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "My Profile" ? "active" : ""}>
-                      <Link
-                        to="/student/student-profile"
-                        onClick={hideMobileMenu}
-                      >
-                        My Profile
-                      </Link>
-                    </li>
-                    <li
-                      className={activeMenu === "Enrolled Courses" ? "active" : ""}
-                    >
-                      <Link
-                        to="/student/student-courses"
-                        onClick={hideMobileMenu}
-                      >
-                        Enrolled Courses
-                      </Link>
-                    </li>
-                    <li
-                      className={activeMenu === "Wishlist" ? "active" : ""}
-                    >
-                      <Link
-                        to="/student/student-wishlist"
-                        onClick={hideMobileMenu}
-                      >
-                      Wishlist
-                      </Link>
-                    </li>
-                    <li
-                      className={activeMenu === "Reviews" ? "active" : ""}
-                    >
-                      <Link
-                        to="/student/student-reviews"
-                        onClick={hideMobileMenu}
-                      >
-                      Reviews
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "My Quiz Attempts" ? "active" : ""}>
-                      <Link
-                        to="/student/student-quiz"
-                        onClick={hideMobileMenu}
-                      >
-                       My Quiz Attempts
-                      </Link>
-                    </li>
-
-                    <li className={activeMenu === "Orders" ? "active" : ""}>
-                      <Link
-                        to="/student/student-order-history"
-                        onClick={hideMobileMenu}
-                      >
-                       Orders
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Question & Answer" ? "active" : ""}>
-                      <Link
-                        to="/student/student-qa"
-                        onClick={hideMobileMenu}
-                      >
-                        Question & Answer
-                      </Link>
-                    </li>
-                    <li
-                      className={activeMenu === "Referrals" ? "active" : ""}
-                    >
-                      <Link
-                        to="/student/student-referral"
-                        onClick={hideMobileMenu}
-                      >
-                        Referrals
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Messages" ? "active" : ""}>
-                      <Link
-                        to="/student/student-messages"
-                        onClick={hideMobileMenu}
-                      >
-                        Messages
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Support Ticket" ? "active" : ""}>
-                      <Link
-                        to="/student/student-tickets"
-                        onClick={hideMobileMenu}
-                      >
-                        Support Ticket
-                      </Link>
-                    </li>
-                    <li className={activeMenu === "Settings" ? "active" : ""}>
-                      <Link
-                        to="/student/student-setting"
-                        onClick={hideMobileMenu}
-                      >
-                        Settings
-                      </Link>
-                    </li>
-                   
-                  </ul>
-                </li>
-                <li className="has-submenu">
-                  <Link to="">
-                    Pages{" "}
-                    <i
-                      className="fas fa-chevron-down"
-                      onClick={openMobileSubMenu4}
-                    ></i>
-                  </Link>
-                  <ul
-                    className={
-                      mobileSubMenu4 ? "submenu submenuShow" : "submenu"
-                    }
-                  >
-                    <li>
-                      <Link to="/page-notification" onClick={hideMobileMenu}>
-                        Notification
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/pricing-plan" onClick={hideMobileMenu}>
-                        Pricing Plan
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/wishlist" onClick={hideMobileMenu}>
-                        Wishlist
-                      </Link>
-                    </li>
-                    <li className="has-submenu">
-                      <Link to="/course-list">
-                        Course{" "}
-                        <i
-                          className=""
-                          onClick={openMobileSubMenu42}
-                        ></i>
-                      </Link>
-                      <ul
-                        className={
-                          mobileSubMenu42 ? "submenu submenuShow" : "submenu"
-                        }
-                      >
-                        <li>
-                          <Link to="/add-course" onClick={hideMobileMenu}>
-                            Add Course
-                          </Link>
-                        </li>
-                        <li>
-                          <Link to="/course-list" onClick={hideMobileMenu}>
-                            Course List
-                          </Link>
-                        </li>
-                        <li>
-                          <Link to="/course-grid" onClick={hideMobileMenu}>
-                            Course Grid
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/course-details"
-                            onClick={hideMobileMenu}
-                          >
-                            Course Details
-                          </Link>
-                        </li>
-                      </ul>
-                    </li>
-                    <li className="has-submenu">
-                      <Link to="/come-soon">
-                        Error
-                        <i
-                          className=""
-                          onClick={openMobileSubMenu43}
-                        ></i>
-                      </Link>
-                      <ul
-                        className={
-                          mobileSubMenu43 ? "submenu submenuShow" : "submenu"
-                        }
-                      >
-                        <li>
-                          <Link to="/come-soon" onClick={hideMobileMenu}>
-                            Coming soon
-                          </Link>
-                        </li>
-                        <li>
-                          <Link to="/error-404" onClick={hideMobileMenu}>
-                            404
-                          </Link>
-                        </li>
-                        <li>
-                          <Link to="/error-500" onClick={hideMobileMenu}>
-                            500
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/under-construction"
-                            onClick={hideMobileMenu}
-                          >
-                            Under Construction
-                          </Link>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <Link to="/faq" onClick={hideMobileMenu}>
-                        FAQ
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/support" onClick={hideMobileMenu}>
-                        Support
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/job-category" onClick={hideMobileMenu}>
-                        Category
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/cart" onClick={hideMobileMenu}>
-                        Cart
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/checkout" onClick={hideMobileMenu}>
-                        Checkout
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/login" onClick={hideMobileMenu}>
-                        Login
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/register" onClick={hideMobileMenu}>
-                        Register
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/forgot-password" onClick={hideMobileMenu}>
-                        Forgot Password
-                      </Link>
-                    </li>
-                  </ul>
-                </li>
-                <li className="has-submenu">
-                  <Link to="#">
-                    Blog{" "}
-                    <i
-                      className="fas fa-chevron-down"
-                      onClick={openMobileSubMenu5}
-                    ></i>
-                  </Link>
-                  <ul
-                    className={
-                      mobileSubMenu5 ? "submenu submenuShow" : "submenu"
-                    }
-                  >
-                    <li>
-                      <Link to="/blog-list" onClick={hideMobileMenu}>
-                        Blog List
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/blog-grid" onClick={hideMobileMenu}>
-                        Blog Grid
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/blog-masonry" onClick={hideMobileMenu}>
-                        Blog Masonry
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/blog-modern" onClick={hideMobileMenu}>
-                        Blog Modern
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/blog-details" onClick={hideMobileMenu}>
-                        Blog Details
-                      </Link>
-                    </li>
-                  </ul>
-                </li>
-                <li className="login-link">
-                  <Link to="/login" onClick={hideMobileMenu}>
-                    Login / Signup
-                  </Link>
-                </li>
-              </ul>
-            </div>
+                  <li>
+                    <Link to="/faq">FAQ</Link>
+                  </li>
+                  <li>
+                    <Link to="/support">Support</Link>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <Link to="/support">About us</Link>
+              </li>
+              <li className="has-submenu">
+                <Link to="/blog-modern">Blog</Link>
+              </li>
+              <li className="login-link">
+                <Link to="/login">Login / Signup</Link>
+              </li>
+            </ul>
             <ul className="nav header-navbar-rht">
-            <DarkMode />
+              <DarkMode />
+              <li className="nav-item">
+                <Link to="/course-message">
+                  <img src={Messages} alt="img" />
+                </Link>
+              </li>
+              <li className="nav-item noti-nav">
+                <Link
+                  to="#"
+                  className="dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                >
+                  <img src={Notification} alt="img" />
+                </Link>
+                <div className="notifications dropdown-menu dropdown-end dropdown-menu-right">
+                  <div className="topnav-dropdown-header">
+                    <span className="notification-title">
+                      Notifications
+                      <select>
+                        <option>All</option>
+                        <option>Unread</option>
+                      </select>
+                    </span>
+                    <Link to="#" className="clear-noti">
+                      Mark all as read{" "}
+                      <i className="fa-solid fa-circle-check" />
+                    </Link>
+                  </div>
+                  <div className="noti-content">
+                    <ul className="notification-list">
+                      <li className="notification-message">
+                        <div className="media d-flex">
+                          <div>
+                            <Link to="/page-notification" className="avatar">
+                              <img className="avatar-img" alt="" src={User1} />
+                            </Link>
+                          </div>
+                          <div className="media-body">
+                            <h6>
+                              <Link to="/page-notification">
+                                Lex Murphy requested <span>access to</span> UNIX
+                                directory tree hierarchy{" "}
+                              </Link>
+                            </h6>
+                            <button className="btn btn-accept">Accept</button>
+                            <button className="btn btn-reject">Reject</button>
+                            <p>Today at 9:42 AM</p>
+                          </div>
+                        </div>
+                      </li>
+                      <li className="notification-message">
+                        <div className="media d-flex">
+                          <div>
+                            <Link to="/page-notification" className="avatar">
+                              <img className="avatar-img" alt="" src={User2} />
+                            </Link>
+                          </div>
+                          <div className="media-body">
+                            <h6>
+                              <Link to="/page-notification">
+                                Ray Arnold left 6 <span>comments on</span> Isla
+                                Nublar SOC2 compliance report
+                              </Link>
+                            </h6>
+                            <p>Yesterday at 11:42 PM</p>
+                          </div>
+                        </div>
+                      </li>
+                      <li className="notification-message">
+                        <div className="media d-flex">
+                          <div>
+                            <Link to="/page-notification" className="avatar">
+                              <img className="avatar-img" alt="" src={User3} />
+                            </Link>
+                          </div>
+                          <div className="media-body">
+                            <h6>
+                              <Link to="/page-notification">
+                                Dennis Nedry <span>commented on</span> Isla
+                                Nublar SOC2 compliance report
+                              </Link>
+                            </h6>
+                            <p className="noti-details">
+                              “Oh, I finished de-bugging the phones, but the
+                              system&apos;s compiling for eighteen minutes, or
+                              twenty. So, some minor systems may go on and off
+                              for a while.”
+                            </p>
+                            <p>Yesterday at 5:42 PM</p>
+                          </div>
+                        </div>
+                      </li>
+                      <li className="notification-message">
+                        <div className="media d-flex">
+                          <div>
+                            <Link to="/page-notification" className="avatar">
+                              <img className="avatar-img" alt="" src={User1} />
+                            </Link>
+                          </div>
+                          <div className="media-body">
+                            <h6>
+                              <Link to="/notifications">
+                                John Hammond <span>created</span> Isla Nublar
+                                SOC2 compliance report{" "}
+                              </Link>
+                            </h6>
+                            <p>Last Wednesday at 11:15 AM</p>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </li>
               <li className="nav-item user-nav">
                 <Link
                   to="#"
@@ -690,7 +334,7 @@ export function InstructorHeader({ activeMenu }) {
                   onClick={profileClick}
                 >
                   <span className="user-img">
-                    <img src={User17} alt="" />
+                    <img src={avatarUrl} alt="" />
                     <span className="status online"></span>
                   </span>
                 </Link>
@@ -706,32 +350,54 @@ export function InstructorHeader({ activeMenu }) {
                   <div className="user-header">
                     <div className="avatar avatar-sm">
                       <img
-                        src={User17}
+                        src={avatarUrl}
                         alt="User Image"
                         className="avatar-img rounded-circle"
                       />
                     </div>
                     <div className="user-text">
-                      <h6>Eugene Andre</h6>
+                      <h6>{user.username}</h6>
                       <p className="text-muted text mb-0">Instructor</p>
                     </div>
                   </div>
                   <Link
-                    className="dropdown-item"
+                    className="dropdown-item text"
+                    to="/instructor/deposit-instructor-dashboard"
+                  >
+                    <Home
+                      size={14}
+                      color={"#FF875A"}
+                      className="feather-home me-1"
+                    />{" "}
+                   Instructor Dashboard
+                  </Link>
+                  <Link
+                    className="dropdown-item text"
                     to="/instructor/instructor-dashboard"
                   >
-                    <Home size={14} color={"#FF875A"} className="feather-home me-1" />{" "}
-                    Dashboard
+                    <Home
+                      size={14}
+                      color={"#FF875A"}
+                      className="feather-home me-1"
+                    />{" "}
+                   Course Dashboard
                   </Link>
                   <Link
                     className="dropdown-item text"
                     to="/instructor/instructor-settings"
                   >
-                    <Star size={14} color={"#FF875A"} className="feather-star me-1" />{" "}
+                    <Star
+                      size={14}
+                      color={"#FF875A"}
+                      className="feather-star me-1"
+                    />{" "}
                     Edit Profile
                   </Link>
-                  
-                  <Link className="dropdown-item text" to="/home">
+                  <Link
+                    className="dropdown-item text"
+                    to="/logout"
+                    onClick={handleLogout}
+                  >
                     <LogOut
                       size={14}
                       color={"#FF875A"}
@@ -751,3 +417,4 @@ export function InstructorHeader({ activeMenu }) {
     </header>
   );
 }
+

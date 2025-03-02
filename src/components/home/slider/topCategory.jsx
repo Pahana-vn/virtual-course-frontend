@@ -62,7 +62,7 @@ const TopCategory = () => {
             <h2>Top Category</h2>
           </div>
           <div className="all-btn all-category d-flex align-items-center">
-            <Link to="job-category" className="btn btn-primary">
+            <Link to="/job-category" className="btn btn-primary">
               All Categories
             </Link>
           </div>
@@ -88,7 +88,7 @@ const TopCategory = () => {
                 <div className="feature-header">
                   <div className="feature-icon">
                     <img
-                      src={`http://localhost:8080${category.image}`}
+                      src={category.image}
                       alt={category.name}
                       style={{ width: "100px", height: "100px" }} // Thêm style tùy chỉnh
                     />

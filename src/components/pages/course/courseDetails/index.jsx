@@ -1,15 +1,22 @@
 import React from "react";
-import CourseHeader from "../header";
-// import InnerBanner from "../../../../assets/img/inner-banner.jpg";
+import { Link, useParams } from "react-router-dom";
 import DetailsContent from "./detailsContent";
-import { Icon1, People, Timer, User1 } from "../../../imagepath";
+import { Icon1, People, Timer } from "../../../imagepath";
 import Footer from "../../../footer";
-import { Link } from "react-router-dom";
+import { useGetCourseDetailsByIdQuery } from "../../../../redux/slices/course/courseApiSlice";
+import RoleBasedHeader from "../../../header/RoleBasedHeader";
 const CourseDetails = () => {
+  const { courseId } = useParams();
+  const courseIdNumber = Number(courseId);
+  
+  const { data: courseDetails, isLoading, isError } = useGetCourseDetailsByIdQuery({ id: courseIdNumber });
+  
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error loading course details.</p>;
   return (
     <>
       <div className="main-wrapper">
-        <CourseHeader activeMenu={"CourseDetails"}/>
+      <RoleBasedHeader />
 
         <div className="breadcrumb-bar">
           <div className="container">
@@ -25,10 +32,10 @@ const CourseDetails = () => {
                         Courses
                       </li>
                       <li className="breadcrumb-item" aria-current="page">
-                        All Courses
+                        <Link to="/course-grid">All Courses</Link>
                       </li>
                       <li className="breadcrumb-item" aria-current="page">
-                        The Complete Web Developer Course 2.0
+                        {courseDetails.titleCourse}
                       </li>
                     </ol>
                   </nav>
@@ -40,6 +47,11 @@ const CourseDetails = () => {
 
         <div
           className="inner-banner"
+          style={{
+            backgroundImage: `url(${courseDetails.imageCover})`, // URL ảnh banner
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
           <div className="container">
             <div className="row">
@@ -47,9 +59,9 @@ const CourseDetails = () => {
                 <div className="instructor-wrap border-bottom-0 m-0">
                   <div className="about-instructor align-items-center">
                     <div className="abt-instructor-img">
-                      <Link to="/instructor/instructor-profile">
+                      <Link to={`/instructor/${courseDetails.instructorId}/instructor-profile`}>
                         <img
-                          src={User1}
+                          src={courseDetails.instructorPhoto}
                           alt="img"
                           className="img-fluid"
                         />
@@ -57,9 +69,10 @@ const CourseDetails = () => {
                     </div>
                     <div className="instructor-detail me-3">
                       <h5>
-                        <Link to="/instructor/instructor-profile">Nicole Brown</Link>
+                        <Link to={`/instructor/${courseDetails.instructorId}/instructor-profile`}>
+                          {`${courseDetails.instructorFirstName} ${courseDetails.instructorLastName}`}</Link>
                       </h5>
-                      <p>UX/UI Designer</p>
+                      <p>{courseDetails.instructorTitle}</p>
                     </div>
                     <div className="rating mb-0">
                       <i className="fas fa-star filled me-1" />
@@ -72,25 +85,24 @@ const CourseDetails = () => {
                       </span>
                     </div>
                   </div>
-                  <span className="web-badge mb-3">WEB DEVELPMENT</span>
+                  <span className="web-badge mb-3">{courseDetails.categoryName}</span>
                 </div>
-                <h2>The Complete Web Developer Course 2.0</h2>
+                <h2>{courseDetails.titleCourse}</h2>
                 <p>
-                  Learn Web Development by building 25 websites and mobile apps
-                  using HTML, CSS, Javascript, PHP, Python, MySQL &amp; more!
+                {courseDetails.hashtag}
                 </p>
                 <div className="course-info d-flex align-items-center border-bottom-0 m-0 p-0">
                   <div className="cou-info">
                     <img src={Icon1} alt="" />
-                    <p>12+ Lesson</p>
+                    <p>{courseDetails.totalLectures}+ Lesson</p>
                   </div>
                   <div className="cou-info">
                     <img src={Timer} alt="" />
-                    <p>9hr 30min</p>
+                    <p>{courseDetails.duration} Minutes</p>
                   </div>
                   <div className="cou-info">
                     <img src={People} alt="" />
-                    <p>32 students enrolled</p>
+                    <p>{courseDetails.totalPurchasedStudents} students enrolled</p>
                   </div>
                 </div>
               </div>
@@ -98,7 +110,7 @@ const CourseDetails = () => {
           </div>
         </div>
 
-        <DetailsContent/>
+        <DetailsContent courseDetails={courseDetails} />
 
         <Footer/>
 

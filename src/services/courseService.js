@@ -1,4 +1,4 @@
-import api from "../untils/api";
+import api from "../utils/api";
 
 export const fetchCourses = async () => {
     try {
@@ -10,12 +10,27 @@ export const fetchCourses = async () => {
     }
 };
 
-export const createCourse = async (courseData) => {
+export const fetchCourseDetails = async (courseId) => {
     try {
-        const response = await api.post("/courses", courseData);
+        const response = await api.get(`/courses/${courseId}/course-details`);
         return response.data;
     } catch (error) {
-        console.error("Error creating course:", error);
+        console.error(`Error fetching course details for ID ${courseId}:`, error);
         throw error;
     }
+};
+
+export const fetchCourseById = async (courseId) => {
+    try {
+        const response = await api.get(`/courses/${courseId}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching course with ID ${courseId}:`, error);
+        throw error;
+    }
+};
+
+export const fetchCourseDetailsForStudent = async (courseId, studentId) => {
+    const response = await api.get(`/courses/${courseId}/details-for-student?studentId=${studentId}`);
+    return response.data;
 };

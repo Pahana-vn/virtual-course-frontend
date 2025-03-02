@@ -1,141 +1,99 @@
-import React, { useEffect, useState } from "react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import React, { useState } from "react";
+import { Button, Modal } from "react-bootstrap";
+import { FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Footer from "../../footer";
 import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
 
 const StudentLearningSchedule = () => {
-    const purchasedCourses = [
-        { courseId: 101, name: "React Basics" },
-        { courseId: 102, name: "Advanced Angular" },
-        { courseId: 103, name: "JavaScript Essentials" },
-    ];
-
     const [schedule, setSchedule] = useState(
-        JSON.parse(localStorage.getItem("schedule")) || [
-            {
-                id: 1,
-                courseId: 101,
-                dailyHours: 2,
-                preferredStartTime: "10:00 AM",
-                preferredEndTime: "12:00 PM",
-                targetCompletionDate: "2024-12-31",
-                timeSpent: 0,
-            },
-            {
-                id: 2,
-                courseId: 102,
-                dailyHours: 3,
-                preferredStartTime: "01:00 PM",
-                preferredEndTime: "04:00 PM",
-                targetCompletionDate: "2025-01-15",
-                timeSpent: 0,
-            },
-        ]
+        JSON.parse(localStorage.getItem("schedule")) || []
     );
 
-    const [newSession, setNewSession] = useState({
-        courseId: "",
-        dailyHours: "",
-        preferredStartTime: "",
-        preferredEndTime: "",
-        targetCompletionDate: "",
+    const [newEvent, setNewEvent] = useState({
+        title: "",
+        description: "",
+        startDate: "",
+        endDate: "",
     });
 
-    const [activeSession, setActiveSession] = useState(
-        JSON.parse(localStorage.getItem("activeSession")) || null
-    );
-    const [timeLeft, setTimeLeft] = useState(0);
-
-    useEffect(() => {
-        let timer;
-        if (activeSession) {
-            const remainingTime = new Date(activeSession.endTime) - new Date();
-            if (remainingTime > 0) {
-                setTimeLeft(Math.floor(remainingTime / 1000));
-                timer = setInterval(() => {
-                    setTimeLeft((prev) => {
-                        if (prev <= 1) {
-                            clearInterval(timer);
-                            completeSession();
-                            return 0;
-                        }
-                        return prev - 1;
-                    });
-                }, 1000);
-            } else {
-                completeSession();
-            }
-        }
-        return () => clearInterval(timer);
-    }, [activeSession]);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [showModal, setShowModal] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewSession({ ...newSession, [name]: value });
+
+        if (name === "startTime" || name === "endTime") {
+            const currentDate = newEvent[name.includes("start") ? "startDate" : "endDate"].split("T")[0];
+            const newDateTime = `${currentDate}T${value}`;
+            setNewEvent({ ...newEvent, [name.includes("start") ? "startDate" : "endDate"]: newDateTime });
+        } else {
+            setNewEvent({ ...newEvent, [name]: value });
+        }
     };
 
-    const addSession = () => {
-        if (!newSession.courseId) return alert("Please select a course!");
+    const addEvent = () => {
+        if (!newEvent.title || !newEvent.startDate || !newEvent.endDate) {
+            return alert("Please fill out all fields!");
+        }
+
         const newId = schedule.length + 1;
-        const updatedSchedule = [
-            ...schedule,
-            {
-                id: newId,
-                timeSpent: 0,
-                ...newSession,
-            },
-        ];
+        const updatedSchedule = [...schedule, { id: newId, ...newEvent }];
         setSchedule(updatedSchedule);
         localStorage.setItem("schedule", JSON.stringify(updatedSchedule));
-        setNewSession({
-            courseId: "",
-            dailyHours: "",
-            preferredStartTime: "",
-            preferredEndTime: "",
-            targetCompletionDate: "",
+        setNewEvent({
+            title: "",
+            description: "",
+            startDate: "",
+            endDate: "",
         });
+        setShowModal(false);
     };
 
-    const startSession = (session) => {
-        const totalTime = session.dailyHours * 3600; // Convert hours to seconds
-        const endTime = new Date(Date.now() + totalTime * 1000).toISOString();
-        const active = { ...session, endTime };
-        setActiveSession(active);
-        setTimeLeft(totalTime);
-        localStorage.setItem("activeSession", JSON.stringify(active));
+    const events = schedule.map((event) => ({
+        title: event.title,
+        start: event.startDate,
+        end: event.endDate,
+        extendedProps: {
+            description: event.description,
+        },
+    }));
+
+    const handleDateClick = (info) => {
+        setSelectedEvent(null);
+        const selectedDate = `${info.dateStr}T12:00`;
+        setNewEvent({
+            title: "",
+            description: "",
+            startDate: selectedDate,
+            endDate: selectedDate,
+        });
+        setShowModal(true);
     };
 
-    const stopSession = () => {
-        const elapsedTime = activeSession.dailyHours * 3600 - timeLeft;
-        const updatedSchedule = schedule.map((session) =>
-            session.id === activeSession.id
-                ? { ...session, timeSpent: session.timeSpent + elapsedTime }
-                : session
-        );
+    const handleEventClick = (info) => {
+        const selectedEvent = schedule.find(event => event.title === info.event.title);
+        setSelectedEvent(selectedEvent);
+        setNewEvent({
+            title: selectedEvent.title,
+            description: selectedEvent.description,
+            startDate: selectedEvent.startDate,
+            endDate: selectedEvent.endDate,
+        });
+        setShowModal(true);
+    };
+
+    const deleteEvent = (eventId) => {
+        const updatedSchedule = schedule.filter(event => event.id !== eventId);
         setSchedule(updatedSchedule);
         localStorage.setItem("schedule", JSON.stringify(updatedSchedule));
-        setActiveSession(null);
-        localStorage.removeItem("activeSession");
-        setTimeLeft(0);
-    };
-
-    const deleteSession = (id) => {
-        const updatedSchedule = schedule.filter((session) => session.id !== id);
-        setSchedule(updatedSchedule);
-        localStorage.setItem("schedule", JSON.stringify(updatedSchedule));
-    };
-
-    const completeSession = () => {
-        alert(`You have completed your session for the course: ${activeSession.courseId}!`);
-        stopSession();
-    };
-
-    const formatTime = (seconds) => {
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = seconds % 60;
-        return `${h}h ${m}m ${s}s`;
+        setShowModal(false);
     };
 
     return (
@@ -173,144 +131,98 @@ const StudentLearningSchedule = () => {
                                     <div className="profile-heading">
                                         <h3>Your Learning Schedule</h3>
                                     </div>
-                                    <div className="table-responsive">
-                                        <table className="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>Course</th>
-                                                    <th>Daily Study Hours</th>
-                                                    <th>Preferred Time</th>
-                                                    <th>Target Completion Date</th>
-                                                    <th>Time Spent</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {schedule.map((session) => (
-                                                    <tr key={session.id}>
-                                                        <td>
-                                                            {
-                                                                purchasedCourses.find(
-                                                                    (c) => c.courseId === session.courseId
-                                                                )?.name
-                                                            }
-                                                        </td>
-                                                        <td>{session.dailyHours} hours</td>
-                                                        <td>
-                                                            {session.preferredStartTime} - {session.preferredEndTime}
-                                                        </td>
-                                                        <td>{session.targetCompletionDate}</td>
-                                                        <td>{(session.timeSpent / 3600).toFixed(2)} hrs</td>
-                                                        <td>
-                                                            {activeSession?.id === session.id ? (
-                                                                <button
-                                                                    className="btn btn-danger btn-sm m-1"
-                                                                    onClick={stopSession}
-                                                                >
-                                                                    Stop Session
-                                                                </button>
-                                                            ) : (
-                                                                <button
-                                                                    className="btn btn-warning btn-sm m-1"
-                                                                    onClick={() => startSession(session)}
-                                                                >
-                                                                    Start Session
-                                                                </button>
-                                                            )}
-                                                            <button
-                                                                className="btn btn-danger btn-sm ml-2 m-1"
-                                                                onClick={() => deleteSession(session.id)}
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
 
-                                    <div className="mt-4">
-                                        <h5>Add a New Session</h5>
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <select
-                                                    className="form-control mb-2"
-                                                    name="courseId"
-                                                    value={newSession.courseId}
-                                                    onChange={handleInputChange}
-                                                >
-                                                    <option value="">Select Course</option>
-                                                    {purchasedCourses.map((course) => (
-                                                        <option key={course.courseId} value={course.courseId}>
-                                                            {course.name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <input
-                                                    type="number"
-                                                    className="form-control mb-2"
-                                                    placeholder="Daily Study Hours"
-                                                    name="dailyHours"
-                                                    value={newSession.dailyHours}
-                                                    onChange={handleInputChange}
-                                                />
-                                            </div>
-                                            <div className="col-md-6">
-                                                <input
-                                                    type="time"
-                                                    className="form-control mb-2"
-                                                    name="preferredStartTime"
-                                                    value={newSession.preferredStartTime}
-                                                    onChange={handleInputChange}
-                                                />
-                                            </div>
-                                            <div className="col-md-6">
-                                                <input
-                                                    type="time"
-                                                    className="form-control mb-2"
-                                                    name="preferredEndTime"
-                                                    value={newSession.preferredEndTime}
-                                                    onChange={handleInputChange}
-                                                />
-                                            </div>
-                                            <div className="col-md-6">
-                                                <input
-                                                    type="date"
-                                                    className="form-control mb-2"
-                                                    name="targetCompletionDate"
-                                                    value={newSession.targetCompletionDate}
-                                                    onChange={handleInputChange}
-                                                />
-                                            </div>
-                                            <div className="col-md-6">
-                                                <button
-                                                    className="btn btn-primary w-100"
-                                                    onClick={addSession}
-                                                >
-                                                    Add Session
-                                                </button>
-                                            </div>
-                                        </div>
+                                    <div className="calendar-container">
+                                        <FullCalendar
+                                            plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
+                                            initialView="dayGridMonth"
+                                            events={events}
+                                            dateClick={handleDateClick}
+                                            eventClick={handleEventClick}
+                                            headerToolbar={{
+                                                left: "prev,next today",
+                                                center: "title",
+                                                right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+                                            }}
+                                        />
                                     </div>
                                 </div>
-                                {activeSession && (
-                                    <div className="mt-4 text-center">
-                                        <h5>Active Session: {activeSession.courseId}</h5>
-                                        <h3>
-                                            Time Left: {formatTime(timeLeft)}
-                                        </h3>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>
                 </div>
                 <Footer />
             </div>
+
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{selectedEvent ? "Edit Event" : "Add New Event"}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="form-group">
+                        <label>Title</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="title"
+                            value={newEvent.title}
+                            onChange={handleInputChange}
+                            placeholder="Event Title"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Description</label>
+                        <textarea
+                            className="form-control"
+                            name="description"
+                            value={newEvent.description}
+                            onChange={handleInputChange}
+                            placeholder="Event Description"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Start Time</label>
+                        <input
+                            type="time"
+                            className="form-control"
+                            name="startTime"
+                            value={newEvent.startDate.slice(11, 16)}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>End Time</label>
+                        <input
+                            type="time"
+                            className="form-control"
+                            name="endTime"
+                            value={newEvent.endDate.slice(11, 16)}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>
+                            Selected Date: {new Date(newEvent.startDate).toLocaleDateString('en-US')}
+                        </label>
+                    </div>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    {selectedEvent && (
+                        <Button variant="danger" onClick={() => deleteEvent(selectedEvent.id)}>
+                            <FaTrashAlt /> Delete
+                        </Button>
+                    )}
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={addEvent}>
+                        Save
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
+
 export default StudentLearningSchedule;

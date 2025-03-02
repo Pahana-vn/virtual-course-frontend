@@ -17,9 +17,7 @@ const Footer = () => {
                 </div>
                 <div className="footer-about-content">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                    consequat mauris Lorem ipsum dolor sit amet, consectetur
-                    adipiscing elit. Ut consequat mauris
+                  At Virtual Course Network, we believe that learning has no borders. With a wide range of quality courses, you can learn anytime, anywhere.
                   </p>
                 </div>
               </div>
@@ -43,7 +41,7 @@ const Footer = () => {
                     <Link to="/instructor/instructor-list">Instructor</Link>
                   </li>
                   <li>
-                    <Link to="/deposit-instructor-dashboard"> Dashboard</Link>
+                    <Link to="/instructor/deposit-instructor-dashboard"> Dashboard</Link>
                   </li>
                 </ul>
               </div>
