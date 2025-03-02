@@ -122,7 +122,7 @@ export const Home = () => {
                     <p>Own your future learning new skills online</p>
                   </div>
                   <div className="banner-content">
-                    <form className="form" action="/course-list">
+                    <form className="form" action="/course-grid">
                       <div className="form-inner">
                         <div className="input-group homeSearch">
                           <i className="fa-solid fa-magnifying-glass search-icon" />

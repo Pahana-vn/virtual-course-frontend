@@ -8,13 +8,13 @@ import { logOut, selectCurrentUser } from "../../../redux/slices/auth/authSlice"
 import { useInstructorAvatarQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 import DarkMode from "../../common/darkMode";
 import {
-  logo,
   Messages,
   Notification,
   User1,
   User2,
   User3,
 } from "../../imagepath";
+import logoVirtual from "../../../assets/img/logo.png";
 
 // eslint-disable-next-line react/prop-types
 
@@ -161,8 +161,8 @@ export function InstructorHeader() {
                 </span>
               </Link>
               <Link to="/home" className="navbar-brand logo">
-                <img src={logo} className="img-fluid" alt="Logo" />
-              </Link>
+                  <img src={logoVirtual} className="img-fluid" alt="Logo" />
+                </Link>
             </div>
             <ul className="main-nav">
               <li className="has-submenu">
