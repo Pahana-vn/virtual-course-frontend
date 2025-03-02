@@ -235,6 +235,7 @@ const Approuter = () => {
           path="/setting-support-view-tickets"
           element={<StudentViewTickets />}
         />
+
         <Route
           path="/deposit-student-dashboard"
           element={<StudentDepositDashboard />}
@@ -458,10 +459,12 @@ const Approuter = () => {
             element={<StudentDashboard />}
           />
           <Route path="/student/student-profile" element={<StudentProfile />} />
+
           <Route
-            path="/student/student-dashboard/:accountId"
+            path="/student/student-dashboard/:studentId"
             element={<StudentDashboard />}
           />
+          
           <Route
             path="/student/student-profile/:studentId"
             element={<StudentProfile />}

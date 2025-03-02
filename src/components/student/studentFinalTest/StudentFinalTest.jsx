@@ -10,11 +10,13 @@ const StudentFinalTest = () => {
     const studentId = localStorage.getItem('studentId');
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
-    const [timeLeft, setTimeLeft] = useState(40 * 60);
+    const [timeLeft, setTimeLeft] = useState(60 * 60); // 60 phút
     const navigate = useNavigate();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false); // State để quản lý việc hiển thị modal
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false); // Biến để kiểm tra bài đã nộp chưa
 
+    // Fetch danh sách câu hỏi
     useEffect(() => {
         if (!testId) return;
 
@@ -23,13 +25,14 @@ const StudentFinalTest = () => {
                 const response = await api.get(`/questions/test/${testId}`);
                 setQuestions(response.data);
             } catch (error) {
-                console.error("❌ Lỗi khi lấy danh sách câu hỏi:", error);
+                console.error("Error when getting list of questions:", error);
             }
         };
 
         fetchQuestions();
     }, [testId]);
 
+    // Đếm ngược thời gian
     useEffect(() => {
         const timer = setInterval(() => {
             setTimeLeft(t => (t > 0 ? t - 1 : 0));
@@ -37,6 +40,14 @@ const StudentFinalTest = () => {
         return () => clearInterval(timer);
     }, []);
 
+    // Tự động nộp bài khi hết thời gian
+    useEffect(() => {
+        if (timeLeft === 0 && !isSubmitted) {
+            handleSubmit(); // Gọi hàm nộp bài
+        }
+    }, [timeLeft, isSubmitted]);
+
+    // Xử lý thay đổi lựa chọn câu trả lời
     const handleOptionChange = (qId, optId, checked, type) => {
         setAnswers(prev => {
             const prevSelected = prev[qId] || [];
@@ -54,7 +65,11 @@ const StudentFinalTest = () => {
         });
     };
 
+    // Hàm nộp bài
     const handleSubmit = async () => {
+        if (isSubmitted) return; // Nếu đã nộp rồi thì không làm gì cả
+        setIsSubmitted(true); // Đánh dấu là đã nộp
+
         const submission = {
             studentId: parseInt(studentId),
             testId: parseInt(testId),
@@ -64,27 +79,30 @@ const StudentFinalTest = () => {
             }))
         };
 
-        console.log("🔎 Data gửi lên:", submission);
+        console.log("Data sent up:", submission);
 
         try {
             await api.post("/tests/submit", submission);
             navigate(`/student/test-result/${testId}`);
         } catch (error) {
-            console.error("❌ Lỗi khi nộp bài:", error.response?.data || error);
+            console.error("Error when submitting assignment:", error.response?.data || error);
         }
     };
 
+    // Tính toán thời gian còn lại
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
 
     const currentQuestion = questions[currentQuestionIndex];
 
+    // Điều hướng câu hỏi trước đó
     const goPrev = () => {
         if (currentQuestionIndex > 0) {
             setCurrentQuestionIndex(currentQuestionIndex - 1);
         }
     };
 
+    // Điều hướng câu hỏi tiếp theo
     const goNext = () => {
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -106,7 +124,7 @@ const StudentFinalTest = () => {
                 }}
             >
                 <div style={{ width: '80%' }}>
-                    {/* Top Black Bar */}
+                    {/* Thanh thời gian */}
                     <div
                         style={{
                             backgroundColor: '#000',
@@ -128,7 +146,7 @@ const StudentFinalTest = () => {
                         <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>TIME LEFT IN 40m</div>
                     </div>
 
-                    {/* Question Navigation Bar */}
+                    {/* Thanh điều hướng câu hỏi */}
                     <div
                         style={{
                             backgroundColor: '#fff',
@@ -208,7 +226,7 @@ const StudentFinalTest = () => {
                         </button>
                     </div>
 
-                    {/* Main Content */}
+                    {/* Nội dung câu hỏi */}
                     <div style={{ flex: '1', padding: '20px', display: 'flex', flexDirection: 'column' }}>
                         {currentQuestion ? (
                             <div
@@ -259,17 +277,18 @@ const StudentFinalTest = () => {
                             <div style={{ textAlign: 'center', marginTop: '50px' }}>No questions available.</div>
                         )}
 
+                        {/* Nút nộp bài */}
                         <div style={{ marginTop: '20px', textAlign: 'right', marginBottom: '20px' }}>
                             <button
-                                onClick={() => setShowConfirmationModal(true)} // Hiển thị modal khi nhấn nút
-                                disabled={timeLeft === 0}
+                                onClick={() => setShowConfirmationModal(true)}
+                                disabled={timeLeft === 0 || isSubmitted}
                                 style={{
-                                    backgroundColor: timeLeft === 0 ? '#6c757d' : '#007bff',
+                                    backgroundColor: timeLeft === 0 || isSubmitted ? '#6c757d' : '#007bff',
                                     color: '#ffffff',
                                     border: 'none',
                                     padding: '10px 20px',
                                     borderRadius: '5px',
-                                    cursor: timeLeft === 0 ? 'not-allowed' : 'pointer',
+                                    cursor: timeLeft === 0 || isSubmitted ? 'not-allowed' : 'pointer',
                                     fontWeight: 'bold',
                                 }}
                             >
@@ -281,7 +300,7 @@ const StudentFinalTest = () => {
             </div>
             <Footer />
 
-            {/* Confirmation Modal */}
+            {/* Modal xác nhận nộp bài */}
             {showConfirmationModal && (
                 <div
                     style={{
@@ -310,7 +329,7 @@ const StudentFinalTest = () => {
                         <h3 style={{ marginBottom: '20px', color: '#495057' }}>Are you sure you want to submit?</h3>
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                             <button
-                                onClick={() => setShowConfirmationModal(false)} // Đóng modal khi nhấn Cancel
+                                onClick={() => setShowConfirmationModal(false)}
                                 style={{
                                     backgroundColor: '#6c757d',
                                     color: '#fff',
@@ -325,8 +344,8 @@ const StudentFinalTest = () => {
                             </button>
                             <button
                                 onClick={() => {
-                                    setShowConfirmationModal(false); // Đóng modal khi nhấn Confirm
-                                    handleSubmit(); // Gọi hàm submit
+                                    setShowConfirmationModal(false);
+                                    handleSubmit();
                                 }}
                                 style={{
                                     backgroundColor: '#007bff',

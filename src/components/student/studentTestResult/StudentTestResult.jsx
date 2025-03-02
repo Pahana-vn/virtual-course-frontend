@@ -19,8 +19,8 @@ const StudentTestResult = () => {
                 const response = await api.get(`/tests/result/${testId}/student/${studentId}`);
                 setResult(response.data);
             } catch (error) {
-                console.error('❌ Lỗi khi lấy kết quả kiểm tra:', error);
-                setError("Không thể lấy kết quả. Vui lòng thử lại!");
+                console.error('Error getting test results:', error);
+                setError("Unable to get results. Please try again!");
             } finally {
                 setLoading(false);
             }
@@ -31,7 +31,7 @@ const StudentTestResult = () => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div className="text-danger">{error}</div>;
 
-    const { testTitle, marksObtained, percentage, passed, questions } = result;
+    const { testTitle, studentLastname, studentFirstname, marksObtained, percentage, passed, questions } = result;
     const statusIcon = passed ? <FaCheckCircle size={48} color="green" /> : <FaTimesCircle size={48} color="red" />;
     const statusText = passed ? "Passed" : "Failed";
 
@@ -39,12 +39,12 @@ const StudentTestResult = () => {
         <div className="main-wrapper" style={{
             fontFamily: 'Arial, sans-serif',
             minHeight: '100vh',
-            backgroundImage: 'url(/path/to/your/background-image.jpg)', // Thay đổi đường dẫn đến ảnh background của bạn
+            backgroundImage: 'url(/path/to/your/background-image.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            paddingTop: '50px', // Thêm padding-top để tránh bị đè bởi header
-            paddingBottom: '60px', // Thêm padding-bottom để tránh bị đè bởi footer
-            boxSizing: 'border-box', // Đảm bảo padding không làm tăng kích thước tổng thể
+            paddingTop: '50px',
+            paddingBottom: '60px',
+            boxSizing: 'border-box',
         }}>
             <StudentHeader activeMenu={"Test Results"} />
             <div style={{
@@ -53,7 +53,7 @@ const StudentTestResult = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 paddingTop: '40px',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)', // Thêm một lớp phủ trắng để làm nổi bật nội dung
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
             }}>
                 <div style={{
                     width: '80%',
@@ -61,9 +61,8 @@ const StudentTestResult = () => {
                     borderRadius: '10px',
                     padding: '40px',
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                    position: 'relative', // Thêm position relative để định vị nút "Back to Quiz"
+                    position: 'relative',
                 }}>
-                    {/* Nút quay lại */}
                     <button
                         onClick={() => navigate("/student/student-quiz")}
                         style={{
@@ -78,9 +77,9 @@ const StudentTestResult = () => {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '10px',
-                            position: 'absolute', // Định vị tuyệt đối
-                            top: '20px', // Cách trên 20px
-                            right: '20px', // Cách phải 20px
+                            position: 'absolute',
+                            top: '20px',
+                            right: '20px',
                         }}
                     >
                         <FaArrowLeft /> Back to Quiz
@@ -88,11 +87,10 @@ const StudentTestResult = () => {
 
                     <h1 style={{ textAlign: 'center', fontSize: '2rem', color: '#333', marginBottom: '20px' }}>Test Results</h1>
 
-                    {/* Thông tin tổng quan */}
                     <div style={{ marginBottom: '30px' }}>
                         <div style={{ marginBottom: '20px', fontSize: '1.2rem', fontWeight: 'bold' }}>
                             <p><strong>Test Name:</strong> {testTitle}</p>
-                            <p><strong>Student ID:</strong> {studentId}</p>
+                            <p><strong>Student:</strong> {studentLastname} {studentFirstname}</p>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>

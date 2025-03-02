@@ -32,7 +32,7 @@ const DetailsContent = ({ courseDetails }) => {
 
   const [openStates, setOpenStates] = useState([]);
   const [cartCourses, setCartCourses] = useState([]);
-  const [wishlist, setWishlist] = useState([]); // Fix setWishlist initialization
+  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(false);
   const [cartLoading, setCartLoading] = useState(false);
   const [studentId, setStudentId] = useState(() => localStorage.getItem("studentId") || "");
@@ -77,7 +77,6 @@ const DetailsContent = ({ courseDetails }) => {
     getCartItems();
   }, [studentId]);
 
-  // Fetch wishlist when studentId changes
   useEffect(() => {
     if (!studentId) return;
 
@@ -204,7 +203,7 @@ const DetailsContent = ({ courseDetails }) => {
                     </div>
                   </div>
                   {courseDetails.sections &&
-                  courseDetails.sections.length > 0 ? (
+                    courseDetails.sections.length > 0 ? (
                     courseDetails.sections.map((section, sectionIndex) => (
                       <div key={section.id} className="course-card">
                         <h6 className="cou-title">
@@ -226,9 +225,8 @@ const DetailsContent = ({ courseDetails }) => {
                         </h6>
                         <div
                           id={`section-${sectionIndex}`}
-                          className={`card-collapse collapse ${
-                            openStates[sectionIndex] ? "show" : ""
-                          }`}
+                          className={`card-collapse collapse ${openStates[sectionIndex] ? "show" : ""
+                            }`}
                         >
                           <ul>
                             {section.lectures && section.lectures.length > 0 ? (
@@ -436,7 +434,7 @@ const DetailsContent = ({ courseDetails }) => {
                         </div>
                         <div className="row gx-2">
                           <div className="col-md-6 addHeart">
-                          <button className="btn btn-wish w-100" onClick={handleAddToCart} disabled={cartLoading}>
+                            <button className="btn btn-wish w-100" onClick={handleAddToCart} disabled={cartLoading}>
                               {cartLoading ? "Adding to cart..." : "Add to cart"}
                             </button>
                           </div>

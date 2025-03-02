@@ -1,12 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import StickyBox from "react-sticky-box";
 import { logout } from "../../../services/authService";
+import { fetchStudentByStudentId } from "../../../services/studentService";
 import { User16 } from "../../imagepath";
 
 export default function StudentSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const studentId = localStorage.getItem("studentId");
+
+  const [avatar, setAvatar] = useState(User16); // Ảnh mặc định
+
+  // Lấy thông tin sinh viên khi component load
+  useEffect(() => {
+    const getStudentData = async () => {
+      if (!studentId) return;
+      try {
+        const studentData = await fetchStudentByStudentId(studentId);
+        if (studentData.avatar) {
+          setAvatar(studentData.avatar); // Nếu có avatar từ API, cập nhật state
+        }
+      } catch (error) {
+        console.error("Error fetching student avatar:", error);
+      }
+    };
+    getStudentData();
+  }, [studentId]); // Chạy khi studentId thay đổi
 
   const getActiveClass = (path) => {
     return location.pathname === path ? "active" : "";
@@ -24,15 +44,17 @@ export default function StudentSidebar() {
           <div className="settings-menu">
             <div className="profile-bg">
               <div className="profile-img">
-                <Link to="/student/student-profile">
-                  <img src={User16} alt="Img" />
+                <Link to={`/student/student-profile/${studentId}`}>
+                  <img src={avatar} alt="Student Avatar" />
                 </Link>
               </div>
             </div>
             <div className="profile-group">
               <div className="profile-name text-center">
                 <h4>
-                  <Link to="/student/student-profile">Rolands Richard</Link>
+                  <Link to={`/student/student-profile/${studentId}`}>
+                    Student Name
+                  </Link>
                 </h4>
                 <p>Student</p>
               </div>
@@ -44,15 +66,14 @@ export default function StudentSidebar() {
             <h3>Dashboard</h3>
             <ul>
               <li className={`nav-item ${getActiveClass('/student/student-dashboard')}`}>
-                <Link to={`/student/student-dashboard/${localStorage.getItem("studentId")}`} className="nav-link">
+                <Link to={`/student/student-dashboard/${studentId}`} className="nav-link">
                   <i className="bx bxs-tachometer" />
                   Dashboard
                 </Link>
               </li>
 
-
-              <li className={`nav-item ${location.pathname === '/student/student-profile' ? 'active' : ''}`}>
-                <Link to={`/student/student-profile/${localStorage.getItem("studentId")}`} className="nav-link">
+              <li className={`nav-item ${getActiveClass('/student/student-profile')}`}>
+                <Link to={`/student/student-profile/${studentId}`} className="nav-link">
                   <i className="bx bxs-user" />
                   My Profile
                 </Link>
@@ -72,13 +93,6 @@ export default function StudentSidebar() {
                 </Link>
               </li>
 
-              {/* <li className={`nav-item ${getActiveClass('/student/student-qa')}`}>
-                <Link to="/student/student-qa" className="nav-link">
-                  <i className="bx bxs-bookmark-alt" />
-                  Certificate
-                </Link>
-              </li> */}
-
               <li className={`nav-item ${getActiveClass('/student/student-courses')}`}>
                 <Link to="/student/student-courses" className="nav-link">
                   <i className="bx bxs-graduation" />
@@ -93,14 +107,7 @@ export default function StudentSidebar() {
                 </Link>
               </li>
 
-              {/* <li className={`nav-item ${location.pathname === '/student/student-reviews' ? 'active' : ''}`}>
-                <Link to="/student/student-reviews" className="nav-link">
-                  <i className="bx bxs-star" />
-                  Reviews
-                </Link>
-              </li> */}
-
-              <li className={`nav-item ${location.pathname === '/student/student-quiz' || location.pathname === '/student/student-quiz-details' ? 'active' : ''}`}>
+              <li className={`nav-item ${getActiveClass('/student/student-quiz')}`}>
                 <Link to="/student/student-quiz" className="nav-link">
                   <i className="bx bxs-shapes" />
                   My Quiz Attempts
@@ -114,25 +121,17 @@ export default function StudentSidebar() {
                 </Link>
               </li>
 
-              <li className={`nav-item ${location.pathname === '/student/student-messages' ? 'active' : ''}`}>
+              <li className={`nav-item ${getActiveClass('/student/student-messages')}`}>
                 <Link to="/student/student-messages" className="nav-link">
                   <i className="bx bxs-chat" />
                   Messages
                 </Link>
               </li>
-
-              {/* <li className={`nav-item ${location.pathname === '/student/student-ticket' ? 'active' : ''}`}>
-
-                <Link to="/student/student-ticket" className="nav-link">
-                  <i className="bx bxs-coupon" />
-                  Support Tickets
-                </Link>
-              </li> */}
             </ul>
             <h3>Account Settings</h3>
             <ul>
-              <li className={`nav-item ${location.pathname === '/student/student-setting' || location.pathname === '/student/student-change-password' || location.pathname === '/student/student-social-profile' || location.pathname === '/student/student-linked-accounts' || location.pathname === '/student/student-notification' ? 'active' : ''}`}>
-                <Link to="/student/student-setting" className="nav-link ">
+              <li className={`nav-item ${getActiveClass('/student/student-setting')}`}>
+                <Link to="/student/student-setting" className="nav-link">
                   <i className="bx bxs-cog" />
                   Settings
                 </Link>
