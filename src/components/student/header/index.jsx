@@ -5,12 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import logoVirtual from "../../../assets/img/logo.png";
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
 import { logOut, selectCurrentUser } from "../../../redux/slices/auth/authSlice";
 import { useStudentAvatarQuery } from "../../../redux/slices/student/studentApiSlice";
 import {
   addCourseToCart,
   fetchCartItems,
+  fetchStudentByStudentId,
   fetchWishlist,
   removeCourseFromCart,
   removeCourseFromWishlist,
@@ -57,6 +59,32 @@ export default function StudentHeader() {
   useOnClickOutside(notificationRef, () => setShowNotification(false));
   useOnClickOutside(profileRef, () => setShowProfile(false));
 
+  const studentId = localStorage.getItem("studentId");
+
+  const [student, setStudent] = useState({
+    username: "",
+    avatar: User16,
+  });
+
+  useOnClickOutside(profileRef, () => setShowProfile(false));
+
+  // Fetch student avatar and username
+  useEffect(() => {
+    const getStudentData = async () => {
+      if (!studentId) return;
+      try {
+        const studentData = await fetchStudentByStudentId(studentId);
+        setStudent({
+          username: studentData.username || "Student",
+          avatar: studentData.avatar || User16,
+        });
+      } catch (error) {
+        console.error("❌ Error fetching student data:", error);
+      }
+    };
+    getStudentData();
+  }, [studentId]);
+
   // Check login status and fetch data from token
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -67,6 +95,8 @@ export default function StudentHeader() {
       fetchCartAndWishlistData(studentId);
     }
   }, []);
+
+
 
   // Fetch Cart and Wishlist data after login
   const fetchCartAndWishlistData = async (studentId) => {
@@ -209,8 +239,9 @@ export default function StudentHeader() {
                   </span>
                 </Link>
                 <Link to="/home" className="navbar-brand logo">
-                  <img src={logo} className="img-fluid" alt="Logo" />
+                  <img src={logoVirtual} className="img-fluid" alt="Logo" />
                 </Link>
+
               </div>
 
               <div className="main-menu-wrapper">
@@ -280,7 +311,7 @@ export default function StudentHeader() {
                 {isLoggedIn ? (
                   <>
                     <li className="nav-item">
-                      <Link to="/student/dashboard">
+                      <Link to="/student/student-messages">
                         <img src={Messages} alt="Messages" />
                       </Link>
                     </li>
@@ -493,10 +524,11 @@ export default function StudentHeader() {
                         onClick={profileClick}
                       >
                         <span className="user-img">
-                          <img src={User16} alt="User" />
+                          <img src={student.avatar} alt="User Avatar" />
                           <span className="status online"></span>
                         </span>
                       </Link>
+
                       <div
                         className={`users dropdown-menu dropdown-menu-right modalPosition ${showProfile ? "show" : ""
                           }`}
@@ -504,14 +536,14 @@ export default function StudentHeader() {
                         <div className="user-header d-flex align-items-center p-2 border-bottom">
                           <div className="avatar avatar-sm">
                             <img
-                              src={User16}
-                              alt="User Image"
+                              src={student.avatar}
+                              alt="User Avatar"
                               className="avatar-img rounded-circle"
                             />
                           </div>
                           <div className="user-text ms-2">
-                            <h6>Student</h6>
-                            <p className="text-muted mb-0"></p>
+                            <h6>{student.username}</h6>
+                            <p className="text-muted mb-0">Student</p>
                           </div>
                         </div>
                         <Link
@@ -546,7 +578,20 @@ export default function StudentHeader() {
 
                         <Link
                           className="dropdown-item text"
-                          to="/student/setting-student-subscription"
+                          to="/student/student-study"
+                          onClick={() => setShowProfile(false)}
+                        >
+                          <User
+                            size={14}
+                            color={"#FF875A"}
+                            className="headerIcon me-2"
+                          />
+                          Study
+                        </Link>
+
+                        <Link
+                          className="dropdown-item text"
+                          to="/student/student-setting"
                           onClick={() => setShowProfile(false)}
                         >
                           <Star
@@ -554,7 +599,7 @@ export default function StudentHeader() {
                             color={"#FF875A"}
                             className="headerIcon me-2"
                           />
-                          Subscription
+                          Setting
                         </Link>
 
                         <Link

@@ -5,6 +5,7 @@ import Scrollbars from "react-custom-scrollbars-2";
 import { Link } from "react-router-dom";
 import SockJS from 'sockjs-client';
 
+import api from "../../../utils/api";
 import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
 import "./studentMessages1.css";
@@ -19,8 +20,13 @@ const StudentMessages = () => {
   const [currentMsg, setCurrentMsg] = useState('');
 
   // Get the studentId and instructorId from localStorage
-  const currentUserAccountId = localStorage.getItem('studentId');  // Get studentId from local storage
-  const chatWithAccountId = localStorage.getItem('instructorId');  // Get instructorId from local storage
+  const currentUserAccountId = localStorage.getItem('studentId');
+  const chatWithAccountId = localStorage.getItem('instructorId');
+
+  const [instructorInfo, setInstructorInfo] = useState({
+    name: "Instructor Name",
+    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzBpnouxDuF063trW5gZOyXtyuQaExCQVMYA&s"
+  });
 
   const stompClientRef = useRef(null);
 
@@ -29,23 +35,12 @@ const StudentMessages = () => {
     setIsSmallScreen(window.innerWidth < 992);
   };
 
-  useEffect(() => {
-    // Fetch chat history between student and instructor
-    fetch(`http://localhost:8080/api/chat/history?user1Id=${currentUserAccountId}&user2Id=${chatWithAccountId}`)
-      .then(res => res.json())
-      .then(data => {
-        setMessages(data);
-      })
-      .catch(error => console.error('Error fetching chat history:', error));
-
-    // Connect to WebSocket
+  const connectWebSocket = (currentUserAccountId, setMessages) => {
     const socket = new SockJS('http://localhost:8080/ws-chat');
     const stompClient = Stomp.over(socket);
-    stompClientRef.current = stompClient;
 
     stompClient.connect({}, (frame) => {
       console.log('Connected: ' + frame);
-      // Subscribe to receive messages in real-time
       stompClient.subscribe(`/queue/user.${currentUserAccountId}`, (messageOutput) => {
         const msg = JSON.parse(messageOutput.body);
         setMessages(prev => [...prev, msg]);
@@ -54,28 +49,81 @@ const StudentMessages = () => {
       console.error('Error', error);
     });
 
-    window.addEventListener("resize", handleResize);
+    return stompClient;
+  };
 
+  useEffect(() => {
+    // Fetch instructor info
+    const fetchInstructorInfo = async () => {
+      try {
+        const response = await api.get(`/api/instructors/${chatWithAccountId}`);
+        const instructor = response.data;
+        setInstructorInfo({
+          name: `${instructor.firstName} ${instructor.lastName}`,
+          avatar: instructor.photo ? `http://localhost:8080/uploads/instructor/${instructor.photo}` : "path/to/default/avatar.jpg"
+        });
+      } catch (error) {
+        console.error('Error fetching instructor info:', error);
+      }
+    };
+  
+    fetchInstructorInfo();
+  
+    // Fetch chat history between student and instructor
+    fetch(`http://localhost:8080/api/chat/history?user1Id=${currentUserAccountId}&user2Id=${chatWithAccountId}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch chat history");
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setMessages(data);
+        } else {
+          console.error("Expected an array but got:", data);
+          setMessages([]);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching chat history:', error);
+        setMessages([]); // Đặt messages thành mảng rỗng nếu có lỗi
+      });
+  
+    // Connect to WebSocket
+    const stompClient = connectWebSocket(currentUserAccountId, setMessages);
+    stompClientRef.current = stompClient;
+  
+    window.addEventListener("resize", handleResize);
+  
     return () => {
       if (stompClientRef.current) {
         stompClientRef.current.disconnect();
       }
       window.removeEventListener("resize", handleResize);
-    }
+    };
   }, [currentUserAccountId, chatWithAccountId]);
 
   const sendMessage = (e) => {
     e.preventDefault();
     if (currentMsg.trim() !== '' && stompClientRef.current) {
+      // Kiểm tra xem STOMP client đã kết nối chưa
+      if (!stompClientRef.current.connected) {
+        console.error("STOMP connection is not established.");
+        return;
+      }
+
       const chatMessageDTO = {
         senderAccountId: currentUserAccountId,
         receiverAccountId: chatWithAccountId,
         content: currentMsg,
         type: "CHAT"
       };
+
+      // Gửi tin nhắn
       stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
 
-      // Temporarily add the message to UI for the sender
+      // Tạm thời thêm tin nhắn vào UI cho người gửi
       setMessages(prev => [...prev, {
         ...chatMessageDTO,
         senderName: "You",
@@ -189,7 +237,7 @@ const StudentMessages = () => {
                                       <div>
                                         <div className="avatar avatar-online">
                                           <img
-                                            src="path/to/receiver/avatar.jpg"
+                                            src={instructorInfo.avatar}
                                             className="rounded-circle"
                                             alt="image"
                                           />
@@ -197,7 +245,7 @@ const StudentMessages = () => {
                                       </div>
                                       <div className="users-list-body">
                                         <div>
-                                          <h5>Receiver Name</h5>
+                                          <h5>{instructorInfo.name}</h5>
                                           <p>
                                             <i className="bx bx-video me-1" />
                                             Video
@@ -227,13 +275,13 @@ const StudentMessages = () => {
                             <div className="user-details mb-0">
                               <figure className="avatar mb-0">
                                 <img
-                                  src="path/to/receiver/avatar.jpg"
+                                  src={instructorInfo.avatar}
                                   className="rounded-circle"
                                   alt="image"
                                 />
                               </figure>
                               <div className="mt-1">
-                                <h5>Receiver Name</h5>
+                                <h5>{instructorInfo.name}</h5>
                                 <small className="last-seen">
                                   Last Seen at 07:15 PM
                                 </small>

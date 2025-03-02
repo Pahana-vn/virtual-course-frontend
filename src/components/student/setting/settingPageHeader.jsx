@@ -1,6 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const StudentSettingPageHeader = () => {
   const location = useLocation();
@@ -32,7 +31,22 @@ const StudentSettingPageHeader = () => {
               Change Password
             </Link>
           </li>
-          <li>
+
+          {/* <li>
+            <Link
+              to="/student/setting-student-delete-profile"
+              className={
+                location.pathname === "/student/setting-student-delete-profile"
+                  ? "active"
+                  : ""
+              }
+            >
+              <i className="bx bx-user-circle" />
+              Delete Profiles
+            </Link>
+          </li> */}
+
+          {/* <li>
             <Link
               to="/student/student-social-profile"
               className={
@@ -70,7 +84,7 @@ const StudentSettingPageHeader = () => {
               <i className="bx bx-bell" />
               Notifications
             </Link>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>

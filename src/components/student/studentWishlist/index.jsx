@@ -1,40 +1,33 @@
-
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { fetchWishlist } from "../../../services/studentService";
 import Footer from "../../footer";
 import { Icon01, Icon2, User2, course02 } from "../../imagepath";
 import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
-import { fetchWishlist } from "../../../services/studentService"; // Import service
 
 const StudentWishlist = () => {
-  const [wishlist, setWishlist] = useState([]); // Dữ liệu wishlist
-  const [loading, setLoading] = useState(true); // Trạng thái loading
-  const [error, setError] = useState(null); // Trạng thái error
+  const [wishlist, setWishlist] = useState([]);
+  const [error, setError] = useState(null);
 
-  // Fetch dữ liệu từ API
   useEffect(() => {
     const fetchStudentWishlist = async () => {
       try {
-        const studentId = localStorage.getItem("studentId"); // Lấy studentId từ localStorage
+        const studentId = localStorage.getItem("studentId");
         if (studentId) {
-          const data = await fetchWishlist(studentId); // Gọi service để lấy wishlist
+          const data = await fetchWishlist(studentId);
           setWishlist(data);
-          setLoading(false);
         } else {
           setError("Student ID not found in localStorage.");
-          setLoading(false);
         }
       } catch (err) {
         setError(err.message);
-        setLoading(false);
       }
     };
 
     fetchStudentWishlist();
   }, []);
 
-  // Render danh sách wishlist
   const renderWishlist = () => {
     if (wishlist.length === 0) {
       return <p>No courses in your wishlist.</p>;
@@ -49,13 +42,12 @@ const StudentWishlist = () => {
                 <img
                   className="img-fluid"
                   alt={course.titleCourse}
-                  src={course.imageCover || course02} // Dùng ảnh mặc định nếu không có
+                  src={course.imageCover || course02}
                 />
               </Link>
               <div className="price">
                 <h3>
-                  ${course.basePrice}{" "}
-                  <span>${course.discountedPrice || course.basePrice}</span>
+                  {course.basePrice.toLocaleString()} VND{" "}
                 </h3>
               </div>
             </div>
@@ -82,9 +74,11 @@ const StudentWishlist = () => {
                   <i className="fa-solid fa-heart color-active" />
                 </div>
               </div>
-              <h3 className="title instructor-text">
+
+              <h3 className="title instructor-text" >
                 <Link to={`/course-details/${course.id}`}>{course.titleCourse}</Link>
               </h3>
+
               <div className="course-info d-flex align-items-center">
                 <div className="rating-img d-flex align-items-center">
                   <img src={Icon01} alt="Img" />
@@ -112,10 +106,6 @@ const StudentWishlist = () => {
       </div>
     ));
   };
-
-  if (loading) {
-    return <p>Loading wishlist...</p>;
-  }
 
   if (error) {
     return <p>Error: {error}</p>;

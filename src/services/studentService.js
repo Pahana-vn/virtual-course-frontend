@@ -10,6 +10,16 @@ export const fetchStudentByStudentId = async (studentId) => {
     }
 };
 
+export const updateStudentProfile = async (studentId, studentData) => {
+    try {
+        const response = await api.put(`/students/${studentId}`, studentData);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating student profile:", error);
+        throw error;
+    }
+};
+
 export const fetchStudentDashboardData = async (studentId) => {
     try {
         const response = await api.get(`/students/${studentId}/dashboard`);
@@ -19,7 +29,6 @@ export const fetchStudentDashboardData = async (studentId) => {
         throw error;
     }
 };
-
 
 export const fetchStudentCourses = async (studentId) => {
     try {
@@ -119,6 +128,16 @@ export const fetchInvoiceDetails = async (transactionId) => {
     }
 };
 
+export const fetchStudentCourseProgress = async (studentId) => {
+    try {
+        const response = await api.get(`/students/student-courses/${studentId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error getting student course progress details:", error);
+        throw error;
+    }
+};
+
 export const fetchStudentQuizResults = async (studentId) => {
     try {
         const response = await api.get(`/students/${studentId}/quiz-results`);
@@ -135,6 +154,28 @@ export const fetchStudentQuizDetails = async (quizId) => {
         return response.data;
     } catch (error) {
         console.error("❌ Lỗi khi lấy chi tiết bài kiểm tra:", error);
+        throw error;
+    }
+};
+
+export const changeStudentPassword = async (studentId, passwordData) => {
+    try {
+        const response = await api.put(`/students/${studentId}/change-password-student`, passwordData);
+        return response.data;
+    } catch (error) {
+        console.error("Error changing password:", error.response ? error.response.data : error);
+        throw error;
+    }
+};
+
+export const deleteStudentAccount = async (studentId, password) => {
+    try {
+        const response = await api.delete(`/students/${studentId}/delete-account-student`, {
+            data: { password }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting account:", error.response ? error.response.data : error);
         throw error;
     }
 };
