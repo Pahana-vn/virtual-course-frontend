@@ -53,8 +53,10 @@ const courseSlice = createSlice({
     },
     updateSection: (state, action) => {
       const { index, title } = action.payload;
-      if (state.curriculumInfo.sections[index]) {
-        state.curriculumInfo.sections[index].title = title;
+      if (index >= 0 && index < state.curriculumInfo.sections.length) {
+        const updatedSections = [...state.curriculumInfo.sections];
+        updatedSections[index] = { ...updatedSections[index], title };
+        state.curriculumInfo.sections = updatedSections; // Gán lại mảng mới để Redux nhận ra sự thay đổi
       }
     },
     deleteSection: (state, action) => {
@@ -75,10 +77,14 @@ const courseSlice = createSlice({
     updateLecture: (state, action) => {
       const { sectionIndex, lectureIndex, lecture } = action.payload;
       if (state.curriculumInfo.sections[sectionIndex]?.lectures[lectureIndex]) {
-        state.curriculumInfo.sections[sectionIndex].lectures[lectureIndex] = {
-          ...state.curriculumInfo.sections[sectionIndex].lectures[lectureIndex],
+        const updatedLectures = [
+          ...state.curriculumInfo.sections[sectionIndex].lectures,
+        ];
+        updatedLectures[lectureIndex] = {
+          ...updatedLectures[lectureIndex],
           ...lecture,
         };
+        state.curriculumInfo.sections[sectionIndex].lectures = updatedLectures; // Gán lại mảng mới
       }
     },
     deleteLecture: (state, action) => {
@@ -114,6 +120,11 @@ const courseSlice = createSlice({
         ].videoUrl = videoUrl;
       }
     },
+    clearCurriculum: (state) => {
+      state.curriculumInfo.sections = [...[]];
+      state.curriculumInfo = { ...state.curriculumInfo };
+    },
+
     // Actions cho Settings Question---------------------
     setQuestionInfo: (state, action) => {
       state.questionInfo.questions = action.payload.questions;
@@ -211,7 +222,7 @@ const courseSlice = createSlice({
         console.warn(`Question at index ${questionId} does not exist!`);
         return;
       }
-      
+
       question.answerOptions = question.answerOptions.filter(
         (answer) => answer.id !== answerId
       );
@@ -263,6 +274,7 @@ export const {
   addArticle,
   addDescription,
   addVideo,
+  clearCurriculum,
   addQuestion,
   updateQuestion,
   deleteQuestion,
