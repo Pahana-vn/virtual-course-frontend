@@ -376,12 +376,14 @@ const AddOrEditCourse = () => {
                         ""
                       )}
                       {PageChange === "curriculum" ? (
-                        <Curriculum nextTab3={nextTab3} prevTab2={prevTab2} />
+                        <Curriculum nextTab3={nextTab3} prevTab2={prevTab2}
+                        isEditing={isEditing} />
                       ) : (
                         ""
                       )}
                       {PageChange === "testQuestion" ? (
-                        <TestQuestion nextTab4={nextTab4} prevTab3={prevTab3} />
+                        <TestQuestion nextTab4={nextTab4} prevTab3={prevTab3} 
+                        isEditing={isEditing} />
                       ) : (
                         ""
                       )}

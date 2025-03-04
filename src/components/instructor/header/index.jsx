@@ -175,35 +175,10 @@ export function InstructorHeader() {
                   Course
                 </Link>
               </li>
-
-              <li className="has-submenu">
-                <Link to="">
-                  Pages
-                  <i
-                    className="fas fa-chevron-down"
-                    onClick={openMobileSubMenu4}
-                  ></i>
-                </Link>
-                <ul
-                  className={mobileSubMenu4 ? "submenu submenuShow" : "submenu"}
-                >
-                  <li>
-                    <Link to="/job-category">Category</Link>
-                  </li>
-
-                  <li>
-                    <Link to="/faq">FAQ</Link>
-                  </li>
-                  <li>
-                    <Link to="/support">Support</Link>
-                  </li>
-                </ul>
-              </li>
               <li>
-                <Link to="/support">About us</Link>
-              </li>
-              <li className="has-submenu">
-                <Link to="/blog-modern">Blog</Link>
+                <Link to="/course-grid" onClick={hideMobileMenu}>
+                Category
+                </Link>
               </li>
               <li className="login-link">
                 <Link to="/login">Login / Signup</Link>

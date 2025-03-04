@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import Papa from "papaparse";
 import PropTypes from "prop-types";
 import Popup from "./popup";
 import {
@@ -11,10 +12,11 @@ import {
   addLecture,
   updateLecture,
   deleteLecture,
+  clearCurriculum,
 } from "../../../redux/slices/course/courseSlice";
 import "./Curriculum.css";
 // eslint-disable-next-line react/prop-types
-const Curriculum = ({ nextTab3, prevTab2 }) => {
+const Curriculum = ({ nextTab3, prevTab2, isEditing }) => {
   const dispatch = useDispatch();
   const { sections } = useSelector((state) => state.course.curriculumInfo);
 
@@ -75,7 +77,9 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
   };
 
   const handleUpdateLecture = (sectionIndex, lectureIndex, data) => {
-    dispatch(updateLecture({ sectionIndex, lectureIndex, lecture: data }));
+    dispatch(
+      updateLecture({ sectionIndex, lectureIndex, lecture: { ...data } })
+    );
   };
 
   const handleDeleteLecture = (sectionIndex, lectureIndex) => {
@@ -84,14 +88,15 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
   };
 
   const handleAddArticle = async (sectionIndex, lectureIndex) => {
-    const currentArticles = sections[sectionIndex].lectures[lectureIndex].articles;
-  
+    const currentArticles =
+      sections[sectionIndex].lectures[lectureIndex].articles;
+
     // Validate số lượng file PDF
     if (currentArticles.length >= 1) {
       setErrorMessage("You can only upload a maximum of 1 articles.");
       return;
     }
-  
+
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = ".pdf"; // Chỉ cho phép file PDF
@@ -103,25 +108,28 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
           const formData = new FormData();
           formData.append("file", file);
           formData.append("type", "articles"); // Loại file (dựa vào API của bạn)
-  
-          const response = await fetch("http://localhost:8080/api/files/upload", {
-            method: "POST",
-            body: formData,
-          });
-  
+
+          const response = await fetch(
+            "http://localhost:8080/api/files/upload",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
           if (!response.ok) {
             throw new Error("Failed to upload file.");
           }
-  
-          const fileUrl = await response.text(); 
+
+          const fileUrl = await response.text();
           const fileName = fileUrl.split("/").pop();
-  
+
           const uploadedFile = {
             name: file.name,
             fileUrl: fileName,
             content: "",
           };
-  
+
           // Cập nhật Lecture với Article mới
           const updatedLecture = {
             ...sections[sectionIndex].lectures[lectureIndex],
@@ -137,7 +145,6 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
     };
     fileInput.click();
   };
-  
 
   const handleDeleteArticle = (sectionIndex, lectureIndex, articleIndex) => {
     const updatedArticles = sections[sectionIndex].lectures[
@@ -212,32 +219,233 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
       .map((value) => String(value).padStart(2, "0"))
       .join(":");
   };
+  
+  const handleDownloadSampleCSV = () => {
+    const sampleData = [
+      {
+        "Section ID": "", // Để trống để tạo mới
+        Section: "Sample Section",
+        "Lecture ID": "",
+        Lecture: "Sample Lecture",
+        "Video URL": "https://youtube.com/sample-video",
+        "Article ID": "",
+        "Article File": "sample-document.pdf",
+        "Article Content": "This is sample content",
+      },
+    ];
+  
+    const csv = Papa.unparse(sampleData);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "sample_curriculum.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
+  const handleImportCSV = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    dispatch(clearCurriculum()); // Xóa dữ liệu cũ trước khi import
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      chunkSize: 100, // Xử lý 100 dòng mỗi lần
+      chunk: async (result, parser) => {
+        parser.pause(); // Tạm dừng đọc file
+
+        await processCSVChunk(result.data); // Xử lý từng phần dữ liệu
+
+        parser.resume(); // Tiếp tục đọc phần tiếp theo
+      },
+      complete: () => {
+        console.log("CSV Import Completed!");
+      },
+    });
+  };
+
+  const processCSVChunk = async (dataChunk) => {
+    return new Promise((resolve) => {
+      const structuredData = {};
+
+      dataChunk.forEach((row) => {
+        const {
+          "Section ID": sectionId,
+          Section,
+          "Lecture ID": lectureId,
+          Lecture,
+          "Video URL": videoUrl,
+          "Article ID": articleId,
+          "Article File": articleFile,
+          "Article Content": articleContent,
+        } = row;
+
+        if (!structuredData[Section]) {
+          structuredData[Section] = {
+            id: sectionId ? Number(sectionId) : null, // Lưu ID nếu có
+            title: Section,
+            lectures: [],
+          };
+        }
+
+        const lectureIndex = structuredData[Section].lectures.findIndex(
+          (l) => l.title === Lecture
+        );
+
+        if (lectureIndex === -1) {
+          structuredData[Section].lectures.push({
+            id: lectureId ? Number(lectureId) : null,
+            title: Lecture,
+            lectureVideo: videoUrl || "",
+            articles: articleFile
+              ? [
+                  {
+                    id: articleId ? Number(articleId) : null,
+                    name: articleFile,
+                    fileUrl: articleFile,
+                    content: articleContent || "",
+                  },
+                ]
+              : [],
+          });
+        } else {
+          if (articleFile) {
+            structuredData[Section].lectures[lectureIndex].articles.push({
+              id: articleId ? Number(articleId) : null,
+              name: articleFile,
+              fileUrl: articleFile,
+              content: articleContent || "",
+            });
+          }
+        }
+      });
+
+      // Dispatch từng phần để tránh lag UI
+      Object.values(structuredData).forEach((section) => {
+        dispatch(
+          addSection({
+            id: section.id,
+            title: section.title,
+            lectures: section.lectures,
+          })
+        );
+      });
+
+      resolve();
+    });
+  };
+
+  const handleExportCSV = () => {
+    if (sections.length === 0) {
+      alert("No data to export.");
+      return;
+    }
+
+    const csvData = [];
+    sections.forEach((section) => {
+      section.lectures.forEach((lecture) => {
+        lecture.articles.forEach((article) => {
+          csvData.push({
+            "Section ID": section.id || "",
+            Section: section.title,
+            "Lecture ID": lecture.id || "",
+            Lecture: lecture.title,
+            "Video URL": lecture.lectureVideo || "",
+            "Article ID": article.id || "",
+            "Article File": article.fileUrl || "",
+            "Article Content": article.content || "",
+          });
+        });
+
+        // Nếu lecture không có bài viết, vẫn ghi vào CSV
+        if (lecture.articles.length === 0) {
+          csvData.push({
+            "Section ID": section.id || "",
+            Section: section.title,
+            "Lecture ID": lecture.id || "",
+            Lecture: lecture.title,
+            "Video URL": lecture.lectureVideo || "",
+            "Article ID": "",
+            "Article File": "",
+            "Article Content": "",
+          });
+        }
+      });
+    });
+
+    const csv = Papa.unparse(csvData);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "curriculum_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
   return (
     <>
       <fieldset className="field-card" style={{ display: "block" }}>
         <div className="add-course-info">
-          <div className="add-course-inner-header">
-            <h4>Curriculum</h4>
-          </div>
-          <div className="add-course-section">
-            <button
-              className="btn"
-              onClick={() =>
-                handleOpenPopup("Add Section", (title) =>
-                  handleAddSection(title)
-                )
-              }
-            >
-              Add Section
-            </button>
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <div className="add-course-inner-header">
+                <h4>Curriculum</h4>
+              </div>
+              <div className="add-course-section">
+                <button
+                  className="btn"
+                  onClick={() =>
+                    handleOpenPopup("Add Section", (title) =>
+                      handleAddSection(title)
+                    )
+                  }
+                >
+                  Add Section
+                </button>
+              </div>
+            </div>
+            <div className="mx-4">
+              <div className="import-section">
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleImportCSV}
+                  style={{ display: "none" }}
+                  id="csvUpload"
+                />
+                <label htmlFor="csvUpload" className="btn btn-primary w-100">
+                  Import CSV
+                </label>
+              </div>
+              {isEditing ? (
+                <button
+                  className="btn btn-success w-100 my-2"
+                  onClick={handleExportCSV}
+                >
+                  Export CSV
+                </button>
+              ) : (
+                <button
+                  className="btn btn-warning w-100 my-2"
+                  onClick={handleDownloadSampleCSV}
+                >
+                  Download Sample CSV
+                </button>
+              )}
+            </div>
           </div>
           {/* Hiển thị các Section */}
           <div className="add-course-form">
             {sections.map((section, sectionIndex) => (
               <div key={sectionIndex} className="curriculum-grid">
                 <div className="curriculum-head">
-                  <p>
+                  <p className="fs-2 fw-bold">
                     Section {sectionIndex + 1}: {section.title}
                   </p>
                   <div className="section-actions">
@@ -506,6 +714,7 @@ const Curriculum = ({ nextTab3, prevTab2 }) => {
 Curriculum.propTypes = {
   nextTab3: PropTypes.func.isRequired,
   prevTab2: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
 };
 
 export default Curriculum;

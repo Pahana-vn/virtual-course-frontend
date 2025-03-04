@@ -9,6 +9,7 @@ import { setMediaInfo } from "../../../redux/slices/course/courseSlice";
 const CourseMedia = ({ prevTab1, nextTab2 }) => {
   const dispatch = useDispatch();
   const [isUploading, setIsUploading] = useState(false);
+  //fix loi hinh anh
   const { imageFileName, imageUrl, videoUrl, videoThumbnail } = useSelector(
     (state) => state.course.mediaInfo
   );

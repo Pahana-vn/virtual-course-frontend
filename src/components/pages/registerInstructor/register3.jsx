@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import OwlCarousel from "react-owl-carousel";
@@ -11,7 +11,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { resetRegister, setSocialInfo } from "../../../redux/slices/instructor/registerSlice";
-import { useInstructorRegisterMutation } from "../../../redux/slices/auth/authApiSlice";
+import { useInstructorRegisterMutation, useResendVerificationEmailMutation } from "../../../redux/slices/auth/authApiSlice";
 
 const RegisterThree = () => {
   const dispatch = useDispatch();
@@ -22,13 +22,14 @@ const RegisterThree = () => {
   const personalInfo = useSelector((state) => state.register.personalInfo);
   const socialInfo = useSelector((state) => state.register.socialInfo);
 
-  useEffect(() => {
-    if (!accountInfo.email) {
-      navigate("/register1");
-    }
-  }, [accountInfo, navigate]);
+  // useEffect(() => {
+  //   if (!accountInfo.email) {
+  //     navigate("/login");
+  //   }
+  // }, [accountInfo, navigate]);
 
   const [registerInstructor] = useInstructorRegisterMutation();
+  const [resendVerificationEmail] = useResendVerificationEmailMutation();
 
   const [facebookUrl, setFacebookUrl] = useState(socialInfo.facebookUrl || "");
   const [googleUrl, setGoogleUrl] = useState(socialInfo.googleUrl || "");
@@ -89,8 +90,10 @@ const RegisterThree = () => {
         toast.success(response.message, { position: "top-right", });
       }
 
+      await resendVerificationEmail(accountInfo.email);
+
       dispatch(resetRegister()); // Xóa dữ liệu đăng ký sau khi hoàn tất
-      navigate("/login"); // Điều hướng đến trang Dashboard
+      navigate("/verify-email-notice");
     } catch (err) {
       if (err.data && err.data.message) {
         toast.error(err.data.message, { position: "top-right", });
