@@ -45,11 +45,11 @@ const GridInnerPage = ({ courses }) => {
                       <p>Instructor</p>
                     </div>
                   </div>
-                  <div className="course-share d-flex align-items-center justify-content-center">
+                  {/* <div className="course-share d-flex align-items-center justify-content-center">
                     <Link to="#">
                       <i className="fa-regular fa-heart" />
                     </Link>
-                  </div>
+                  </div> */}
                 </div>
                 <h3 className="course-title">
                   <Link to={`/course-details/${course.id}`}>

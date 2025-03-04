@@ -89,7 +89,7 @@ const StudentWishlist = () => {
                   <p>{course.duration} hours</p>
                 </div>
               </div>
-              <div className="rating mb-0">
+              {/* <div className="rating mb-0">
                 {[...Array(5)].map((_, i) => (
                   <i
                     key={i}
@@ -99,7 +99,7 @@ const StudentWishlist = () => {
                 <span className="d-inline-block average-rating">
                   <span>{course.rating}</span> ({course.reviewsCount})
                 </span>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

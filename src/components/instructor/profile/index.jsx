@@ -1,11 +1,13 @@
 import DOMPurify from "dompurify";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
+import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 import { useGetInstructorCoursesQuery } from "../../../redux/slices/course/courseApiSlice";
 import {
   useInstructorDetailsQuery,
 } from "../../../redux/slices/instructor/instructorApiSlice";
 import Footer from "../../footer";
+import RoleBasedHeader from "../../header/RoleBasedHeader";
 import {
   AddressIcon,
   CoursesIcon,
@@ -17,8 +19,6 @@ import {
   TtlStudIcon,
   User1,
 } from "../../imagepath";
-import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
-import RoleBasedHeader from "../../header/RoleBasedHeader";
 
 export default function InstructorProfile() {
   const formatCurrency = useCurrencyFormatter();
@@ -126,9 +126,8 @@ export default function InstructorProfile() {
                   <li className="list-inline-item">
                     <div className="all-btn all-category d-flex align-items-center">
                       <Link
-                        to={`/chat/${instructorId}`}
-                        className="btn btn-primary bg-success"
-                      >
+                        to={`/student/student-messages?instructorId=${instructorId}`}
+                        className="btn btn-primary bg-success">
                         CHAT NOW
                       </Link>
                     </div>
@@ -193,7 +192,7 @@ export default function InstructorProfile() {
                 <div className="card-body">
                   <h5 className="subs-title">Experience</h5>
                   {instructor.experiences &&
-                  instructor.experiences.length > 0 ? (
+                    instructor.experiences.length > 0 ? (
                     instructor.experiences.map((exp, index) => (
                       <div className="edu-wrap" key={index}>
                         <div className="edu-name">
@@ -514,11 +513,10 @@ export default function InstructorProfile() {
                       {[...Array(5)].map((_, index) => (
                         <i
                           key={index}
-                          className={`fas fa-star ${
-                            index < Math.round(instructor.averageRating)
-                              ? "filled"
-                              : ""
-                          }`}
+                          className={`fas fa-star ${index < Math.round(instructor.averageRating)
+                            ? "filled"
+                            : ""
+                            }`}
                         ></i>
                       ))}
                       <span className="d-inline-block average-rating">

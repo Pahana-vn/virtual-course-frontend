@@ -5,90 +5,191 @@ import Scrollbars from "react-custom-scrollbars-2";
 import { Link } from "react-router-dom";
 import SockJS from 'sockjs-client';
 
+// Import các hàm service (đảm bảo fetchStudentInfo gọi /students/by-account/{id})
+import {
+  fetchChatHistory,
+  fetchRecentChatsForInstructor,
+  fetchStudentInfo,
+  sendChatMessage
+} from "../../../services/chatService";
+
+// Import header, sidebar cho Instructor
 import { InstructorHeader } from "../header";
 import InstructorSidebar from "../sidebar";
 
-const InstructorChat = () => {
+const InstructorMessages = () => {
+  // Lấy instructorAccountId từ localStorage.
+  const currentInstructorAccountId = parseInt(localStorage.getItem('instructorId'), 10);
+
+  // Quản lý UI (search, responsive, v.v.)
   const [visible, setVisible] = useState(false);
   const [searchChat, setSearchChat] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 992);
 
+  // Danh sách student đã chat (recent chat), student đang chọn, tin nhắn
+  const [chatStudents, setChatStudents] = useState([]);
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [currentMsg, setCurrentMsg] = useState('');
 
-  // Instructor có accountId=1
-  const currentUserAccountId = 1;
-  // Đang chat với Student accountId=3
-  const chatWithAccountId = 3;
+  // Thông tin student đang chat
+  const [studentInfo, setStudentInfo] = useState({
+    name: "Student Name",
+    avatar: "https://ibiettuot.com/wp-content/uploads/2021/10/avatar-mac-dinh.png"
+  });
 
+  // Tham chiếu stompClient để disconnect khi unmount
   const stompClientRef = useRef(null);
 
-  const handleResize = () => {
-    setIsSmallScreen(window.innerWidth < 992);
-  };
-
+  // =========== Lấy danh sách student (recent chat) ===========
   useEffect(() => {
-    // Lấy lịch sử chat
-    fetch(`http://localhost:8080/api/chat/history?user1Id=${currentUserAccountId}&user2Id=${chatWithAccountId}`)
-      .then(res => res.json())
-      .then(data => {
-        // data đã là ChatMessageDTO: {senderName, senderAvatar, timestamp, ...}
-        setMessages(data);
-      })
-      .catch(error => console.error('Error fetching chat history:', error));
+    const fetchRecentChatsData = async () => {
+      try {
+        // Gọi /api/chat/recent-chats-instructor?instructorId={accountId}
+        const recentChats = await fetchRecentChatsForInstructor(currentInstructorAccountId);
+        // recentChats có dạng [2, 5, 9, ...] => accountId của student
 
-    // Kết nối WebSocket
+        // Lấy thông tin student cho mỗi accountId
+        const students = await Promise.all(
+          recentChats.map(async (stuAccId) => {
+            // Hàm fetchStudentInfo(stuAccId) phải gọi /students/by-account/{stuAccId}
+            const student = await fetchStudentInfo(stuAccId);
+            // Map sang object hiển thị
+            return {
+              id: stuAccId,
+              name: `${student.firstName} ${student.lastName}`,
+              avatar: student.avatar,
+              studentId: student.id // Thêm studentId vào object
+            };
+          })
+        );
+
+        setChatStudents(students);
+      } catch (error) {
+        console.error('Error fetching recent chats for instructor:', error);
+      }
+    };
+
+    if (currentInstructorAccountId) {
+      fetchRecentChatsData();
+    }
+  }, [currentInstructorAccountId]);
+
+  // =========== Khi chọn 1 student trong Recent Chat ===========
+  useEffect(() => {
+    if (!selectedStudentId) return;
+
+    // 1) Lấy lịch sử chat
+    const fetchChatHistoryData = async () => {
+      try {
+        const chatHistory = await fetchChatHistory(currentInstructorAccountId, selectedStudentId);
+        setMessages(chatHistory);
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+        setMessages([]);
+      }
+    };
+
+    fetchChatHistoryData();
+
+    // 2) Lấy thông tin student
+    const loadStudentInfo = async () => {
+      try {
+        const student = await fetchStudentInfo(selectedStudentId);
+        setStudentInfo({
+          name: `${student.firstName} ${student.lastName}`,
+          avatar: student.avatar
+        });
+      } catch (error) {
+        console.error('Error fetching student info:', error);
+      }
+    };
+
+    loadStudentInfo();
+
+    // 3) Kết nối WebSocket
     const socket = new SockJS('http://localhost:8080/ws-chat');
     const stompClient = Stomp.over(socket);
-    stompClientRef.current = stompClient;
 
     stompClient.connect({}, (frame) => {
-      console.log('Instructor Connected: ' + frame);
-      // Subscribe /queue/user.1
-      stompClient.subscribe(`/queue/user.${currentUserAccountId}`, (messageOutput) => {
+      console.log('Instructor STOMP connected: ' + frame);
+
+      // Lắng nghe tin nhắn từ queue/user.{instructorAccountId}
+      stompClient.subscribe(`/queue/user.${currentInstructorAccountId}`, (messageOutput) => {
         const msg = JSON.parse(messageOutput.body);
-        setMessages(prev => [...prev, msg]);
+        setMessages((prev) => [...prev, msg]);
       });
     }, (error) => {
-      console.error('Error', error);
+      console.error('STOMP Error', error);
     });
 
-    window.addEventListener("resize", handleResize);
+    stompClientRef.current = stompClient;
 
+    // Cleanup WS khi unmount
     return () => {
       if (stompClientRef.current) {
         stompClientRef.current.disconnect();
       }
-      window.removeEventListener("resize", handleResize);
-    }
-  }, [currentUserAccountId, chatWithAccountId]);
+    };
+  }, [currentInstructorAccountId, selectedStudentId]);
 
-  const sendMessage = (e) => {
+  // =========== Gửi tin nhắn ===========
+  const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (currentMsg.trim() !== '' && stompClientRef.current) {
-      const chatMessageDTO = {
-        senderAccountId: currentUserAccountId,
-        receiverAccountId: chatWithAccountId,
-        content: currentMsg,
-        type: "CHAT"
-      };
-      stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
+    if (!currentMsg.trim() || !selectedStudentId) return;
 
-      // Tạm thời thêm vào UI cho người gửi:
-      setMessages(prev => [...prev, {
-        ...chatMessageDTO,
-        senderName: "You",
-        senderAvatar: "path/to/instructor/avatar.jpg", // Avatar của instructor hiện tại
-        timestamp: new Date().toISOString()
-      }]);
+    const chatMessageDTO = {
+      senderAccountId: currentInstructorAccountId,
+      receiverAccountId: selectedStudentId,
+      content: currentMsg,
+      type: "CHAT"
+    };
+
+    try {
+      // Gửi tin nhắn bằng REST
+      await sendChatMessage(chatMessageDTO);
+
+      // Gửi tin nhắn qua WebSocket
+      if (stompClientRef.current && stompClientRef.current.connected) {
+        stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
+      }
+
+      // Thêm vào UI cho người gửi
+      setMessages((prev) => [
+        ...prev,
+        {
+          ...chatMessageDTO,
+          senderName: "You",
+          senderAvatar: "path/to/instructor/avatar.jpg", // Tuỳ chỉnh nếu muốn
+          timestamp: new Date().toISOString()
+        }
+      ]);
 
       setCurrentMsg('');
+    } catch (error) {
+      console.error('Error sending chat message:', error);
     }
   };
 
+  // =========== Chọn student (accountId) từ Recent Chat ===========
+  const handleStudentClick = (stuAccId) => {
+    setSelectedStudentId(stuAccId);
+  };
+
+  // =========== Theo dõi thay đổi kích thước màn hình ===========
+  useEffect(() => {
+    const handleResize = () => setIsSmallScreen(window.innerWidth < 992);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // ===================== Render UI =====================
   return (
     <div className="main-wrapper chat-wrapper chat-page main-chat-blk">
+      {/* Header Instructor */}
       <InstructorHeader activeMenu={"Messages"} />
+
+      {/* Breadcrumb */}
       <div className="breadcrumb-bar breadcrumb-bar-info">
         <div className="container">
           <div className="row">
@@ -97,8 +198,12 @@ const InstructorChat = () => {
                 <h2 className="breadcrumb-title">Messages</h2>
                 <nav aria-label="breadcrumb" className="page-breadcrumb">
                   <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link to="/home">Home</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">Messages</li>
+                    <li className="breadcrumb-item">
+                      <Link to="/home">Home</Link>
+                    </li>
+                    <li className="breadcrumb-item active" aria-current="page">
+                      Messages
+                    </li>
                   </ol>
                 </nav>
               </div>
@@ -107,10 +212,14 @@ const InstructorChat = () => {
         </div>
       </div>
 
+      {/* Page content */}
       <div className="page-content chat-page-wrapper">
         <div className="container">
           <div className="row">
+            {/* Sidebar Instructor */}
             <InstructorSidebar />
+
+            {/* Main Chat Area */}
             <div className="col-xl-9 col-lg-9 theiaStickySidebar">
               <div className="settings-widget card-details mb-0">
                 <div className="settings-menu p-0">
@@ -119,6 +228,7 @@ const InstructorChat = () => {
                   </div>
                   <div className="checkout-form">
                     <div className="content">
+                      {/* Left sidebar: danh sách student */}
                       <div className="sidebar-group left-sidebar chat_sidebar">
                         <div
                           id="chats"
@@ -171,87 +281,81 @@ const InstructorChat = () => {
                                   </div>
                                 </div>
                               </div>
-                              <div
-                                className="sidebar-body chat-body"
-                                id="chatsidebar"
-                              >
+
+                              <div className="sidebar-body chat-body" id="chatsidebar">
                                 <div className="d-flex justify-content-between align-items-center ps-0 pe-0">
                                   <div className="fav-title pin-chat">
                                     <h6>Recent Chat</h6>
                                   </div>
                                 </div>
+
+                                {/* Danh sách Student */}
                                 <ul className="user-list">
-                                  <li className="user-list-item chat-user-list">
-                                    <Link to="#">
-                                      <div>
-                                        <div className="avatar avatar-online">
-                                          {/* Avatar của người đang chat cùng (có thể lấy từ 1 message) */}
-                                          <img
-                                            src="path/to/receiver/avatar.jpg"
-                                            className="rounded-circle"
-                                            alt="image"
-                                          />
-                                        </div>
-                                      </div>
-                                      <div className="users-list-body">
+                                  {chatStudents.map((student) => (
+                                    <li
+                                      key={student.id}
+                                      className={
+                                        "user-list-item chat-user-list " +
+                                        (selectedStudentId === student.id ? "active" : "")
+                                      }
+                                      onClick={() => handleStudentClick(student.id)}
+                                    >
+                                      <Link to="#">
                                         <div>
-                                          <h5>Receiver Name</h5>
-                                          <p>
-                                            <i className="bx bx-video me-1" />
-                                            Video
-                                          </p>
-                                        </div>
-                                        <div className="last-chat-time">
-                                          <small className="text-muted">
-                                            Yesterday
-                                          </small>
-                                          <div className="chat-pin">
-                                            <i className="fa-solid fa-check" />
+                                          <div className="avatar avatar-online">
+                                            <img
+                                              src={student.avatar}
+                                              className="rounded-circle"
+                                              alt="student"
+                                            />
                                           </div>
                                         </div>
-                                      </div>
-                                    </Link>
-                                  </li>
+                                        <div className="users-list-body">
+                                          <div>
+                                            <h5>{student.name}</h5>
+                                            <p>recently</p>
+                                          </div>
+                                          <div className="last-chat-time">
+                                            <small className="text-muted">...</small>
+                                            <div className="chat-pin">
+                                              <i className="fa-solid fa-check" />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </Link>
+                                    </li>
+                                  ))}
                                 </ul>
+                                {/* /Danh sách Student */}
                               </div>
                             </div>
                           </Scrollbars>
                         </div>
                       </div>
+                      {/* /Left sidebar */}
 
+                      {/* Khu vực chat chính */}
                       <div className="chat chat-messages" id="middle">
                         <div className="h-100">
+                          {/* Header chat */}
                           <div className="chat-header">
                             <div className="user-details mb-0">
-                              <div className="d-lg-none">
-                                <ul className="list-inline mt-2 me-2">
-                                  <li className="list-inline-item">
-                                    <Link
-                                      className="text-muted px-0 left_sides"
-                                      to="#"
-                                      data-chat="open"
-                                    >
-                                      <i className="fas fa-arrow-left" />
-                                    </Link>
-                                  </li>
-                                </ul>
-                              </div>
                               <figure className="avatar mb-0">
-                                {/* Avatar đối phương. Có thể lấy từ msg đầu tiên */}
                                 <img
-                                  src="path/to/receiver/avatar.jpg"
+                                  src={studentInfo.avatar}
                                   className="rounded-circle"
-                                  alt="image"
+                                  alt="student"
                                 />
                               </figure>
                               <div className="mt-1">
-                                <h5>Receiver Name</h5>
+                                <h5>{studentInfo.name}</h5>
                                 <small className="last-seen">
-                                  Last Seen at 07:15 PM
+                                  Talk to me
                                 </small>
                               </div>
                             </div>
-                            <div className="chat-options ">
+
+                            <div className="chat-options">
                               <ul className="list-inline">
                                 <li className="list-inline-item">
                                   <OverlayTrigger
@@ -267,47 +371,9 @@ const InstructorChat = () => {
                                     </Link>
                                   </OverlayTrigger>
                                 </li>
-                                <li className="list-inline-item">
-                                  <Link
-                                    className="btn btn-outline-light no-bg"
-                                    to="#"
-                                    data-bs-toggle="dropdown"
-                                  >
-                                    <i className="fa-solid fa-ellipsis-vertical" />
-                                  </Link>
-                                  <div className="dropdown-menu dropdown-menu-end">
-                                    <Link to="/home" className="dropdown-item ">
-                                      <span>
-                                        <i className="bx bx-x" />
-                                      </span>
-                                      Close Chat{" "}
-                                    </Link>
-                                    <Link
-                                      to="#"
-                                      className="dropdown-item"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#clear-chat"
-                                    >
-                                      <span>
-                                        <i className="bx bx-brush-alt" />
-                                      </span>
-                                      Clear Message
-                                    </Link>
-                                    <Link
-                                      to="#"
-                                      className="dropdown-item"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#change-chat"
-                                    >
-                                      <span>
-                                        <i className="bx bx-trash" />
-                                      </span>
-                                      Delete Chat
-                                    </Link>
-                                  </div>
-                                </li>
                               </ul>
                             </div>
+
                             <div
                               className={
                                 searchChat
@@ -334,59 +400,68 @@ const InstructorChat = () => {
                               </form>
                             </div>
                           </div>
+                          {/* /Header chat */}
+
+                          {/* Nội dung chat */}
                           <div className="chat-body chat-page-group slimscroll">
                             <div className="messages">
                               {messages.map((m, index) => {
-                                const isMe = m.senderAccountId === currentUserAccountId;
+                                const isMe = (m.senderAccountId === currentInstructorAccountId);
 
+                                // Format giờ
                                 const dateObj = new Date(m.timestamp);
-                                console.log(m.timestamp, dateObj); // Kiểm tra thời gian parse
+                                const timeStr = dateObj.toLocaleTimeString('en-GB', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  timeZone: 'Asia/Ho_Chi_Minh'
+                                });
 
-                                const avatar = m.senderAvatar ? m.senderAvatar : "path/to/default/avatar.jpg";
-                                const displayName = m.senderName ? m.senderName : (isMe ? "You" : "User");
-                                const timeStr = m.timestamp
-                                  ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                  : '';
+                                // Style bubble chat
+                                const chatContainerStyle = {
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  marginBottom: '10px',
+                                  width: '100%',
+                                  justifyContent: isMe ? 'flex-end' : 'flex-start'
+                                };
+
+                                const chatContentStyle = {
+                                  maxWidth: '70%',
+                                  width: 'fit-content',
+                                  padding: '8px 12px',
+                                  borderRadius: '12px',
+                                  backgroundColor: isMe ? '#fff1f0' : '#f0f5ff',
+                                  wordWrap: 'break-word'
+                                };
+
+                                const timeStyle = {
+                                  fontSize: '12px',
+                                  color: '#777',
+                                  marginBottom: '3px',
+                                  textAlign: isMe ? 'right' : 'left'
+                                };
 
                                 return (
-                                  <div className={isMe ? "chats chats-right" : "chats"} key={index}>
-                                    {!isMe && (
-                                      <div className="chat-avatar">
-                                        <img
-                                          src={avatar}
-                                          className="rounded-circle dreams_chat"
-                                          alt="image"
-                                        />
+                                  <div style={chatContainerStyle} key={index}>
+                                    <div style={chatContentStyle}>
+                                      <div style={timeStyle}>
+                                        <span>{timeStr}</span>
                                       </div>
-                                    )}
-                                    <div className="chat-content">
-                                      <div className={`chat-profile-name ${isMe ? 'text-end' : ''}`}>
-                                        <h6>
-                                          {displayName}<span>{timeStr}</span>
-                                        </h6>
-                                      </div>
-                                      <div className="message-content">
+                                      <div style={{ whiteSpace: 'pre-wrap' }}>
                                         {m.content}
                                       </div>
                                     </div>
-                                    {isMe && (
-                                      <div className="chat-avatar">
-                                        <img
-                                          src={avatar}
-                                          className="rounded-circle dreams_chat"
-                                          alt="image"
-                                        />
-                                      </div>
-                                    )}
                                   </div>
                                 );
                               })}
                             </div>
                           </div>
+                          {/* /Nội dung chat */}
                         </div>
 
+                        {/* Footer gõ tin nhắn */}
                         <div className="chat-footer">
-                          <form onSubmit={sendMessage}>
+                          <form onSubmit={handleSendMessage}>
                             <div className="smile-foot">
                               <div className="chat-action-btns">
                                 <div className="chat-action-col">
@@ -398,7 +473,7 @@ const InstructorChat = () => {
                                     <i className="fa-solid fa-ellipsis-vertical" />
                                   </Link>
                                   <div className="dropdown-menu dropdown-menu-end">
-                                    <Link to="#" className="dropdown-item ">
+                                    <Link to="#" className="dropdown-item">
                                       <span>
                                         <i className="bx bx-file" />
                                       </span>
@@ -419,7 +494,7 @@ const InstructorChat = () => {
                                 className="form-control chat_form"
                                 placeholder="Type your message here..."
                                 value={currentMsg}
-                                onChange={e => setCurrentMsg(e.target.value)}
+                                onChange={(e) => setCurrentMsg(e.target.value)}
                               />
                             </div>
                             <div className="form-buttons">
@@ -429,14 +504,15 @@ const InstructorChat = () => {
                             </div>
                           </form>
                         </div>
+                        {/* /Footer gõ tin nhắn */}
                       </div>
-                      {/* /Chat */}
+                      {/* /Khu vực chat chính */}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            {/* End col */}
+            {/* /End col */}
           </div>
         </div>
       </div>
@@ -444,4 +520,4 @@ const InstructorChat = () => {
   );
 };
 
-export default InstructorChat;
+export default InstructorMessages;

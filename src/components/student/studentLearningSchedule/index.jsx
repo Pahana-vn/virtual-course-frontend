@@ -213,10 +213,24 @@ const StudentLearningSchedule = () => {
                             <FaTrashAlt /> Delete
                         </Button>
                     )}
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                    <Button className="btn"
+                        style={{
+                            marginLeft: "10px",
+                            backgroundColor: "#F04261",
+                            color: "white",
+                            border: "none",
+                        }}
+                        onClick={() => setShowModal(false)}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={addEvent}>
+                    <Button className="btn"
+                        style={{
+                            marginLeft: "10px",
+                            backgroundColor: "#F04261",
+                            color: "white",
+                            border: "none",
+                        }}
+                        onClick={addEvent}>
                         Save
                     </Button>
                 </Modal.Footer>

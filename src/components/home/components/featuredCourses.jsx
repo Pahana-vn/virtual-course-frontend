@@ -6,9 +6,9 @@ import { useGetAllCoursesByStatusQuery } from "../../../redux/slices/course/cour
 const FeaturedCourses = () => {
   const { data: courses, error, isLoading } = useGetAllCoursesByStatusQuery({status : "PUBLISHED"});
 
-  const toggleClass = () => {
-    // Thêm logic toggleClass ở đây nếu cần
-  };
+  // const toggleClass = () => {
+  //   // Thêm logic toggleClass ở đây nếu cần
+  // };
 
   const formatCurrency = useCurrencyFormatter();
 
@@ -83,14 +83,14 @@ const FeaturedCourses = () => {
                             <p>Instructor</p>
                           </div>
                         </div>
-                        <div className="course-share d-flex align-items-center justify-content-center">
+                        {/* <div className="course-share d-flex align-items-center justify-content-center">
                           <Link to="#">
                             <i
                               onClick={toggleClass}
                               className="fa-regular fa-heart"
                             />
                           </Link>
-                        </div>
+                        </div> */}
                       </div>
                       <h3 className="course-title instructor-text">
                         <Link to={`/course/${course.id}/course-details`}>

@@ -55,9 +55,9 @@ const StudentCourses = () => {
                   src={course.imageCover || "default-image.jpg"}
                 />
               </Link>
-              <div className="price">
+              {/* <div className="price">
                 <h3>{course.basePrice.toLocaleString()} VND</h3>
-              </div>
+              </div> */}
             </div>
             <div className="product-content">
               <div className="course-group d-flex">
@@ -85,14 +85,14 @@ const StudentCourses = () => {
               <div className="course-info d-flex align-items-center">
                 <div className="rating-img d-flex align-items-center">
                   <img src={Icon1} alt="Img" />
-                  <p>12+ Lesson</p>
+                  <p>{course.duration}+ Lesson</p>
                 </div>
                 <div className="course-view d-flex align-items-center">
                   <img src={Icon2} alt="Img" />
-                  <p>70hr 30min</p>
+                  <p>{course.duration}</p>
                 </div>
               </div>
-              <div className="rating mb-0">
+              {/* <div className="rating mb-0">
                 <i className="fas fa-star filled me-1" />
                 <i className="fas fa-star filled me-1" />
                 <i className="fas fa-star filled me-1" />
@@ -101,7 +101,7 @@ const StudentCourses = () => {
                 <span className="d-inline-block average-rating">
                   <span>5.0</span> (20)
                 </span>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
