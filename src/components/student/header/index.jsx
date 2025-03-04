@@ -197,6 +197,11 @@ export default function StudentHeader() {
   };
   // Mobile Menu Handlers
 
+  const openMobileMenu = () => {
+    document.body.classList.add("menu-opened");
+    setMobileMenu(true);
+  };
+
   const hideMobileMenu = () => {
     document.body.classList.remove("menu-opened");
     setMobileMenu(false);
@@ -221,7 +226,7 @@ export default function StudentHeader() {
           >
             <div className="container">
               <div className="navbar-header">
-                <Link to="#" id="mobile_btn">
+                <Link to="#" id="mobile_btn" onClick={openMobileMenu}>
                   <span className="bar-icon">
                     <span></span>
                     <span></span>
