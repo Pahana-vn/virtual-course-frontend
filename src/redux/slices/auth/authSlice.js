@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 const authSlice = createSlice({
   name: "auth",
-  initialState: { 
+  initialState: {
     user: null,
     token: localStorage.getItem("token") || null,
     studentId: localStorage.getItem("studentId") || null,
-    instructorId: null,
-   },
+    instructorId: localStorage.getItem("instructorId") || null,
+  },
   reducers: {
     setCredentials: (state, action) => {
       const { accountId, username, token, instructorId, studentId, roles } =
@@ -17,7 +17,7 @@ const authSlice = createSlice({
       state.studentId = studentId;
       // localStorage.setItem("user", JSON.stringify(state.user));
       localStorage.setItem("token", state.token);
-      // localStorage.setItem("instructorId", state.instructorId);
+      localStorage.setItem("instructorId", state.instructorId);
       localStorage.setItem("studentId", state.studentId);
     },
     logOut: (state) => {
@@ -28,7 +28,7 @@ const authSlice = createSlice({
 
       // localStorage.removeItem("user");
       localStorage.removeItem("token");
-      // localStorage.removeItem("instructorId");
+      localStorage.removeItem("instructorId");
       localStorage.removeItem("studentId");
     },
   },

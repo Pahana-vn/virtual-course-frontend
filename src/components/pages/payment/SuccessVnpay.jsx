@@ -70,6 +70,8 @@ const styles = {
         alignItems: "center",
         padding: "20px",
         backgroundColor: "#f4f4f9",
+        marginTop: "80px", // Thêm margin-top để tránh bị đè bởi header
+        marginBottom: "60px", // Thêm margin-bottom để tránh bị đè bởi footer
     },
     messageContainer: {
         textAlign: "center",

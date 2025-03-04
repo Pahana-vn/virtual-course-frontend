@@ -136,7 +136,7 @@ const DetailsContent = ({ courseDetails }) => {
         toast.info(result.message);
       } else {
         toast.success("Added to wishlist successfully!");
-        setWishlist([...wishlist, courseDetails.id]); // Update wishlist state
+        setWishlist([...wishlist, courseDetails.id]);
       }
     } catch (error) {
       toast.error("Add to wishlist failed.");
@@ -145,7 +145,6 @@ const DetailsContent = ({ courseDetails }) => {
     }
   };
 
-  // Sanitize descriptions for security
   const sanitizedCourseDescription = DOMPurify.sanitize(courseDetails.description);
   const sanitizedInstructorDescription = DOMPurify.sanitize(instructorDetails?.bio);
 

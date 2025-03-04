@@ -103,16 +103,6 @@ const StudentDashboard = () => {
                                                                 src={course.imageCover || course02}
                                                             />
                                                         </Link>
-                                                        <div className="price mt-2">
-                                                            <h3>
-                                                                ${course.price || "FREE"}
-                                                                {course.discountedPrice && (
-                                                                    <span className="ms-2 text-muted text-decoration-line-through">
-                                                                        ${course.discountedPrice}
-                                                                    </span>
-                                                                )}
-                                                            </h3>
-                                                        </div>
                                                     </div>
                                                     <div className="product-content">
                                                         <div className="course-group d-flex">
@@ -143,23 +133,12 @@ const StudentDashboard = () => {
                                                         <div className="course-info d-flex align-items-center justify-content-between">
                                                             <div className="rating-img d-flex align-items-center">
                                                                 <img src={Icon1} alt="Lesson Icon" className="me-2" />
-                                                                <p className="mb-0">{course.lessonCount || "0"}+ Lessons</p>
+                                                                <p className="mb-0">{course.duration || "0"}+ Lessons</p>
                                                             </div>
                                                             <div className="course-view d-flex align-items-center">
                                                                 <img src={Icon2} alt="Duration Icon" className="me-2" />
                                                                 <p className="mb-0">{course.duration || "0hr"}</p>
                                                             </div>
-                                                        </div>
-                                                        <div className="rating mt-3">
-                                                            {[...Array(5)].map((_, i) => (
-                                                                <i
-                                                                    key={i}
-                                                                    className={`fas fa-star ${i < (course.rating || 0) ? "filled" : ""} me-1`}
-                                                                />
-                                                            ))}
-                                                            <span className="d-inline-block average-rating">
-                                                                <span>{course.rating || "0.0"}</span> ({course.ratingCount || "0"})
-                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
