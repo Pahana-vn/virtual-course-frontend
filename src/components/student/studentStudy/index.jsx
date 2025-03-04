@@ -310,16 +310,7 @@ const StudentStudy = () => {
 
               {/* Nội dung khóa học */}
               <div className="product-content">
-                <h3
-                  className="title"
-                  style={{
-                    fontSize: "20px",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                  title={course.titleCourse}
-                >
+                <h3 className="title instructor-text" title={course.titleCourse}>
                   <Link
                     to={`/course-details/${course.id}`}
                     style={{ textDecoration: "none", color: "#000" }}

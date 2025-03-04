@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { Home, LogOut, Star, User } from "react-feather";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logoVirtual from "../../../assets/img/logo.png";
@@ -17,7 +17,7 @@ import {
   removeCourseFromWishlist,
 } from "../../../services/studentService";
 import DarkMode from "../../common/darkMode";
-import { Cart, logo, Messages, Wish, User16 } from "../../imagepath";
+import { Cart, logo, Messages, User16, Wish } from "../../imagepath";
 import "./StudentHeader1.css";
 
 export default function StudentHeader() {
@@ -265,36 +265,10 @@ export default function StudentHeader() {
                     </Link>
                   </li>
 
-                  <li className="has-submenu">
-                    <Link to="#">
-                      Pages
-                      <i
-                        className="fas fa-chevron-down"
-                        onClick={openMobileSubMenu4}
-                      ></i>
-                    </Link>
-                    <ul
-                      className={
-                        mobileSubMenu4 ? "submenu submenuShow" : "submenu"
-                      }
-                    >
-                      <li>
-                        <Link to="/job-category">Category</Link>
-                      </li>
-                      <li>
-                        <Link to="/faq">FAQ</Link>
-                      </li>
-                      <li>
-                        <Link to="/support">Support</Link>
-                      </li>
-                    </ul>
-                  </li>
                   <li>
-                    <Link to="/support">About us</Link>
+                    <Link to="/job-category">Category</Link>
                   </li>
-                  <li className="has-submenu">
-                    <Link to="/blog-modern">Blog</Link>
-                  </li>
+
                 </ul>
               </div>
 
@@ -516,7 +490,7 @@ export default function StudentHeader() {
                         onClick={profileClick}
                       >
                         <span className="user-img">
-                          <img src={User16} alt="User" />
+                          <img src={student.avatar} alt="User" />
                           <span className="status online"></span>
                         </span>
                       </Link>
@@ -527,7 +501,7 @@ export default function StudentHeader() {
                         <div className="user-header d-flex align-items-center p-2 border-bottom">
                           <div className="avatar avatar-sm">
                             <img
-                              src={User16}
+                              src={student.avatar}
                               alt="User Image"
                               className="avatar-img rounded-circle"
                             />

@@ -143,7 +143,7 @@ const StudentFinalTest = () => {
                                 {minutes}m {seconds < 10 ? `0${seconds}` : seconds}s
                             </span>
                         </div>
-                        <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>TIME LEFT IN 40m</div>
+                        <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>TIME LEFT IN 60m</div>
                     </div>
 
                     {/* Thanh điều hướng câu hỏi */}

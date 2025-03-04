@@ -212,7 +212,7 @@ export function InstructorHeader() {
             <ul className="nav header-navbar-rht">
               <DarkMode />
               <li className="nav-item">
-                <Link to="/course-message">
+                <Link to="/instructor/instructor-messages">
                   <img src={Messages} alt="img" />
                 </Link>
               </li>

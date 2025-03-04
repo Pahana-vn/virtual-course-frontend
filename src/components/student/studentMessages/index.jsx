@@ -2,13 +2,12 @@ import { Stomp } from '@stomp/stompjs';
 import React, { useEffect, useRef, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import Scrollbars from "react-custom-scrollbars-2";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import SockJS from 'sockjs-client';
 
-import api from "../../../utils/api";
+import { fetchChatHistory, fetchInstructorInfo, fetchRecentChats, fetchStudentInfo, sendChatMessage } from "../../../services/chatService";
 import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
-import "./studentMessages1.css";
 
 const StudentMessages = () => {
   const [visible, setVisible] = useState(false);
@@ -19,22 +18,125 @@ const StudentMessages = () => {
   const [messages, setMessages] = useState([]);
   const [currentMsg, setCurrentMsg] = useState('');
 
-  // Get the studentId and instructorId from localStorage
-  const currentUserAccountId = localStorage.getItem('studentId');
-  const chatWithAccountId = localStorage.getItem('instructorId');
+  const currentUserAccountId = parseInt(localStorage.getItem('studentId'), 10);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const instructorId = parseInt(queryParams.get('instructorId'), 10);
 
   const [instructorInfo, setInstructorInfo] = useState({
     name: "Instructor Name",
     avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzBpnouxDuF063trW5gZOyXtyuQaExCQVMYA&s"
   });
 
+  const [studentInfo, setStudentInfo] = useState({
+    name: "You",
+    avatar: "https://ibiettuot.com/wp-content/uploads/2021/10/avatar-mac-dinh.png"
+  });
+
+  const [chatInstructors, setChatInstructors] = useState([]);
+  const [selectedInstructorId, setSelectedInstructorId] = useState(instructorId);
+
   const stompClientRef = useRef(null);
 
-  // Resize handler
-  const handleResize = () => {
-    setIsSmallScreen(window.innerWidth < 992);
-  };
+  // Fetch danh sách các cuộc trò chuyện gần đây
+  useEffect(() => {
+    const fetchRecentChatsData = async () => {
+      try {
+        const recentChats = await fetchRecentChats(currentUserAccountId);
+        console.log("Recent Chats:", recentChats); // Kiểm tra dữ liệu trả về
 
+        // Lấy thông tin chi tiết của từng instructor
+        const instructors = await Promise.all(
+          recentChats.map(async (id) => {
+            const instructor = await fetchInstructorInfo(id);
+            return {
+              id: id,
+              name: `${instructor.firstName} ${instructor.lastName}`,
+              avatar: instructor.photo
+            };
+          })
+        );
+
+        setChatInstructors(instructors); // Lưu danh sách instructor vào state
+      } catch (error) {
+        console.error('Error fetching recent chats:', error);
+      }
+    };
+
+    fetchRecentChatsData();
+  }, [currentUserAccountId]);
+
+  // Fetch thông tin instructor và lịch sử chat khi selectedInstructorId thay đổi
+  useEffect(() => {
+    if (!selectedInstructorId) {
+      console.error("Instructor ID is missing");
+      return;
+    }
+
+    const fetchInstructorInfoData = async () => {
+      try {
+        const instructor = await fetchInstructorInfo(selectedInstructorId);
+        setInstructorInfo({
+          name: `${instructor.firstName} ${instructor.lastName}`,
+          avatar: instructor.photo
+        });
+      } catch (error) {
+        console.error('Error fetching instructor info:', error);
+      }
+    };
+
+    const fetchStudentInfoData = async () => {
+      try {
+        const student = await fetchStudentInfo(currentUserAccountId);
+        setStudentInfo({
+          name: `${student.firstName} ${student.lastName}`,
+          avatar: student.photo
+        });
+      } catch (error) {
+        console.error('Error fetching student info:', error);
+      }
+    };
+
+    fetchInstructorInfoData();
+    fetchStudentInfoData();
+
+    const fetchChatHistoryData = async () => {
+      try {
+        const chatHistory = await fetchChatHistory(currentUserAccountId, selectedInstructorId);
+        const formattedMessages = chatHistory.map(m => ({
+          ...m,
+          senderName: m.senderAccountId === currentUserAccountId ? "You" : instructorInfo.name,
+          senderAvatar: m.senderAccountId === currentUserAccountId
+            ? studentInfo.avatar
+            : instructorInfo.avatar
+        }));
+        setMessages(formattedMessages);
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+        setMessages([]);
+      }
+    };
+
+    fetchChatHistoryData();
+
+    const stompClient = connectWebSocket(currentUserAccountId, setMessages);
+    stompClientRef.current = stompClient;
+
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 992);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      if (stompClientRef.current) {
+        stompClientRef.current.disconnect();
+      }
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [currentUserAccountId, selectedInstructorId]);
+
+  // Kết nối WebSocket
   const connectWebSocket = (currentUserAccountId, setMessages) => {
     const socket = new SockJS('http://localhost:8080/ws-chat');
     const stompClient = Stomp.over(socket);
@@ -52,62 +154,10 @@ const StudentMessages = () => {
     return stompClient;
   };
 
-  useEffect(() => {
-    // Fetch instructor info
-    const fetchInstructorInfo = async () => {
-      try {
-        const response = await api.get(`/api/instructors/${chatWithAccountId}`);
-        const instructor = response.data;
-        setInstructorInfo({
-          name: `${instructor.firstName} ${instructor.lastName}`,
-          avatar: instructor.photo ? `http://localhost:8080/uploads/instructor/${instructor.photo}` : "path/to/default/avatar.jpg"
-        });
-      } catch (error) {
-        console.error('Error fetching instructor info:', error);
-      }
-    };
-  
-    fetchInstructorInfo();
-  
-    // Fetch chat history between student and instructor
-    fetch(`http://localhost:8080/api/chat/history?user1Id=${currentUserAccountId}&user2Id=${chatWithAccountId}`)
-      .then(res => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch chat history");
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (Array.isArray(data)) {
-          setMessages(data);
-        } else {
-          console.error("Expected an array but got:", data);
-          setMessages([]);
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching chat history:', error);
-        setMessages([]); // Đặt messages thành mảng rỗng nếu có lỗi
-      });
-  
-    // Connect to WebSocket
-    const stompClient = connectWebSocket(currentUserAccountId, setMessages);
-    stompClientRef.current = stompClient;
-  
-    window.addEventListener("resize", handleResize);
-  
-    return () => {
-      if (stompClientRef.current) {
-        stompClientRef.current.disconnect();
-      }
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [currentUserAccountId, chatWithAccountId]);
-
-  const sendMessage = (e) => {
+  // Gửi tin nhắn
+  const sendMessage = async (e) => {
     e.preventDefault();
     if (currentMsg.trim() !== '' && stompClientRef.current) {
-      // Kiểm tra xem STOMP client đã kết nối chưa
       if (!stompClientRef.current.connected) {
         console.error("STOMP connection is not established.");
         return;
@@ -115,21 +165,58 @@ const StudentMessages = () => {
 
       const chatMessageDTO = {
         senderAccountId: currentUserAccountId,
-        receiverAccountId: chatWithAccountId,
+        receiverAccountId: selectedInstructorId,
         content: currentMsg,
         type: "CHAT"
       };
 
-      // Gửi tin nhắn
-      stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
+      try {
+        // Gửi tin nhắn qua REST API
+        await sendChatMessage(chatMessageDTO);
 
-      // Tạm thời thêm tin nhắn vào UI cho người gửi
-      setMessages(prev => [...prev, {
-        ...chatMessageDTO,
-        senderName: "You",
-        senderAvatar: "https://ibiettuot.com/wp-content/uploads/2021/10/avatar-mac-dinh.png", // Placeholder avatar
-      }]);
-      setCurrentMsg('');
+        // Gửi tin nhắn qua WebSocket
+        stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
+
+        // Cập nhật UI
+        setMessages(prev => [...prev, {
+          ...chatMessageDTO,
+          senderName: "You",
+          senderAvatar: studentInfo.avatar,
+        }]);
+        setCurrentMsg('');
+
+        // Kiểm tra xem instructor đã có trong danh sách chatInstructors chưa
+        const isInstructorInList = chatInstructors.some(instructor => instructor.id === selectedInstructorId);
+        if (!isInstructorInList) {
+          const instructor = await fetchInstructorInfo(selectedInstructorId);
+          setChatInstructors(prev => [...prev, {
+            id: selectedInstructorId,
+            name: `${instructor.firstName} ${instructor.lastName}`,
+            avatar: instructor.photo
+          }]);
+        }
+      } catch (error) {
+        console.error('Error sending chat message:', error);
+      }
+    }
+  };
+
+  // Xử lý khi bấm vào một instructor
+  const handleInstructorClick = async (id) => {
+    setSelectedInstructorId(id);
+    try {
+      const chatHistory = await fetchChatHistory(currentUserAccountId, id);
+      const formattedMessages = chatHistory.map(m => ({
+        ...m,
+        senderName: m.senderAccountId === currentUserAccountId ? "You" : instructorInfo.name,
+        senderAvatar: m.senderAccountId === currentUserAccountId
+          ? studentInfo.avatar
+          : instructorInfo.avatar
+      }));
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error('Error fetching chat history:', error);
+      setMessages([]);
     }
   };
 
@@ -232,36 +319,40 @@ const StudentMessages = () => {
                                   </div>
                                 </div>
                                 <ul className="user-list">
-                                  <li className="user-list-item chat-user-list">
-                                    <Link to="#">
-                                      <div>
-                                        <div className="avatar avatar-online">
-                                          <img
-                                            src={instructorInfo.avatar}
-                                            className="rounded-circle"
-                                            alt="image"
-                                          />
-                                        </div>
-                                      </div>
-                                      <div className="users-list-body">
+                                  {chatInstructors.map((instructor) => (
+                                    <li
+                                      className={`user-list-item chat-user-list ${selectedInstructorId === instructor.id ? 'active' : ''}`}
+                                      key={instructor.id}
+                                      onClick={() => handleInstructorClick(instructor.id)}
+                                    >
+                                      <Link to="#">
                                         <div>
-                                          <h5>{instructorInfo.name}</h5>
-                                          <p>
-                                            <i className="bx bx-video me-1" />
-                                            Video
-                                          </p>
-                                        </div>
-                                        <div className="last-chat-time">
-                                          <small className="text-muted">
-                                            Yesterday
-                                          </small>
-                                          <div className="chat-pin">
-                                            <i className="fa-solid fa-check" />
+                                          <div className="avatar avatar-online">
+                                            <img
+                                              src={instructor.avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzBpnouxDuF063trW5gZOyXtyuQaExCQVMYA&s"}
+                                              className="rounded-circle"
+                                              alt="image"
+                                            />
                                           </div>
                                         </div>
-                                      </div>
-                                    </Link>
-                                  </li>
+                                        <div className="users-list-body">
+                                          <div>
+                                            <h5>{instructor.name || "Instructor Name"}</h5>
+                                            <p>
+                                              {/* <i className="bx bx-video me-1" /> */}
+                                              viewed
+                                            </p>
+                                          </div>
+                                          <div className="last-chat-time">
+                                            <small className="text-muted">recently</small>
+                                            <div className="chat-pin">
+                                              <i className="fa-solid fa-check" />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </Link>
+                                    </li>
+                                  ))}
                                 </ul>
                               </div>
                             </div>
@@ -283,7 +374,7 @@ const StudentMessages = () => {
                               <div className="mt-1">
                                 <h5>{instructorInfo.name}</h5>
                                 <small className="last-seen">
-                                  Last Seen at 07:15 PM
+                                  Talk to me
                                 </small>
                               </div>
                             </div>
@@ -311,7 +402,6 @@ const StudentMessages = () => {
                               <div className="messages">
                                 {messages.map((m, index) => {
                                   const isMe = m.senderAccountId === currentUserAccountId;
-
                                   const dateObj = new Date(m.timestamp);
                                   const timeStr = dateObj.toLocaleTimeString('en-GB', {
                                     hour: '2-digit',
@@ -319,45 +409,43 @@ const StudentMessages = () => {
                                     timeZone: 'Asia/Ho_Chi_Minh'
                                   });
 
-                                  const avatar = m.senderAvatar
-                                    ? m.senderAvatar
-                                    : 'path/to/default/avatar.jpg';
+                                  const chatContainerStyle = {
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    marginBottom: '10px',
+                                    width: '100%',
+                                    justifyContent: isMe ? 'flex-end' : 'flex-start'
+                                  };
 
-                                  const displayName = m.senderName
-                                    ? m.senderName
-                                    : isMe
-                                      ? 'You'
-                                      : 'User';
+                                  const chatContentStyle = {
+                                    maxWidth: '70%',
+                                    width: 'fit-content',
+                                    padding: '8px 12px',
+                                    borderRadius: '12px',
+                                    backgroundColor: isMe ? '#fff1f0' : '#f0f5ff',
+                                    wordWrap: 'break-word'
+                                  };
+
+                                  const messageContentStyle = {
+                                    wordWrap: 'break-word',
+                                    whiteSpace: 'pre-wrap'
+                                  };
+
+                                  const timeStyle = {
+                                    fontSize: '12px',
+                                    color: '#777',
+                                    marginBottom: '3px',
+                                    textAlign: isMe ? 'right' : 'left'
+                                  };
 
                                   return (
-                                    <div className={isMe ? 'chats chats-right' : 'chats'} key={index}>
-                                      {!isMe && (
-                                        <div className="chat-avatar">
-                                          <img
-                                            src={avatar}
-                                            className="rounded-circle dreams_chat"
-                                            alt="image"
-                                          />
+                                    <div style={chatContainerStyle} key={index}>
+                                      <div style={chatContentStyle}>
+                                        <div style={timeStyle}>
+                                          <span>{timeStr}</span>
                                         </div>
-                                      )}
-                                      <div className="chat-content">
-                                        <div className={`chat-profile-name ${isMe ? 'text-end' : ''}`}>
-                                          <h6>
-                                            {displayName}
-                                            <span>{timeStr}</span>
-                                          </h6>
-                                        </div>
-                                        <div className="message-content">{m.content}</div>
+                                        <div style={messageContentStyle}>{m.content}</div>
                                       </div>
-                                      {isMe && (
-                                        <div className="chat-avatar">
-                                          <img
-                                            src={avatar}
-                                            className="rounded-circle dreams_chat"
-                                            alt="image"
-                                          />
-                                        </div>
-                                      )}
                                     </div>
                                   );
                                 })}
@@ -365,7 +453,6 @@ const StudentMessages = () => {
                             </div>
                           </div>
                         </div>
-
                         <div className="chat-footer">
                           <form onSubmit={sendMessage}>
                             <div className="smile-foot">
@@ -411,13 +498,11 @@ const StudentMessages = () => {
                           </form>
                         </div>
                       </div>
-                      {/* /Chat */}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            {/* Student Profile */}
           </div>
         </div>
       </div>
