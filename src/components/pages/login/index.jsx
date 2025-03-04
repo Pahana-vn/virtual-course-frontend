@@ -41,12 +41,9 @@ const Login = () => {
     setSubmitting(true);
     setErrMsg("");
     try {
-      // Gọi API đăng nhập tại đây
       const userData = await login(credentials).unwrap();
-      // console.log("User Data:", userData);
       dispatch(setCredentials(userData));
       navigate("/");
-
     } catch (error) {
       if (!error.data) {
         setErrMsg("No Server Response");
@@ -54,6 +51,8 @@ const Login = () => {
         setErrMsg("Invalid email or password");
       } else if (error.status === 401) {
         setErrMsg("Incorrect email or password");
+      } else if (error.status === 403) {
+        setErrMsg("Email is not verified. Please check your inbox..");
       } else {
         setErrMsg("Login Failed: Unknown error");
       }
@@ -159,7 +158,6 @@ const Login = () => {
                     initialValues={{
                       email: "",
                       password: "",
-                      rememberMe: false,
                     }}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
@@ -233,14 +231,14 @@ const Login = () => {
                           </span>
                         </div>
 
-                        {/* Remember Me */}
+                        {/* Remember Me
                         <div className="remember-me">
                           <label className="custom_check mr-2 mb-0 d-inline-flex remember-me">
                             Remember me
                             <Field type="checkbox" name="rememberMe" />
                             <span className="checkmark" />
                           </label>
-                        </div>
+                        </div> */}
 
                         {/* Submit Button */}
                         <div className="d-grid">

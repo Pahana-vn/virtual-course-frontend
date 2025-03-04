@@ -227,6 +227,10 @@ const courseSlice = createSlice({
         (answer) => answer.id !== answerId
       );
     },
+    clearQuestionInfo: (state) => {
+      state.questionInfo.questions = [...[]];
+      state.questionInfo = { ...state.questionInfo };
+    },
 
     // Actions cho Settings
     setSettingsInfo: (state, action) => {
@@ -281,6 +285,7 @@ export const {
   addAnswerOption,
   updateAnswerOption,
   deleteAnswerOption,
+  clearQuestionInfo,
   addHashtag,
   removeHashtag,
   setBasePrice,

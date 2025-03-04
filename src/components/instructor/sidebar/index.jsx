@@ -92,7 +92,7 @@ export default function InstructorSidebar() {
                   My Profile
                 </Link>
               </li>
-              <li
+              {/* <li
                 className={`nav-item ${location.pathname === "/instructor/instructor-reviews"
                     ? "active"
                     : ""
@@ -113,7 +113,7 @@ export default function InstructorSidebar() {
                   <i className="bx bxs-bookmark-alt" />
                   Question &amp; Answer
                 </Link>
-              </li>
+              </li> */}
               <li
                 className={`nav-item ${location.pathname === "/instructor/instructor-chat"
                     ? "active"
@@ -125,7 +125,7 @@ export default function InstructorSidebar() {
                   Messages
                 </Link>
               </li>
-              <li
+              {/* <li
                 className={`nav-item ${location.pathname === "/instructor/instructor-notifications"
                     ? "active"
                     : ""
@@ -180,7 +180,7 @@ export default function InstructorSidebar() {
                   <i className="bx bxs-file" />
                   Assignments
                 </Link>
-              </li>
+              </li> */}
               <li
                 className={`nav-item ${location.pathname === "/instructor/instructor-earnings"
                     ? "active"

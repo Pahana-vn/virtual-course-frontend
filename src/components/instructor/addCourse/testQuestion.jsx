@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import Papa from "papaparse";
 import Popup from "./popup";
 import {
   addQuestion,
@@ -10,10 +11,12 @@ import {
   addAnswerOption,
   updateAnswerOption,
   deleteAnswerOption,
+  clearQuestionInfo,
+  setQuestionInfo,
 } from "../../../redux/slices/course/courseSlice";
 import "./Curriculum.css";
 
-const TestQuestion = ({ nextTab4, prevTab3 }) => {
+const TestQuestion = ({ nextTab4, prevTab3, isEditing }) => {
   const dispatch = useDispatch();
   const { questions } = useSelector(
     (state) => state.course.questionInfo || { questions: [] }
@@ -56,12 +59,14 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
   ];
 
   const handleAddQuestion = (mark, title) => {
-    dispatch(addQuestion({ 
-      id: generateUniqueId(),
-      title,
-      mark,
-      answerOptions: [],
-    }));
+    dispatch(
+      addQuestion({
+        id: generateUniqueId(),
+        title,
+        mark,
+        answerOptions: [],
+      })
+    );
   };
 
   const handleUpdateQuestion = (questionId, newTitle) => {
@@ -82,16 +87,10 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
       title: title || "Untitled Option",
       isCorrect: currentAnswerOptions.length === 0,
     };
-    dispatch(
-      addAnswerOption({ questionId, answerOption: newAnswerOption })
-    );
+    dispatch(addAnswerOption({ questionId, answerOption: newAnswerOption }));
   };
 
-  const handleUpdateAnswerOption = (
-    questionId,
-    answerId,
-    updatedAnswer
-  ) => {
+  const handleUpdateAnswerOption = (questionId, answerId, updatedAnswer) => {
     dispatch(
       updateAnswerOption({
         questionId,
@@ -110,12 +109,151 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
     );
   };
 
+  const handleImportCSV = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    dispatch(clearQuestionInfo());
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      chunkSize: 100,
+      chunk: async (result, parser) => {
+        parser.pause();
+        await processCSVChunk(result.data);
+        parser.resume();
+      },
+      complete: (result) => {
+        console.log("CSV Import Completed!");
+        console.log("Raw Parsed Data:", result.data);
+      },
+    });
+  };
+
+  const processCSVChunk = async (dataChunk) => {
+    return new Promise((resolve) => {
+      const formattedQuestions = dataChunk.map((row, index) => {
+        if (!row["Question Title"] || !row["Mark"]) return null;
+
+        const answerOptions = Object.keys(row)
+          .filter((key) => key.startsWith("Answer"))
+          .map((key, i) => ({
+            id: `${Date.now()}-${index}-${i}`,
+            title: row[key].replace("(correct)", "").trim(),
+            isCorrect: row[key].includes("(correct)"),
+          }))
+          .filter((ans) => ans.title !== ""); // Bỏ các dòng trống
+
+        return {
+          id: generateUniqueId(),
+          title: row["Question Title"],
+          mark: parseInt(row["Mark"], 10) || 10,
+          answerOptions,
+        };
+      }).filter(Boolean);
+
+      dispatch(setQuestionInfo({ questions: formattedQuestions }));
+      resolve();
+    });
+  };
+
+  const handleExportCSV = () => {
+    if (questions.length === 0) {
+      alert("No questions available to export.");
+      return;
+    }
+
+    const csvData = [
+      ["Question Title", "Mark", "Answer 1", "Answer 2", "Answer 3", "Answer 4", "Answer 5"],
+      ...questions.map((q) => [
+        q.title,
+        q.mark,
+        ...q.answerOptions.map((opt) => `${opt.title}${opt.isCorrect ? " (correct)" : ""}`),
+      ]),
+    ];
+
+    const csv = Papa.unparse(csvData);
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "questions_export.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleDownloadSampleCSV = () => {
+    const sampleData = [
+      {
+        "Question Title": "What is Java?",
+        "Mark": "10",
+        "Answer 1": "A programming language (correct)",
+        "Answer 2": "A fruit",
+        "Answer 3": "A coffee",
+        "Answer 4": "",
+        "Answer 5": "",
+      },
+      {
+        "Question Title": "Which of these are programming languages?",
+        "Mark": "8",
+        "Answer 1": "Java (correct)",
+        "Answer 2": "Python (correct)",
+        "Answer 3": "HTML",
+        "Answer 4": "CSS",
+        "Answer 5": "",
+      },
+    ];
+
+    const csv = Papa.unparse(sampleData);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "sample_questions.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+
   return (
     <>
       <fieldset className="field-card" style={{ display: "block" }}>
         <div className="add-course-info">
-          <div className="add-course-inner-header">
-            <h4>Test Questions</h4>
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="add-course-inner-header">
+              <h4>Test Questions</h4>
+            </div>
+
+            <div className="import-section mx-4">
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleImportCSV}
+                style={{ display: "none" }}
+                id="csvUpload"
+              />
+              <label htmlFor="csvUpload" className="btn btn-primary">
+                Import CSV
+              </label>
+              {isEditing ? (
+                <button
+                  className="btn btn-success mx-2 mb-2"
+                  onClick={handleExportCSV}
+                >
+                  Export CSV
+                </button>
+              ) : (
+                <button
+                  className="btn btn-warning mx-2 mb-2"
+                  onClick={handleDownloadSampleCSV}
+                >
+                  Download Sample CSV
+                </button>
+              )}
+            </div>
           </div>
           <div className="add-course-form">
             {questionMarks.map((questionMark) => (
@@ -134,7 +272,6 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                     Add Question
                   </button>
                 </div>
-
                 <div className="quiz-content">
                   {questions
                     .filter((question) => question.mark === questionMark.mark)
@@ -147,7 +284,8 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                               data-bs-toggle="collapse"
                               to={`#collapse-quiz-${questionMark.mark}-${question.id}`}
                             >
-                              <i className="fas fa-align-justify" /> Question: {question.title}
+                              <i className="fas fa-align-justify" /> Question:{" "}
+                              {question.title}
                             </Link>
                             <div className="faq-right">
                               <button
@@ -156,8 +294,11 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                                   handleOpenPopup(
                                     "Edit Question Title",
                                     (newTitle) =>
-                                      handleUpdateQuestion(question.id, newTitle),
-                                      question.title
+                                      handleUpdateQuestion(
+                                        question.id,
+                                        newTitle
+                                      ),
+                                    question.title
                                   )
                                 }
                               >
@@ -165,7 +306,9 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                               </button>
                               <button
                                 className="btn btn-delete-quiz"
-                                onClick={() => handleDeleteQuestion(question.id)}
+                                onClick={() =>
+                                  handleDeleteQuestion(question.id)
+                                }
                               >
                                 <i className="far fa-trash-can" />
                               </button>
@@ -196,7 +339,7 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
                                     }
                                   />
                                   <p className="m-0 flex-grow-1">
-                                    Answer: 
+                                    Answer:
                                     <strong>{answer.title}</strong>
                                   </p>
                                   <button
@@ -223,8 +366,9 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
 
                             {/* Hiển thị lỗi nếu không có đáp án đúng */}
                             {question.answerOptions.length > 0 &&
-                              question.answerOptions.filter((answer) => answer.isCorrect)
-                                .length === 0 && (
+                              question.answerOptions.filter(
+                                (answer) => answer.isCorrect
+                              ).length === 0 && (
                                 <p className="error-message text-danger">
                                   At least one answer must be marked as correct.
                                 </p>
@@ -290,6 +434,7 @@ const TestQuestion = ({ nextTab4, prevTab3 }) => {
 TestQuestion.propTypes = {
   nextTab4: PropTypes.func.isRequired,
   prevTab3: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
 };
 
 export default TestQuestion;

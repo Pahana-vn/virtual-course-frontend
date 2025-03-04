@@ -140,6 +140,9 @@ import RegisterFour from "./components/pages/registerInstructor/register4";
 import RegisterThree from "./components/pages/registerInstructor/register3";
 import RegisterTwo from "./components/pages/registerInstructor/register2";
 import RegisterOne from "./components/pages/registerInstructor/register1";
+import VerifyEmailPage from "./components/pages/verify/VerifyEmailPage";
+import ResendVerificationEmail from "./components/pages/verify/ResendVerificationEmail";
+import VerifyEmailNotice from "./components/pages/verify/VerifyEmailNotice";
 
 
 const Approuter = () => {
@@ -157,7 +160,9 @@ const Approuter = () => {
         <Route path="/register3" element={<RegisterThree />} />
         <Route path="/register4" element={<RegisterFour />} />
         <Route path="/register5" element={<RegisterFive />} />
-
+        <Route path="/verify/:token" element={<VerifyEmailPage />} />
+        <Route path="/resend-verification" element={<ResendVerificationEmail />} />
+        <Route path="/verify-email-notice" element={<VerifyEmailNotice />} />
 
         {/* Blog */}
         <Route path="/blog-list" element={<BlogList />} />

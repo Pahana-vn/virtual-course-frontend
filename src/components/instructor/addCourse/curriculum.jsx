@@ -387,17 +387,7 @@ const Curriculum = ({ nextTab3, prevTab2, isEditing }) => {
     link.click();
     document.body.removeChild(link);
   };
-
-  // const handleClearCurriculum = () => {
-  //   if (
-  //     window.confirm(
-  //       "Are you sure you want to reset the entire curriculum? This action cannot be undone."
-  //     )
-  //   ) {
-  //     dispatch(clearCurriculum());
-  //   }
-  // };
-
+  
   return (
     <>
       <fieldset className="field-card" style={{ display: "block" }}>
@@ -455,7 +445,7 @@ const Curriculum = ({ nextTab3, prevTab2, isEditing }) => {
             {sections.map((section, sectionIndex) => (
               <div key={sectionIndex} className="curriculum-grid">
                 <div className="curriculum-head">
-                  <p className="fs-4 fw-bold">
+                  <p className="fs-2 fw-bold">
                     Section {sectionIndex + 1}: {section.title}
                   </p>
                   <div className="section-actions">

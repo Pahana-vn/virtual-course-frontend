@@ -56,6 +56,21 @@ export const authApiSlice = baseApiSlice.injectEndpoints({
         }
       },
     }),
+    verifyEmail: builder.mutation({
+      query: (token) => ({
+        url: `/auth/verify?token=${token}`,
+        method: "GET",
+      }),
+    }),
+
+    // API gửi lại email xác minh
+    resendVerificationEmail: builder.mutation({
+      query: (email) => ({
+        url: "/auth/resend-verification",
+        method: "POST",
+        body: { email },
+      }),
+    }),
 
     checkEmailExist: builder.query({
       query: (email) => `/auth/check-email?email=${email}`,
@@ -72,6 +87,8 @@ export const {
   useRegisterMutation,
   useInstructorRegisterMutation,
   useLogoutMutation,
-  useLazyCheckEmailExistQuery, 
-  useLazyCheckUsernameExistQuery, 
+  useVerifyEmailMutation, 
+  useResendVerificationEmailMutation,
+  useLazyCheckEmailExistQuery,
+  useLazyCheckUsernameExistQuery,
 } = authApiSlice;
