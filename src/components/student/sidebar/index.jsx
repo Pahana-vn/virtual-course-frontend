@@ -3,34 +3,36 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import StickyBox from "react-sticky-box";
 import { logout } from "../../../services/authService";
 import { fetchStudentByStudentId } from "../../../services/studentService";
-import { User16 } from "../../imagepath";
+
+const DEFAULT_AVATAR = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU";
 
 export default function StudentSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const studentId = localStorage.getItem("studentId");
 
-  const [avatar, setAvatar] = useState(User16); // Ảnh mặc định
+  const [student, setStudent] = useState({
+    avatar: DEFAULT_AVATAR,
+    username: "Student Name",
+  });
 
-  // Lấy thông tin sinh viên khi component load
   useEffect(() => {
     const getStudentData = async () => {
       if (!studentId) return;
       try {
         const studentData = await fetchStudentByStudentId(studentId);
-        if (studentData.avatar) {
-          setAvatar(studentData.avatar); // Nếu có avatar từ API, cập nhật state
-        }
+        setStudent({
+          avatar: studentData.avatar || DEFAULT_AVATAR,
+          username: studentData.username || "Student Name",
+        });
       } catch (error) {
         console.error("Error fetching student avatar:", error);
       }
     };
     getStudentData();
-  }, [studentId]); // Chạy khi studentId thay đổi
+  }, [studentId]);
 
-  const getActiveClass = (path) => {
-    return location.pathname === path ? "active" : "";
-  };
+  const getActiveClass = (path) => (location.pathname === path ? "active" : "");
 
   const handleLogout = () => {
     logout();
@@ -45,7 +47,12 @@ export default function StudentSidebar() {
             <div className="profile-bg">
               <div className="profile-img">
                 <Link to={`/student/student-profile/${studentId}`}>
-                  <img src={avatar} alt="Student Avatar" />
+                  <img
+                    src={student.avatar}
+                    onError={(e) => (e.target.src = DEFAULT_AVATAR)}
+                    alt="Student Avatar"
+                    className="img-fluid"
+                  />
                 </Link>
               </div>
             </div>
@@ -53,7 +60,7 @@ export default function StudentSidebar() {
               <div className="profile-name text-center">
                 <h4>
                   <Link to={`/student/student-profile/${studentId}`}>
-                    Student Name
+                    {student.username}
                   </Link>
                 </h4>
                 <p>Student</p>

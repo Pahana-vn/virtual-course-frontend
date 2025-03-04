@@ -5,6 +5,7 @@ import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
 import StudentSettingPageHeader from "./settingPageHeader";
 
+const DEFAULT_AVATAR = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU";
 const StudentSetting = () => {
   const navigate = useNavigate();
   const studentId = localStorage.getItem("studentId");
@@ -23,7 +24,7 @@ const StudentSetting = () => {
     address: "",
     gender: "",
     phone: "",
-    avatar: "",
+    avatar: DEFAULT_AVATAR,
     bio: "",
   });
 
@@ -43,7 +44,7 @@ const StudentSetting = () => {
           address: data.address || "Not Set",
           gender: data.gender || "OTHER",
           phone: data.phone || "",
-          avatar: data.avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU",
+          avatar: data.avatar || DEFAULT_AVATAR,
           bio: data.bio || "No bio yet.",
         });
       } catch (error) {
@@ -58,19 +59,16 @@ const StudentSetting = () => {
   const validateForm = (data) => {
     let errors = {};
 
-    // Kiểm tra username (bắt buộc, loại bỏ khoảng trắng thừa)
     if (!data.username || data.username.trim() === "") {
       errors.username = "Username is required.";
     } else {
-      data.username = data.username.trim(); // Loại bỏ khoảng trắng thừa
+      data.username = data.username.trim();
     }
 
-    // Kiểm tra số điện thoại (phải có đúng 10 số)
     if (!/^\d{10}$/.test(data.phone)) {
       errors.phone = "Phone number must be exactly 10 digits.";
     }
 
-    // Kiểm tra ngày sinh không vượt quá hiện tại
     const today = new Date();
     const dob = new Date(data.dob);
     if (dob > today) {
@@ -181,6 +179,7 @@ const StudentSetting = () => {
                           <Link to="/student/student-profile" className="profile-pic">
                             <img
                               src={student.avatar}
+                              onError={(e) => (e.target.src = DEFAULT_AVATAR)}
                               alt="Avatar"
                               className="img-fluid"
                             />
@@ -199,7 +198,7 @@ const StudentSetting = () => {
                                   </div>
                                 </div>
                                 <div className="img-delete">
-                                  <Link to="#" className="delete-icon" onClick={() => setStudent({ ...student, avatar: "http://localhost:8080/uploads/student/default-avatar.png" })}>
+                                  <Link to="#" className="delete-icon" onClick={() => setStudent({ ...student, avatar: DEFAULT_AVATAR })}>
                                     <i className="bx bx-trash" />
                                   </Link>
                                 </div>

@@ -15,7 +15,7 @@ const StudentOrderHistory = () => {
         const data = await fetchStudentOrders(studentId);
         setOrders(data);
       } catch (error) {
-        console.error("Lỗi khi tải đơn hàng:", error);
+        console.error("Error loading order:", error);
       }
     };
     loadOrders();
@@ -84,8 +84,8 @@ const StudentOrderHistory = () => {
                               <td>
                                 <span
                                   className={`badge ${order.status === "Completed"
-                                      ? "badge-success"
-                                      : "badge-warning"
+                                    ? "badge-success"
+                                    : "badge-warning"
                                     }`}
                                   style={{
                                     padding: "6px 12px",
@@ -101,7 +101,7 @@ const StudentOrderHistory = () => {
                                 <Link
                                   to={`/view-invoice/${order.id}`}
                                   className="btn btn-light-danger quiz-view"
-                                  
+
                                 >
                                   View Invoice
                                 </Link>

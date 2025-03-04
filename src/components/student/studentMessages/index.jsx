@@ -24,8 +24,8 @@ const StudentMessages = () => {
   const instructorId = parseInt(queryParams.get('instructorId'), 10);
 
   const [instructorInfo, setInstructorInfo] = useState({
-    name: "Instructor Name",
-    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzBpnouxDuF063trW5gZOyXtyuQaExCQVMYA&s"
+    name: "Select Instructor to chat",
+    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"
   });
 
   const [studentInfo, setStudentInfo] = useState({
@@ -38,14 +38,12 @@ const StudentMessages = () => {
 
   const stompClientRef = useRef(null);
 
-  // Fetch danh sách các cuộc trò chuyện gần đây
   useEffect(() => {
     const fetchRecentChatsData = async () => {
       try {
         const recentChats = await fetchRecentChats(currentUserAccountId);
-        console.log("Recent Chats:", recentChats); // Kiểm tra dữ liệu trả về
+        console.log("Recent Chats:", recentChats);
 
-        // Lấy thông tin chi tiết của từng instructor
         const instructors = await Promise.all(
           recentChats.map(async (id) => {
             const instructor = await fetchInstructorInfo(id);
@@ -57,7 +55,7 @@ const StudentMessages = () => {
           })
         );
 
-        setChatInstructors(instructors); // Lưu danh sách instructor vào state
+        setChatInstructors(instructors);
       } catch (error) {
         console.error('Error fetching recent chats:', error);
       }
@@ -66,7 +64,6 @@ const StudentMessages = () => {
     fetchRecentChatsData();
   }, [currentUserAccountId]);
 
-  // Fetch thông tin instructor và lịch sử chat khi selectedInstructorId thay đổi
   useEffect(() => {
     if (!selectedInstructorId) {
       console.error("Instructor ID is missing");
@@ -136,7 +133,6 @@ const StudentMessages = () => {
     };
   }, [currentUserAccountId, selectedInstructorId]);
 
-  // Kết nối WebSocket
   const connectWebSocket = (currentUserAccountId, setMessages) => {
     const socket = new SockJS('http://localhost:8080/ws-chat');
     const stompClient = Stomp.over(socket);
@@ -154,7 +150,6 @@ const StudentMessages = () => {
     return stompClient;
   };
 
-  // Gửi tin nhắn
   const sendMessage = async (e) => {
     e.preventDefault();
     if (currentMsg.trim() !== '' && stompClientRef.current) {
@@ -171,13 +166,10 @@ const StudentMessages = () => {
       };
 
       try {
-        // Gửi tin nhắn qua REST API
         await sendChatMessage(chatMessageDTO);
 
-        // Gửi tin nhắn qua WebSocket
         stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
 
-        // Cập nhật UI
         setMessages(prev => [...prev, {
           ...chatMessageDTO,
           senderName: "You",
@@ -185,7 +177,6 @@ const StudentMessages = () => {
         }]);
         setCurrentMsg('');
 
-        // Kiểm tra xem instructor đã có trong danh sách chatInstructors chưa
         const isInstructorInList = chatInstructors.some(instructor => instructor.id === selectedInstructorId);
         if (!isInstructorInList) {
           const instructor = await fetchInstructorInfo(selectedInstructorId);
@@ -201,7 +192,6 @@ const StudentMessages = () => {
     }
   };
 
-  // Xử lý khi bấm vào một instructor
   const handleInstructorClick = async (id) => {
     setSelectedInstructorId(id);
     try {
@@ -329,7 +319,7 @@ const StudentMessages = () => {
                                         <div>
                                           <div className="avatar avatar-online">
                                             <img
-                                              src={instructor.avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzBpnouxDuF063trW5gZOyXtyuQaExCQVMYA&s"}
+                                              src={instructor.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"}
                                               className="rounded-circle"
                                               alt="image"
                                             />
@@ -339,7 +329,6 @@ const StudentMessages = () => {
                                           <div>
                                             <h5>{instructor.name || "Instructor Name"}</h5>
                                             <p>
-                                              {/* <i className="bx bx-video me-1" /> */}
                                               viewed
                                             </p>
                                           </div>
@@ -366,7 +355,7 @@ const StudentMessages = () => {
                             <div className="user-details mb-0">
                               <figure className="avatar mb-0">
                                 <img
-                                  src={instructorInfo.avatar}
+                                  src={instructorInfo.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"}
                                   className="rounded-circle"
                                   alt="image"
                                 />
