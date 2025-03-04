@@ -17,7 +17,7 @@ const Footer = () => {
                 </div>
                 <div className="footer-about-content">
                   <p>
-                  At Virtual Course Network, we believe that learning has no borders. With a wide range of quality courses, you can learn anytime, anywhere.
+                    At Virtual Course Network, we break down barriers to learning. With a diverse selection of high-quality courses, you can expand your knowledge anytime, anywhere—without limits.
                   </p>
                 </div>
               </div>
@@ -29,19 +29,10 @@ const Footer = () => {
                 <h2 className="footer-title">For Instructor</h2>
                 <ul>
                   <li>
-                    <Link to="/instructor/instructor-profile">Profile</Link>
-                  </li>
-                  <li>
                     <Link to="/login">Login</Link>
                   </li>
                   <li>
-                    <Link to="/register">Register</Link>
-                  </li>
-                  <li>
-                    <Link to="/instructor/instructor-list">Instructor</Link>
-                  </li>
-                  <li>
-                    <Link to="/instructor/deposit-instructor-dashboard"> Dashboard</Link>
+                    <Link to="/register1">Register</Link>
                   </li>
                 </ul>
               </div>
@@ -52,21 +43,14 @@ const Footer = () => {
               <div className="footer-widget footer-menu">
                 <h2 className="footer-title">For Student</h2>
                 <ul>
-                  <li>
-                    <Link to="/student/students-profile">Profile</Link>
-                  </li>
+
                   <li>
                     <Link to="/login">Login</Link>
                   </li>
                   <li>
                     <Link to="/register">Register</Link>
                   </li>
-                  <li>
-                    <Link to="/student/students-list">Student</Link>
-                  </li>
-                  <li>
-                    <Link to="/deposit-student-dashboard"> Dashboard</Link>
-                  </li>
+
                 </ul>
               </div>
               {/* /Footer Widget */}
@@ -74,29 +58,18 @@ const Footer = () => {
             <div className="col-lg-4 col-md-6">
               {/* Footer Widget */}
               <div className="footer-widget footer-contact">
-                <h2 className="footer-title">News letter</h2>
-                <div className="news-letter">
-                  <form>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter your email address"
-                      name="email"
-                    />
-                  </form>
-                </div>
+
                 <div className="footer-contact-info">
                   <div className="footer-address">
                     <img src={Icon20} alt="" className="img-fluid" />
                     <p>
                       {" "}
-                      3556 Beech Street, San Francisco,
-                      <br /> California, CA 94108{" "}
+                      62 Street 36, Van Phuc Urban Area, Thu Duc, Ho Chi Minh 71300
                     </p>
                   </div>
                   <p>
                     <img src={Icon19} alt="" className="img-fluid" />
-                    dreamslms@example.com
+                    virtualcourselms@example.com
                   </p>
                   <p className="mb-0">
                     <img src={Icon21} alt="" className="img-fluid" />
@@ -116,21 +89,10 @@ const Footer = () => {
           {/* Copyright */}
           <div className="copyright">
             <div className="row">
-              <div className="col-md-6">
-                <div className="privacy-policy">
-                  <ul>
-                    <li>
-                      <Link to="/term-condition">Terms</Link>
-                    </li>
-                    <li>
-                      <Link to="/privacy-policy">Privacy</Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="col-md-6">
+
+              <div className="col-md-12">
                 <div className="copyright-text">
-                  <p className="mb-0">© 2023 DreamsLMS. All rights reserved.</p>
+                  <p className="mb-0">© 2025 VirtualCourseLMS. All rights reserved.</p>
                 </div>
               </div>
             </div>

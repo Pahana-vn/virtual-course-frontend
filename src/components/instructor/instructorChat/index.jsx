@@ -5,7 +5,6 @@ import Scrollbars from "react-custom-scrollbars-2";
 import { Link } from "react-router-dom";
 import SockJS from 'sockjs-client';
 
-// Import các hàm service (đảm bảo fetchStudentInfo gọi /students/by-account/{id})
 import {
   fetchChatHistory,
   fetchRecentChatsForInstructor,
@@ -13,53 +12,41 @@ import {
   sendChatMessage
 } from "../../../services/chatService";
 
-// Import header, sidebar cho Instructor
 import { InstructorHeader } from "../header";
 import InstructorSidebar from "../sidebar";
-
+const DEFAULT_AVATAR = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU";
 const InstructorMessages = () => {
-  // Lấy instructorAccountId từ localStorage.
   const currentInstructorAccountId = parseInt(localStorage.getItem('instructorId'), 10);
 
-  // Quản lý UI (search, responsive, v.v.)
   const [visible, setVisible] = useState(false);
   const [searchChat, setSearchChat] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 992);
 
-  // Danh sách student đã chat (recent chat), student đang chọn, tin nhắn
   const [chatStudents, setChatStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [currentMsg, setCurrentMsg] = useState('');
 
-  // Thông tin student đang chat
   const [studentInfo, setStudentInfo] = useState({
-    name: "Student Name",
-    avatar: "https://ibiettuot.com/wp-content/uploads/2021/10/avatar-mac-dinh.png"
+    name: "Select Student to chat",
+    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"
   });
 
-  // Tham chiếu stompClient để disconnect khi unmount
   const stompClientRef = useRef(null);
 
-  // =========== Lấy danh sách student (recent chat) ===========
   useEffect(() => {
     const fetchRecentChatsData = async () => {
       try {
-        // Gọi /api/chat/recent-chats-instructor?instructorId={accountId}
         const recentChats = await fetchRecentChatsForInstructor(currentInstructorAccountId);
-        // recentChats có dạng [2, 5, 9, ...] => accountId của student
 
-        // Lấy thông tin student cho mỗi accountId
         const students = await Promise.all(
           recentChats.map(async (stuAccId) => {
-            // Hàm fetchStudentInfo(stuAccId) phải gọi /students/by-account/{stuAccId}
             const student = await fetchStudentInfo(stuAccId);
-            // Map sang object hiển thị
             return {
               id: stuAccId,
-              name: `${student.firstName} ${student.lastName}`,
-              avatar: student.avatar,
-              studentId: student.id // Thêm studentId vào object
+              name: student.username,
+              avatar: student.avatar || DEFAULT_AVATAR,
+              studentId: student.id
             };
           })
         );
@@ -75,11 +62,9 @@ const InstructorMessages = () => {
     }
   }, [currentInstructorAccountId]);
 
-  // =========== Khi chọn 1 student trong Recent Chat ===========
   useEffect(() => {
     if (!selectedStudentId) return;
 
-    // 1) Lấy lịch sử chat
     const fetchChatHistoryData = async () => {
       try {
         const chatHistory = await fetchChatHistory(currentInstructorAccountId, selectedStudentId);
@@ -92,13 +77,12 @@ const InstructorMessages = () => {
 
     fetchChatHistoryData();
 
-    // 2) Lấy thông tin student
     const loadStudentInfo = async () => {
       try {
         const student = await fetchStudentInfo(selectedStudentId);
         setStudentInfo({
-          name: `${student.firstName} ${student.lastName}`,
-          avatar: student.avatar
+          name: student.username,
+          avatar: student.avatar || DEFAULT_AVATAR
         });
       } catch (error) {
         console.error('Error fetching student info:', error);
@@ -107,14 +91,12 @@ const InstructorMessages = () => {
 
     loadStudentInfo();
 
-    // 3) Kết nối WebSocket
     const socket = new SockJS('http://localhost:8080/ws-chat');
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, (frame) => {
       console.log('Instructor STOMP connected: ' + frame);
 
-      // Lắng nghe tin nhắn từ queue/user.{instructorAccountId}
       stompClient.subscribe(`/queue/user.${currentInstructorAccountId}`, (messageOutput) => {
         const msg = JSON.parse(messageOutput.body);
         setMessages((prev) => [...prev, msg]);
@@ -125,7 +107,6 @@ const InstructorMessages = () => {
 
     stompClientRef.current = stompClient;
 
-    // Cleanup WS khi unmount
     return () => {
       if (stompClientRef.current) {
         stompClientRef.current.disconnect();
@@ -133,7 +114,6 @@ const InstructorMessages = () => {
     };
   }, [currentInstructorAccountId, selectedStudentId]);
 
-  // =========== Gửi tin nhắn ===========
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!currentMsg.trim() || !selectedStudentId) return;
@@ -146,10 +126,8 @@ const InstructorMessages = () => {
     };
 
     try {
-      // Gửi tin nhắn bằng REST
       await sendChatMessage(chatMessageDTO);
 
-      // Gửi tin nhắn qua WebSocket
       if (stompClientRef.current && stompClientRef.current.connected) {
         stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
       }
@@ -160,7 +138,7 @@ const InstructorMessages = () => {
         {
           ...chatMessageDTO,
           senderName: "You",
-          senderAvatar: "path/to/instructor/avatar.jpg", // Tuỳ chỉnh nếu muốn
+          senderAvatar: "path/to/instructor/avatar.jpg",
           timestamp: new Date().toISOString()
         }
       ]);
@@ -171,19 +149,16 @@ const InstructorMessages = () => {
     }
   };
 
-  // =========== Chọn student (accountId) từ Recent Chat ===========
   const handleStudentClick = (stuAccId) => {
     setSelectedStudentId(stuAccId);
   };
 
-  // =========== Theo dõi thay đổi kích thước màn hình ===========
   useEffect(() => {
     const handleResize = () => setIsSmallScreen(window.innerWidth < 992);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ===================== Render UI =====================
   return (
     <div className="main-wrapper chat-wrapper chat-page main-chat-blk">
       {/* Header Instructor */}
@@ -228,7 +203,6 @@ const InstructorMessages = () => {
                   </div>
                   <div className="checkout-form">
                     <div className="content">
-                      {/* Left sidebar: danh sách student */}
                       <div className="sidebar-group left-sidebar chat_sidebar">
                         <div
                           id="chats"
@@ -304,7 +278,7 @@ const InstructorMessages = () => {
                                         <div>
                                           <div className="avatar avatar-online">
                                             <img
-                                              src={student.avatar}
+                                              src={student.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"}
                                               className="rounded-circle"
                                               alt="student"
                                             />
@@ -342,7 +316,7 @@ const InstructorMessages = () => {
                             <div className="user-details mb-0">
                               <figure className="avatar mb-0">
                                 <img
-                                  src={studentInfo.avatar}
+                                  src={studentInfo.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"}
                                   className="rounded-circle"
                                   alt="student"
                                 />

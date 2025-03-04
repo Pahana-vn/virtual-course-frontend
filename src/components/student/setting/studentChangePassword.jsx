@@ -24,7 +24,7 @@ const StudentChangePassword = () => {
     setMessage("");
     setError("");
 
-    const studentId = localStorage.getItem("studentId"); // Lấy studentId từ localStorage
+    const studentId = localStorage.getItem("studentId");
 
     if (!studentId) {
       setError("Student ID not found!");

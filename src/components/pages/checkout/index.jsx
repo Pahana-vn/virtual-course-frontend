@@ -19,7 +19,6 @@ const Checkout = () => {
   useEffect(() => {
     const loadCheckoutData = async () => {
       if (courseId) {
-        // Lấy 1 course
         try {
           const course = await fetchCourseById(courseId);
           setSingleCourse(course);
@@ -28,7 +27,6 @@ const Checkout = () => {
           toast.error("Error fetching course details");
         }
       } else {
-        // Lấy các course trong cart
         try {
           const response = await fetchCartItems(studentId);
           setCartItems(response);
