@@ -108,6 +108,13 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
         body: profileData,
       }),
     }),
+    changePassword: builder.mutation({
+      query: (changePasswordDTO) => ({
+        url: `/instructors/change-password`,  // Endpoint đổi mật khẩu
+        method: "PUT",
+        body: changePasswordDTO,
+      }),
+    }),
   }),
 });
 
@@ -121,4 +128,5 @@ export const {
   useInstructorProfileQuery,
   useGetInstructorAccountIdQuery,
   useUpdateInstructorProfileMutation,
+  useChangePasswordMutation,
 } = instructorApiSlice;

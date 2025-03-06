@@ -21,28 +21,23 @@ const GridInnerPage = ({ courses }) => {
   return (
     <>
       <div className="row">
-        {courses.map((course) => (
-          <div key={course.id} className="col-lg-4 col-md-6 d-flex">
-            <div className="course-box course-design d-flex">
-              <div className="product">
-                <div className="product-img">
-                  <Link to={`/course-details/${course.id}`}>
-                    <img
-                      className="img-fluid"
-                      style={{ objectFit: "cover", height: "200px" }}
-                      alt={course.titleCourse}
-                      src={course.imageCover || "/default-image.png"}
-                    />
-                  </Link>
-                  <div className="price">
-                    <h3>
-                      <small>
-                        {course.basePrice === 0
-                          ? "Free"
-                          : formatCurrency(course.basePrice)}
-                      </small>
-                    </h3>
-                  </div>
+      {courses.map((course) => (
+        <div key={course.id} className="col-lg-4 col-md-6 d-flex">
+          <div className="course-box course-design d-flex ">
+            <div className="product">
+              <div className="product-img">
+                <Link to={`/course-details/${course.id}`}>
+                  <img
+                    className="img-fluid"
+                    style={{ objectFit: 'contain', height: '200px' }}
+                    alt={course.titleCourse}
+                    src={course.imageCover || "/default-image.png"}
+                  />
+                </Link>
+                <div className="price">
+                  <h3>
+                  <small>{course.basePrice === 0 ? "Free" : formatCurrency(course.basePrice)}</small>
+                  </h3>
                 </div>
                 <div className="product-content">
                   <div className="course-group d-flex">
@@ -87,10 +82,9 @@ const GridInnerPage = ({ courses }) => {
                     </div>
                     <div className="course-view d-flex align-items-center">
                       <img src={Icon2} alt="" />
-                      <p>{course.duration} hours</p>
+                      <p>{course.duration} {course.duration === 1 ? "hr" : "hrs"}</p>
                     </div>
                   </div>
-
                   <div className="rating">
                     <i className="fas fa-star filled me-1" />
                     <i className="fas fa-star filled me-1" />
@@ -101,7 +95,6 @@ const GridInnerPage = ({ courses }) => {
                       <span>4.0</span> (15)
                     </span>
                   </div>
-
                   <div className="all-btn all-category d-flex align-items-center">
                     <Link to={`/checkout/${course.id}`} className="btn btn-primary">
                       BUY NOW

@@ -31,8 +31,8 @@ const Basic = ({ nextTab }) => {
   const validateFields = () => {
     const newErrors = {};
     if (!courseTitle) newErrors.courseTitle = "Course title is required";
-    if (!category) newErrors.category = "Please select a category";
-    if (!level) newErrors.level = "Please select a level";
+    if (!category || !category.value) newErrors.category = "Please select a category";
+    if (!level || !level.value) newErrors.level = "Please select a level";
     if (!description) newErrors.description = "Course description is required";
     return newErrors;
   };

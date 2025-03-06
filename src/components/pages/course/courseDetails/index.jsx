@@ -5,9 +5,11 @@ import { Icon1, People, Timer } from "../../../imagepath";
 import Footer from "../../../footer";
 import { useGetCourseDetailsByIdQuery } from "../../../../redux/slices/course/courseApiSlice";
 import RoleBasedHeader from "../../../header/RoleBasedHeader";
+import useDurationFormatter from "../../../../hooks/useDurationFormatter";
 const CourseDetails = () => {
   const { courseId } = useParams();
   const courseIdNumber = Number(courseId);
+  const formatDuration = useDurationFormatter();
   
   const { data: courseDetails, isLoading, isError } = useGetCourseDetailsByIdQuery({ id: courseIdNumber });
   
@@ -98,7 +100,7 @@ const CourseDetails = () => {
                   </div>
                   <div className="cou-info">
                     <img src={Timer} alt="" />
-                    <p>{courseDetails.duration} Minutes</p>
+                    <p>{formatDuration(courseDetails.duration)}</p>
                   </div>
                   <div className="cou-info">
                     <img src={People} alt="" />

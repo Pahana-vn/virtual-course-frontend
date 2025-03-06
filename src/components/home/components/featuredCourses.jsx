@@ -4,9 +4,11 @@ import { Icon1, Icon2, Messages } from "../../../components/imagepath";
 import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 import { useGetAllCoursesByStatusQuery } from "../../../redux/slices/course/courseApiSlice";
 const FeaturedCourses = () => {
-  const { data: courses, error, isLoading } = useGetAllCoursesByStatusQuery({ status: "PUBLISHED" });
-
   const navigate = useNavigate();
+  const { data: courses, error, isLoading } = useGetAllCoursesByStatusQuery({ status: "PUBLISHED" });
+  const formatCurrency = useCurrencyFormatter();
+
+  
   const handleChatClick = (instructorId) => {
     const studentId = localStorage.getItem("studentId");
 
@@ -16,11 +18,6 @@ const FeaturedCourses = () => {
       navigate(`/student/student-messages?instructorId=${instructorId}`);
     }
   };
-  // const toggleClass = () => {
-  //   // Thêm logic toggleClass ở đây nếu cần
-  // };
-
-  const formatCurrency = useCurrencyFormatter();
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -55,7 +52,7 @@ const FeaturedCourses = () => {
         </div>
         <div className="course-feature">
           <div className="row">
-            {courses.map((course) => (
+            {courses?.map((course) => (
               <div className="col-lg-4 col-md-6 d-flex" key={course.id}>
                 <div className="course-box d-flex aos" data-aos="fade-up">
                   <div className="product">
@@ -63,7 +60,7 @@ const FeaturedCourses = () => {
                       <Link to={`/course-details/${course.id}`}>
                         <img
                           className="img-fluid"
-                          style={{ objectFit: 'cover', height: '300px' }}
+                          style={{ objectFit: 'contain', height: '300px' }}
                           alt={course.titleCourse}
                           src={course.imageCover || "default-image.jpg"}
                         />
@@ -121,8 +118,8 @@ const FeaturedCourses = () => {
                           <p>{course.totalLectures}+ Lessons</p>
                         </div>
                         <div className="course-view d-flex align-items-center">
-                          <img src={Icon2} alt="" />
-                          <p>{course.duration} hours</p>
+                          <img src={ Icon2} alt="" />
+                          <p>{course.duration} {course.duration === 1 ? "hr" : "hrs"}</p>
                         </div>
                       </div>
                       <div className="d-flex align-items-center justify-content-between">

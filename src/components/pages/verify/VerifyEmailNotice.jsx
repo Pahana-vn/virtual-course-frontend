@@ -1,6 +1,15 @@
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const VerifyEmailNotice = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    // Chờ 3 giây sau khi hiển thị thông báo và tự động chuyển hướng đến trang đăng nhập
+    setTimeout(() => {
+      navigate("/login");
+    }, 5000);
+  }, [navigate]);
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="bg-white p-6 rounded-lg shadow-md text-center">

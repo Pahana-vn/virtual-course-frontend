@@ -1,0 +1,30 @@
+.add-image-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    padding: 15px;
+    min-height: 200px;
+    border: 1px solid #ddd;
+  }
+  
+  .add-image-box img {
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 5px;
+    object-fit: contain;
+  }
+  
+  .add-video-box {
+    background-color: #ffe5e5;
+    border: 1px solid #ff9999;
+    min-height: 180px;
+  }
+  
+  .add-video-box img {
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+  }
+  

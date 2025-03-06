@@ -52,7 +52,11 @@ const Login = () => {
       } else if (error.status === 401) {
         setErrMsg("Incorrect email or password");
       } else if (error.status === 403) {
-        setErrMsg("Email is not verified. Please check your inbox..");
+        if (error.data.message.includes("pending approval")) {
+          setErrMsg("Your account is pending approval. Please wait for admin approval.");
+        } else {
+          setErrMsg("Email is not verified. Please check your inbox.");
+        }
       } else {
         setErrMsg("Login Failed: Unknown error");
       }

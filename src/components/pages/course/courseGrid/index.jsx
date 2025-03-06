@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import Footer from "../../../footer";
-import { Blog1, Blog2, Blog3 } from "../../../imagepath";
 import GridInnerPage from "./gridInnerPage";
 import { useGetFilteredCoursesQuery } from "../../../../redux/slices/course/courseApiSlice";
 import { useGetCategoriesQuery } from "../../../../redux/slices/course/categoryApiSlice";
@@ -420,7 +419,7 @@ const CourseGrid = () => {
                     </div>
                     {/* /Search Filter */}
                     {/* Latest Posts */}
-                    <div className="card post-widget ">
+                    {/* <div className="card post-widget ">
                       <div className="card-body">
                         <div className="latest-head">
                           <h4 className="card-title">Latest Courses</h4>
@@ -503,7 +502,7 @@ const CourseGrid = () => {
                           </li>
                         </ul>
                       </div>
-                    </div>
+                    </div> */}
                     {/* /Latest Posts */}
                   </div>
                 </div>

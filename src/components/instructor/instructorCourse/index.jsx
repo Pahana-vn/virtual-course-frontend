@@ -126,7 +126,7 @@ const InstructorCourse = () => {
                                       >
                                         <img
                                           className="img-fluid"
-                                          style={{ objectFit: 'cover', height: '200px' }}
+                                          style={{ objectFit: 'contain', height: '200px' }}
                                           alt={course.titleCourse}
                                           src={course.imageCover}
                                         />
@@ -154,7 +154,9 @@ const InstructorCourse = () => {
                                         </div>
                                         <div className="course-view d-flex align-items-center">
                                           <img src={Icon2} alt="Duration" />
-                                          <p>{course.duration} mins</p>
+                                          <p>
+                                          {course.duration} {course.duration === 1 ? "hr" : "hrs"}
+                                          </p>
                                         </div>
                                       </div>
                                       <div className="course-edit-btn d-flex align-items-center justify-content-between">
