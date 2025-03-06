@@ -8,9 +8,9 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "Instructor", id })),
-              { type: "Instructor", id: "LIST" },
-            ]
+            ...result.map(({ id }) => ({ type: "Instructor", id })),
+            { type: "Instructor", id: "LIST" },
+          ]
           : [{ type: "Instructor", id: "LIST" }],
     }),
 
@@ -96,6 +96,11 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
         return currentArg !== previousArg;
       },
     }),
+    getInstructorAccountId: builder.query({
+      query: (instructorId) => ({
+        url: `/instructors/${instructorId}/account-id`,
+      }),
+    }),
     updateInstructorProfile: builder.mutation({
       query: ({ id, profileData }) => ({
         url: `/instructors/${id}/instructor-profile`,
@@ -121,6 +126,7 @@ export const {
   useInstructorAvatarQuery,
   useInstructorDetailsQuery,
   useInstructorProfileQuery,
+  useGetInstructorAccountIdQuery,
   useUpdateInstructorProfileMutation,
   useChangePasswordMutation,
 } = instructorApiSlice;

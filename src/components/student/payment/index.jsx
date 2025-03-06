@@ -28,7 +28,6 @@ export default function StudentPayment() {
       color: "black",
       minHeight: "44px",
       paddingLeft: "5px",
-      // This line disable the blue border
       boxShadow: state.isFocused ? 0 : 0,
       borderRadius: state.isSelected ? "0" : "10px",
       fontSize: "14px",

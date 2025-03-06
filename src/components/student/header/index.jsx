@@ -17,7 +17,7 @@ import {
   removeCourseFromWishlist,
 } from "../../../services/studentService";
 import DarkMode from "../../common/darkMode";
-import { Cart, logo, Messages, User16, Wish } from "../../imagepath";
+import { Cart, logo, Messages, Wish } from "../../imagepath";
 import "./StudentHeader1.css";
 
 export default function StudentHeader() {
@@ -55,7 +55,7 @@ export default function StudentHeader() {
 
   const [student, setStudent] = useState({
     username: "",
-    avatar: User16,
+    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU",
   });
 
   useOnClickOutside(profileRef, () => setShowProfile(false));
@@ -66,9 +66,10 @@ export default function StudentHeader() {
       if (!studentId) return;
       try {
         const studentData = await fetchStudentByStudentId(studentId);
+        console.log("Fetched student data:", studentData);
         setStudent({
           username: studentData.username || "Student",
-          avatar: studentData.avatar || User16,
+          avatar: studentData.avatar ? studentData.avatar : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU",
         });
       } catch (error) {
         console.error("❌ Error fetching student data:", error);
@@ -77,7 +78,7 @@ export default function StudentHeader() {
     getStudentData();
   }, [studentId]);
 
-  // Check login status and fetch data from token
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const studentId = localStorage.getItem("studentId");
@@ -88,9 +89,6 @@ export default function StudentHeader() {
     }
   }, []);
 
-
-
-  // Fetch Cart and Wishlist data after login
   const fetchCartAndWishlistData = async (studentId) => {
     if (!studentId) return;
 
@@ -495,7 +493,7 @@ export default function StudentHeader() {
                         onClick={profileClick}
                       >
                         <span className="user-img">
-                          <img src={student.avatar} alt="User" />
+                          <img src={student.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"} alt="User" />
                           <span className="status online"></span>
                         </span>
                       </Link>
@@ -505,8 +503,7 @@ export default function StudentHeader() {
                       >
                         <div className="user-header d-flex align-items-center p-2 border-bottom">
                           <div className="avatar avatar-sm">
-                            <img
-                              src={student.avatar}
+                            <img src={student.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"}
                               alt="User Image"
                               className="avatar-img rounded-circle"
                             />
@@ -605,8 +602,8 @@ export default function StudentHeader() {
             </div>
           </nav>
           <div
-          className={mobileMenu ? "sidebar-overlay opened" : "sidebar-overlay"}
-        ></div>
+            className={mobileMenu ? "sidebar-overlay opened" : "sidebar-overlay"}
+          ></div>
         </div>
       </header>
     </>

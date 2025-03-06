@@ -1,13 +1,23 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import {  Icon1, Icon2 } from "../../../components/imagepath";
+import { Link, useNavigate } from "react-router-dom";
+import { Icon1, Icon2, Messages } from "../../../components/imagepath";
 import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 import { useGetAllCoursesByStatusQuery } from "../../../redux/slices/course/courseApiSlice";
 const FeaturedCourses = () => {
-
+  const navigate = useNavigate();
+  const { data: courses, error, isLoading } = useGetAllCoursesByStatusQuery({ status: "PUBLISHED" });
   const formatCurrency = useCurrencyFormatter();
 
-  const { data: courses, error, isLoading } = useGetAllCoursesByStatusQuery({status : "PUBLISHED"});
+  
+  const handleChatClick = (instructorId) => {
+    const studentId = localStorage.getItem("studentId");
+
+    if (!studentId) {
+      navigate("/login");
+    } else {
+      navigate(`/student/student-messages?instructorId=${instructorId}`);
+    }
+  };
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -79,6 +89,14 @@ const FeaturedCourses = () => {
                             </h4>
                             <p>Instructor</p>
                           </div>
+
+                          <div className="nav-item ms-2"
+                            onClick={() => handleChatClick(course.instructorId)}>
+                            <Link to="/student/student-messages">
+                              <img src={Messages} alt="Messages" style={{ width: "40px", height: "40px" }} />
+                            </Link>
+                          </div>
+
                         </div>
                         {/* <div className="course-share d-flex align-items-center justify-content-center">
                           <Link to="#">
@@ -96,7 +114,7 @@ const FeaturedCourses = () => {
                       </h3>
                       <div className="course-info d-flex align-items-center">
                         <div className="rating-img d-flex align-items-center">
-                          <img src={ Icon1} alt="" />
+                          <img src={Icon1} alt="" />
                           <p>{course.totalLectures}+ Lessons</p>
                         </div>
                         <div className="course-view d-flex align-items-center">
