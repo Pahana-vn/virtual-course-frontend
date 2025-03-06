@@ -75,6 +75,12 @@ const RegisterTwo = () => {
     },
   };
 
+  const validatePhoneNumber = (phone) => {
+    // Biểu thức chính quy kiểm tra số điện thoại hợp lệ (cho Việt Nam)
+    const phoneRegex = /^(0[1-9]{1}[0-9]{8})$/;
+    return phoneRegex.test(phone);
+  };
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (!file) {
@@ -138,6 +144,13 @@ const RegisterTwo = () => {
 
   const handleNextStep = async (e) => {
     e.preventDefault();
+
+    if (!validatePhoneNumber(phone)) {
+      toast.error("Please enter a valid phone number.", {
+        position: "top-right",
+      });
+      return;
+    }
 
     if (selectedImage && !isSaveDisabled) {
       toast.error("Please save your avatar before proceeding!", {

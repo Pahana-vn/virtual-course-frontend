@@ -14,7 +14,7 @@ import {
   deleteLecture,
   clearCurriculum,
 } from "../../../redux/slices/course/courseSlice";
-import "./Curriculum.css";
+import "./utils/Curriculum.css";
 // eslint-disable-next-line react/prop-types
 const Curriculum = ({ nextTab3, prevTab2, isEditing }) => {
   const dispatch = useDispatch();

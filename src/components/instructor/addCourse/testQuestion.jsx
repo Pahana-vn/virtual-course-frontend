@@ -14,7 +14,7 @@ import {
   clearQuestionInfo,
   setQuestionInfo,
 } from "../../../redux/slices/course/courseSlice";
-import "./Curriculum.css";
+import "./utils/Curriculum.css";
 
 const TestQuestion = ({ nextTab4, prevTab3, isEditing }) => {
   const dispatch = useDispatch();
@@ -111,77 +111,76 @@ const TestQuestion = ({ nextTab4, prevTab3, isEditing }) => {
 
   const handleImportCSV = (event) => {
     const file = event.target.files[0];
-    if (!file) return;
-
+    if (!file) {
+      alert("No file selected.");
+      return;
+    }
+  
     dispatch(clearQuestionInfo());
-
+  
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      chunkSize: 100,
-      chunk: async (result, parser) => {
-        parser.pause();
-        await processCSVChunk(result.data);
-        parser.resume();
-      },
       complete: (result) => {
-        console.log("CSV Import Completed!");
-        console.log("Raw Parsed Data:", result.data);
+        if (!result.data || result.data.length === 0) {
+          alert("CSV file is empty or incorrect format.");
+          return;
+        }
+        processCSVChunk(result.data);
+      },
+      error: (error) => {
+        alert(`Error parsing CSV: ${error.message}`);
       },
     });
   };
-
-  const processCSVChunk = async (dataChunk) => {
+  
+  const processCSVChunk = (dataChunk) => {
     return new Promise((resolve) => {
-      const formattedQuestions = dataChunk.map((row, index) => {
-        if (!row["Question Title"] || !row["Mark"]) return null;
+      const structuredData = [];
 
-        const answerOptions = Object.keys(row)
-          .filter((key) => key.startsWith("Answer"))
-          .map((key, i) => ({
-            id: `${Date.now()}-${index}-${i}`,
-            title: row[key].replace("(correct)", "").trim(),
-            isCorrect: row[key].includes("(correct)"),
-          }))
-          .filter((ans) => ans.title !== ""); // Bỏ các dòng trống
+      dataChunk.forEach((row) => {
+        const {
+          "Question Title": questionTitle,
+          "Mark": mark,
+          "Answer Option 1": answerOption1,
+          "Answer Option 2": answerOption2,
+          "Answer Option 3": answerOption3,
+          "Answer Option 4": answerOption4,
+          "Answer Option 5": answerOption5,
+          "Correct Answer": correctAnswer,
+        } = row;
 
-        return {
-          id: generateUniqueId(),
-          title: row["Question Title"],
-          mark: parseInt(row["Mark"], 10) || 10,
+        if (!questionTitle || !mark) return;
+
+        const answerOptions = [
+          answerOption1,
+          answerOption2,
+          answerOption3,
+          answerOption4,
+          answerOption5,
+        ]
+          .filter(Boolean)
+          .map((option) => ({
+            title: option,
+            isCorrect: option === correctAnswer,
+          }));
+
+        structuredData.push({
+          title: questionTitle,
+          mark: parseInt(mark, 10) || 0,
           answerOptions,
-        };
-      }).filter(Boolean);
+        });
+      });
 
-      dispatch(setQuestionInfo({ questions: formattedQuestions }));
+      if (structuredData.length === 0) {
+        alert("No valid questions found in CSV.");
+        return;
+      }
+
+      dispatch(setQuestionInfo({ questions: structuredData })); 
+      alert("CSV Import Completed!");
       resolve();
     });
-  };
-
-  const handleExportCSV = () => {
-    if (questions.length === 0) {
-      alert("No questions available to export.");
-      return;
-    }
-
-    const csvData = [
-      ["Question Title", "Mark", "Answer 1", "Answer 2", "Answer 3", "Answer 4", "Answer 5"],
-      ...questions.map((q) => [
-        q.title,
-        q.mark,
-        ...q.answerOptions.map((opt) => `${opt.title}${opt.isCorrect ? " (correct)" : ""}`),
-      ]),
-    ];
-
-    const csv = Papa.unparse(csvData);
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "questions_export.csv";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
   };
 
   const handleDownloadSampleCSV = () => {
@@ -189,23 +188,25 @@ const TestQuestion = ({ nextTab4, prevTab3, isEditing }) => {
       {
         "Question Title": "What is Java?",
         "Mark": "10",
-        "Answer 1": "A programming language (correct)",
-        "Answer 2": "A fruit",
-        "Answer 3": "A coffee",
-        "Answer 4": "",
-        "Answer 5": "",
+        "Answer Option 1": "A programming language",
+        "Answer Option 2": "A fruit",
+        "Answer Option 3": "A coffee",
+        "Answer Option 4": "",
+        "Answer Option 5": "",
+        "Correct Answer": "A programming language",
       },
       {
         "Question Title": "Which of these are programming languages?",
         "Mark": "8",
-        "Answer 1": "Java (correct)",
-        "Answer 2": "Python (correct)",
-        "Answer 3": "HTML",
-        "Answer 4": "CSS",
-        "Answer 5": "",
+        "Answer Option 1": "Java",
+        "Answer Option 2": "Python",
+        "Answer Option 3": "HTML",
+        "Answer Option 4": "CSS",
+        "Answer Option 5": "",
+        "Correct Answer": "Java",
       },
     ];
-
+  
     const csv = Papa.unparse(sampleData);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -215,6 +216,42 @@ const TestQuestion = ({ nextTab4, prevTab3, isEditing }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };  
+
+  const handleExportCSV = () => {
+    if (questions.length === 0) {
+      alert("No questions available to export.");
+      return;
+    }
+  
+    const csvData = [
+      ["Question Title", "Mark", "Answer Option 1", "Answer Option 2", "Answer Option 3", "Answer Option 4", "Answer Option 5", "Correct Answer"],
+      ...questions.map((q) => {
+        const answers = q.answerOptions.map(opt => opt.title);
+        const correctAnswer = q.answerOptions.find(opt => opt.isCorrect)?.title || ""; // Chỉ lấy 1 đáp án đúng vào cột Correct Answer
+  
+        return [
+          q.title,
+          q.mark,
+          answers[0] || "",
+          answers[1] || "",
+          answers[2] || "",
+          answers[3] || "",
+          answers[4] || "",
+          correctAnswer, // Chỉ ghi đáp án đúng vào cột cuối cùng
+        ];
+      }),
+    ];
+  
+    const csv = Papa.unparse(csvData);
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "questions_export.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
   
 

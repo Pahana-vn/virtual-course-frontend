@@ -17,7 +17,7 @@ const GridInnerPage = ({ courses }) => {
                 <Link to={`/course-details/${course.id}`}>
                   <img
                     className="img-fluid"
-                    style={{ objectFit: 'cover', height: '200px' }}
+                    style={{ objectFit: 'contain', height: '200px' }}
                     alt={course.titleCourse}
                     src={course.imageCover || "/default-image.png"}
                   />
@@ -63,7 +63,7 @@ const GridInnerPage = ({ courses }) => {
                   </div>
                   <div className="course-view d-flex align-items-center">
                     <img src={Icon2} alt="" />
-                    <p>{course.duration} mins</p>
+                    <p>{course.duration} {course.duration === 1 ? "hr" : "hrs"}</p>
                   </div>
                 </div>
                 <div className="rating">

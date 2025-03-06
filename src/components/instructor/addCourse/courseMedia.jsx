@@ -4,15 +4,48 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setMediaInfo } from "../../../redux/slices/course/courseSlice";
-
+import "./utils/CourseMedia.css";
 // eslint-disable-next-line react/prop-types
 const CourseMedia = ({ prevTab1, nextTab2 }) => {
   const dispatch = useDispatch();
+  const [errors, setErrors] = useState({});
+
   const [isUploading, setIsUploading] = useState(false);
   //fix loi hinh anh
-  const { imageFileName, imageUrl, videoUrl, videoThumbnail } = useSelector(
-    (state) => state.course.mediaInfo
-  );
+  const {
+    imageFileName,
+    imageUrl = "",
+    videoUrl,
+    videoThumbnail,
+  } = useSelector((state) => state.course.mediaInfo);
+  const [localImageUrl, setLocalImageUrl] = useState("");
+
+  const validateFields = () => {
+    const newErrors = {};
+    
+    // Kiểm tra ảnh có được upload hay không
+    if (!imageUrl) newErrors.imageUrl = "Please upload a course cover image.";
+    
+    // Kiểm tra video URL hợp lệ (phải là YouTube)
+    const youtubeRegex =
+      /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
+    if (!videoUrl) {
+      newErrors.videoUrl = "Please provide a video URL.";
+    } else if (!youtubeRegex.test(videoUrl)) {
+      newErrors.videoUrl = "Invalid YouTube URL. Please enter a valid link.";
+    }
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Nếu không có lỗi, trả về `true`
+  };
+
+  
+  useEffect(() => {
+    if (imageUrl) {
+      setLocalImageUrl(`${imageUrl}?timestamp=${new Date().getTime()}`);
+    }
+  }, [imageUrl, isUploading]);
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -46,24 +79,19 @@ const CourseMedia = ({ prevTab1, nextTab2 }) => {
       }
 
       const fileUrlFromServer = response.data;
+      const updatedImageUrl = `${fileUrlFromServer}?timestamp=${new Date().getTime()}`;
       const fileNameFromServer = fileUrlFromServer.split("/").pop();
 
-      const fileType = "course";
-      const existsResponse = await axios.get(
-        `http://localhost:8080/api/files/exists/${fileType}/${fileNameFromServer}`
+      await waitForFileReady(fileUrlFromServer);
+
+      dispatch(
+        setMediaInfo({
+          imageFileName: fileNameFromServer,
+          imageUrl: updatedImageUrl,
+        })
       );
-        console.log(existsResponse.data);
-      if (existsResponse.data) {
-        dispatch(
-          setMediaInfo({
-            imageFileName: fileNameFromServer,
-            imageUrl: `${fileUrlFromServer}?timestamp=${new Date().getTime()}`,
-          })
-        );
-        alert("Image uploaded and verified successfully!");
-      } else {
-        alert("File not found on server.");
-      }
+      setLocalImageUrl(updatedImageUrl);
+      alert("Image uploaded successfully!");
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Failed to upload image. Please try again.");
@@ -100,6 +128,35 @@ const CourseMedia = ({ prevTab1, nextTab2 }) => {
       }
     }
   }, [videoUrl, dispatch]);
+
+  const waitForFileReady = async (fileUrl) => {
+    let isFileReady = false;
+    let attempts = 0;
+    const maxAttempts = 20; // Thử tối đa 10 lần (tương đương 5 giây)
+
+    while (!isFileReady && attempts < maxAttempts) {
+      try {
+        // Gửi request HEAD để kiểm tra file có tồn tại không
+        await axios.head(fileUrl, { timeout: 500 });
+        isFileReady = true;
+      } catch (error) {
+        console.log(`Waiting for file... Attempt ${attempts + 1}`);
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Đợi 500ms trước khi thử lại
+        attempts++;
+      }
+    }
+
+    if (!isFileReady) {
+      console.warn("File not available after multiple attempts.");
+    }
+  };
+
+  const handleNext = () => {
+    if (validateFields()) {
+      nextTab2(); // Chỉ chuyển tab nếu không có lỗi
+    }
+  };
+
   return (
     <>
       <fieldset className="field-card" style={{ display: "block" }}>
@@ -119,17 +176,24 @@ const CourseMedia = ({ prevTab1, nextTab2 }) => {
                   </label>
                 </div>
               </div>
+              {errors.imageUrl && <span className="error text-danger">{errors.imageUrl}</span>}
               <div className="input-block">
                 <div className="add-image-box">
                   {isUploading ? (
                     <div className="spinner"></div> // Hiển thị trạng thái tải
-                  ) : imageUrl ? (
-                    <img src={imageUrl} alt="Course Cover" loading="lazy" />
+                  ) : localImageUrl ? (
+                    <img
+                      src={localImageUrl}
+                      alt="Course Cover"
+                      loading="lazy"
+                    />
                   ) : (
                     <span style={{ color: "#aaa" }}>No image uploaded</span>
                   )}
                 </div>
               </div>
+             
+
               <div className="input-block">
                 <input
                   type="text"
@@ -141,6 +205,7 @@ const CourseMedia = ({ prevTab1, nextTab2 }) => {
                   }
                 />
               </div>
+              {errors.videoUrl && <span className="error text-danger">{errors.videoUrl}</span>}
               <div className="input-block">
                 <div className="add-image-box add-video-box">
                   {videoThumbnail ? (
@@ -156,13 +221,14 @@ const CourseMedia = ({ prevTab1, nextTab2 }) => {
                   )}
                 </div>
               </div>
+              
             </form>
           </div>
           <div className="widget-btn">
             <Link className="btn btn-black prev_btn" onClick={prevTab1}>
               Previous
             </Link>
-            <Link className="btn btn-info-light next_btn" onClick={nextTab2}>
+            <Link className="btn btn-info-light next_btn" onClick={handleNext}>
               Continue
             </Link>
           </div>

@@ -3,15 +3,12 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 import { useGetInstructorCoursesQuery } from "../../../redux/slices/course/courseApiSlice";
-import {
-  useInstructorDetailsQuery,
-} from "../../../redux/slices/instructor/instructorApiSlice";
+import { useInstructorDetailsQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 import Footer from "../../footer";
 import RoleBasedHeader from "../../header/RoleBasedHeader";
 import {
   AddressIcon,
   CoursesIcon,
-  EmailIcon,
   Icon1,
   Icon2,
   PhoneIcon,
@@ -19,8 +16,11 @@ import {
   TtlStudIcon,
   User1,
 } from "../../imagepath";
+import { useSelector } from "react-redux";
+import { selectCurrentRoles } from "../../../redux/slices/auth/authSlice";
 
 export default function InstructorProfile() {
+  const roles = useSelector(selectCurrentRoles);
   const formatCurrency = useCurrencyFormatter();
   const { instructorId } = useParams();
   const {
@@ -123,15 +123,18 @@ export default function InstructorProfile() {
                       </Link>
                     </li>
                   )}
-                  <li className="list-inline-item">
-                    <div className="all-btn all-category d-flex align-items-center">
-                      <Link
-                        to={`/student/student-messages?instructorId=${instructorId}`}
-                        className="btn btn-primary bg-success">
-                        CHAT NOW
-                      </Link>
-                    </div>
-                  </li>
+                  {roles && roles.includes("ROLE_INSTRUCTOR") ? null : (
+                    <li className="list-inline-item">
+                      <div className="all-btn all-category d-flex align-items-center">
+                        <Link
+                          to={`/student/student-messages?instructorId=${instructorId}`}
+                          className="btn btn-primary bg-success"
+                        >
+                          CHAT NOW
+                        </Link>
+                      </div>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
@@ -192,7 +195,7 @@ export default function InstructorProfile() {
                 <div className="card-body">
                   <h5 className="subs-title">Experience</h5>
                   {instructor.experiences &&
-                    instructor.experiences.length > 0 ? (
+                  instructor.experiences.length > 0 ? (
                     instructor.experiences.map((exp, index) => (
                       <div className="edu-wrap" key={index}>
                         <div className="edu-name">
@@ -232,7 +235,7 @@ export default function InstructorProfile() {
                                   <img
                                     className="img-fluid"
                                     style={{
-                                      objectFit: "cover",
+                                      objectFit: "contain",
                                       height: "300px",
                                     }}
                                     alt={course.titleCourse}
@@ -285,7 +288,7 @@ export default function InstructorProfile() {
                                   </div>
                                   <div className="course-view d-flex align-items-center">
                                     <img src={Icon2} alt="" />
-                                    <p>{course.duration} mins</p>
+                                    <p>{course.duration} {course.duration === 1 ? "hr" : "hrs"}</p>
                                   </div>
                                 </div>
                                 <div className="rating">
@@ -513,10 +516,11 @@ export default function InstructorProfile() {
                       {[...Array(5)].map((_, index) => (
                         <i
                           key={index}
-                          className={`fas fa-star ${index < Math.round(instructor.averageRating)
-                            ? "filled"
-                            : ""
-                            }`}
+                          className={`fas fa-star ${
+                            index < Math.round(instructor.averageRating)
+                              ? "filled"
+                              : ""
+                          }`}
                         ></i>
                       ))}
                       <span className="d-inline-block average-rating">
@@ -571,19 +575,6 @@ export default function InstructorProfile() {
                 <div className="card-body">
                   <h5 className="subs-title">Contact Details</h5>
                   <div className="contact-info-list">
-                    <div className="edu-wrap">
-                      <div className="edu-name">
-                        <span>
-                          <img src={EmailIcon} alt="Address" />
-                        </span>
-                      </div>
-                      <div className="edu-detail">
-                        <h6>Email</h6>
-                        <p>
-                          <Link to="#">{instructor.email}</Link>
-                        </p>
-                      </div>
-                    </div>
                     <div className="edu-wrap">
                       <div className="edu-name">
                         <span>

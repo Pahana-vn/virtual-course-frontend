@@ -18,7 +18,7 @@ export const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const formatCurrency = useCurrencyFormatter();
-  
+
   const instructorId = useSelector(selectCurrentInstructor);
 
   const {
@@ -172,7 +172,7 @@ export const Dashboard = () => {
                                 className="course-table-img">
                                   <span>
                                     <img
-                                    style={{ objectFit: 'cover',width:'110px', height: '80px' }}
+                                    style={{ objectFit: 'contain',width:'110px', height: '80px' }}
                                       src={
                                         course.imageCover || "default-image-url"
                                       }
@@ -222,7 +222,7 @@ export const Dashboard = () => {
                             <Link to={`/course/${course.id}/course-details`}>
                               <img
                                 className="img-fluid"
-                                style={{ objectFit: 'cover', height: '200px' }}
+                                style={{ objectFit: 'contain', height: '200px' }}
                                 alt={course.titleCourse}
                                 src={
                                   course.imageCover ||
@@ -287,7 +287,7 @@ export const Dashboard = () => {
                               </div>
                               <div className="course-view d-flex align-items-center">
                                 <img src={Icon2} alt="Icon" />
-                                <p>{course.duration} mins</p>
+                                <p>{course.duration} {course.duration === 1 ? "hr" : "hrs"}</p>
                               </div>
                             </div>
                             <div className="rating mb-0">
