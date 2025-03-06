@@ -359,7 +359,7 @@ export function InstructorHeader() {
                   </Link>
                   <Link
                     className="dropdown-item text"
-                    to="/instructor/instructor-settings"
+                    to="/instructor/instructor-profile-settings"
                   >
                     <Star
                       size={14}

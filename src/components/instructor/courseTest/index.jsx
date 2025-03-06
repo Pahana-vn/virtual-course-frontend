@@ -42,7 +42,7 @@ export const InstructorCourseTests = () => {
     if (currentTest.totalMarks === 50) {
       return (
         <p className="text-danger">
-          You have selected a 100 point question set. You need to select 4
+          You have selected a 50 point question set. You need to select 4
           questions of 6 points, 2 questions of 8 points, and 1 question of 10
           points.
         </p>
@@ -50,7 +50,7 @@ export const InstructorCourseTests = () => {
     } else if (currentTest.totalMarks === 100) {
       return (
         <p className="text-danger">
-          You have selected a 50 point question set. You need to select 6
+          You have selected a 100 point question set. You need to select 6
           questions of 6 points, 3 questions of 8 points, and 4 questions of 10
           points.
         </p>
@@ -263,7 +263,7 @@ export const InstructorCourseTests = () => {
           </div>
           <div className="row">
             {/* Left Section: Available Tests */}
-            <div className="col-md-4">
+            <div className="col-md-5">
               <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">
                   <h5>Available Tests</h5>
@@ -285,11 +285,11 @@ export const InstructorCourseTests = () => {
                   </button>
                 </div>
                 <div className="card-body">
-                {!tests.some((test) => test.isFinalTest) && (
-    <div className="alert alert-warning" role="alert">
-      ⚠️ You must select at least one Final Test.
-    </div>
-  )}
+                  {!tests.some((test) => test.isFinalTest) && (
+                    <div className="alert alert-warning" role="alert">
+                      ⚠️ You must select at least one Final Test.
+                    </div>
+                  )}
                   <ul className="list-group">
                     {tests.map((test) => {
                       return (
@@ -309,18 +309,15 @@ export const InstructorCourseTests = () => {
 
                             {/* Checkbox để đánh dấu Final Test */}
                           </div>
-                            <input
-                              type="checkbox"
-                              className="mx-2"
-                              checked={test.isFinalTest}
-                              onChange={() =>
-                                handleToggleFinalTest(
-                                  test.id,
-                                  !test.isFinalTest
-                                )
-                              }
-                            />
-                            <label className="mb-0"> is final Test?</label>
+                          <input
+                            type="checkbox"
+                            className="mx-2"
+                            checked={test.isFinalTest}
+                            onChange={() =>
+                              handleToggleFinalTest(test.id, !test.isFinalTest)
+                            }
+                          />
+                          <label className="mb-0"> is final Test?</label>
 
                           {/* Nút xóa bài kiểm tra */}
                           <button
@@ -364,7 +361,7 @@ export const InstructorCourseTests = () => {
             </div>
 
             {/* Right Section: Test Details */}
-            <div className="col-md-8">
+            <div className="col-md-7">
               <div className="card">
                 <div className="card-header">
                   <h5>Test Details</h5>
@@ -483,7 +480,9 @@ export const InstructorCourseTests = () => {
                   <ul>
                     {currentTest.questions.map((q) => (
                       <li key={q.id}>
+                        <small>
                         <strong>({q.marks} marks)</strong> {q.content}
+                          </small>
                         <button
                           className="btn btn-delete-article"
                           onClick={() => handleRemoveQuestion(q.id)}

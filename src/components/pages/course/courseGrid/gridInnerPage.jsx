@@ -39,6 +39,7 @@ const GridInnerPage = ({ courses }) => {
                   <small>{course.basePrice === 0 ? "Free" : formatCurrency(course.basePrice)}</small>
                   </h3>
                 </div>
+                </div>
                 <div className="product-content">
                   <div className="course-group d-flex">
                     <div className="course-group-img d-flex">
@@ -58,9 +59,7 @@ const GridInnerPage = ({ courses }) => {
                         <p>Instructor</p>
                       </div>
                     </div>
-
                     <div className="all-btn all-category d-flex align-items-center ms-2">
-
                       <div className="nav-item ms-2"
                         onClick={() => handleChatClick(course.instructorId)}>
                         <Link to="/student/student-messages">
@@ -68,7 +67,6 @@ const GridInnerPage = ({ courses }) => {
                         </Link>
                       </div>
                     </div>
-                  </div>
                 </div>
 
                   <h3 className="course-title">
