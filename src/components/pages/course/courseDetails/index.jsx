@@ -5,11 +5,9 @@ import { Icon1, People, Timer } from "../../../imagepath";
 import Footer from "../../../footer";
 import { useGetCourseDetailsByIdQuery } from "../../../../redux/slices/course/courseApiSlice";
 import RoleBasedHeader from "../../../header/RoleBasedHeader";
-import useDurationFormatter from "../../../../hooks/useDurationFormatter";
 const CourseDetails = () => {
   const { courseId } = useParams();
   const courseIdNumber = Number(courseId);
-  const formatDuration = useDurationFormatter();
   
   const { data: courseDetails, isLoading, isError } = useGetCourseDetailsByIdQuery({ id: courseIdNumber });
   
@@ -76,16 +74,6 @@ const CourseDetails = () => {
                       </h5>
                       <p>{courseDetails.instructorTitle}</p>
                     </div>
-                    <div className="rating mb-0">
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star me-1" />
-                      <span className="d-inline-block average-rating">
-                        <span>4.5</span> (15)
-                      </span>
-                    </div>
                   </div>
                   <span className="web-badge mb-3">{courseDetails.categoryName}</span>
                 </div>
@@ -100,7 +88,7 @@ const CourseDetails = () => {
                   </div>
                   <div className="cou-info">
                     <img src={Timer} alt="" />
-                    <p>{formatDuration(courseDetails.duration)}</p>
+                    <p>{courseDetails.duration} {courseDetails.duration === 1 ? "hr" : "hrs"}</p>
                   </div>
                   <div className="cou-info">
                     <img src={People} alt="" />

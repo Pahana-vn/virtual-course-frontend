@@ -1,5 +1,4 @@
 import DOMPurify from "dompurify";
-import FeatherIcon from "feather-icons-react";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -24,7 +23,6 @@ import {
   Play,
   Teacher,
   Timer2,
-  User1,
   Users,
   Video2,
 } from "../../../imagepath";
@@ -363,103 +361,7 @@ const DetailsContent = ({ courseDetails }) => {
                 </div>
               </div>
               {/* /Instructor */}
-              {/* Reviews */}
-              <div className="card review-sec">
-                <div className="card-body">
-                  <h5 className="subs-title">Reviews</h5>
-                  <div className="instructor-wrap">
-                    <div className="about-instructor">
-                      <div className="abt-instructor-img">
-                        <Link to="instructor-profile">
-                          <img src={User1} alt="img" className="img-fluid" />
-                        </Link>
-                      </div>
-                      <div className="instructor-detail">
-                        <h5>
-                          <Link to="/instructor/instructor-profile">
-                            Nicole Brown
-                          </Link>
-                        </h5>
-                        <p>UX/UI Designer</p>
-                      </div>
-                    </div>
-                    <div className="rating">
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star me-1" />
-                      <span className="d-inline-block average-rating">
-                        4.5 Instructor Rating
-                      </span>
-                    </div>
-                  </div>
-                  <p className="rev-info">
-                    “ This is the second Photoshop course I have completed with
-                    Cristian. Worth every penny and recommend it highly. To get
-                    the most out of this course, its best to to take the
-                    Beginner to Advanced course first. The sound and video
-                    quality is of a good standard. Thank you Cristian. “
-                  </p>
-                  <Link to="#" className=" btn-reply">
-                    {/* <i className="feather-corner-up-left" /> */}
-                    <FeatherIcon icon="corner-up-left" />
-                    Reply
-                  </Link>
-                </div>
-              </div>
-              {/* /Reviews */}
-              {/* Comment */}
-              <div className="card comment-sec">
-                <div className="card-body">
-                  <h5 className="subs-title">Post A comment</h5>
-                  <form action="#">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="input-block">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Full Name"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="input-block">
-                          <input
-                            type="email"
-                            className="form-control"
-                            placeholder="Email"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="input-block">
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Subject"
-                      />
-                    </div>
-                    <div className="input-block">
-                      <textarea
-                        rows={4}
-                        className="form-control"
-                        placeholder="Your Comments"
-                        defaultValue={""}
-                      />
-                    </div>
-                    <div className="submit-section">
-                      <button className=" submit-btn" type="submit">
-                        Submit
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              {/* /Comment */}
             </div>
-
             <div className="col-lg-4">
               <div className="sidebar-sec">
                 <div className="video-sec vid-bg">
