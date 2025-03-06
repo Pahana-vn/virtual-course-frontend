@@ -122,7 +122,7 @@ const FeaturedCourses = () => {
                         </div>
                         <div className="course-view d-flex align-items-center">
                           <img src={Icon2} alt="" />
-                          <p>{course.duration} min</p>
+                          <p>{course.duration} hours</p>
                         </div>
                       </div>
                       <div className="d-flex align-items-center justify-content-between">

@@ -87,7 +87,7 @@ const GridInnerPage = ({ courses }) => {
                     </div>
                     <div className="course-view d-flex align-items-center">
                       <img src={Icon2} alt="" />
-                      <p>{course.duration} mins</p>
+                      <p>{course.duration} hours</p>
                     </div>
                   </div>
 

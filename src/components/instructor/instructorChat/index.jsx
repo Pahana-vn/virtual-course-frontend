@@ -9,12 +9,13 @@ import {
   fetchChatHistory,
   fetchRecentChatsForInstructor,
   fetchStudentInfo,
-  sendChatMessage
 } from "../../../services/chatService";
 
 import { InstructorHeader } from "../header";
 import InstructorSidebar from "../sidebar";
+
 const DEFAULT_AVATAR = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU";
+
 const InstructorMessages = () => {
   const currentInstructorAccountId = parseInt(localStorage.getItem('instructorId'), 10);
 
@@ -29,7 +30,7 @@ const InstructorMessages = () => {
 
   const [studentInfo, setStudentInfo] = useState({
     name: "Select Student to chat",
-    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"
+    avatar: DEFAULT_AVATAR
   });
 
   const stompClientRef = useRef(null);
@@ -91,6 +92,7 @@ const InstructorMessages = () => {
 
     loadStudentInfo();
 
+    // Kết nối WebSocket
     const socket = new SockJS('http://localhost:8080/ws-chat');
     const stompClient = Stomp.over(socket);
 
@@ -126,13 +128,12 @@ const InstructorMessages = () => {
     };
 
     try {
-      await sendChatMessage(chatMessageDTO);
-
       if (stompClientRef.current && stompClientRef.current.connected) {
+        // Gửi tin nhắn qua WebSocket
         stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
       }
 
-      // Thêm vào UI cho người gửi
+      // Thêm tin nhắn vào UI ngay lập tức
       setMessages((prev) => [
         ...prev,
         {
@@ -143,9 +144,21 @@ const InstructorMessages = () => {
         }
       ]);
 
+      const timestamp = new Date().toLocaleString('vi-VN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+
+      console.log("Gửi tin nhắn:");
+      console.log(`Người gửi: Bạn (ID: ${currentInstructorAccountId})`);
+      console.log(`Người nhận: Học viên (ID: ${selectedStudentId})`);
+      console.log(`Nội dung: ${currentMsg}`);
+      console.log(`Thời gian: ${timestamp}`);
+
       setCurrentMsg('');
     } catch (error) {
-      console.error('Error sending chat message:', error);
+      console.error('Lỗi khi gửi tin nhắn:', error);
     }
   };
 
@@ -229,10 +242,9 @@ const InstructorMessages = () => {
                                     </li>
                                   </ul>
                                   <div
-                                    className={
-                                      visible
-                                        ? "user-chat-search visible-chat"
-                                        : "user-chat-search"
+                                    className={visible
+                                      ? "user-chat-search visible-chat"
+                                      : "user-chat-search"
                                     }
                                   >
                                     <form>
@@ -278,7 +290,7 @@ const InstructorMessages = () => {
                                         <div>
                                           <div className="avatar avatar-online">
                                             <img
-                                              src={student.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"}
+                                              src={student.avatar} onError={(e) => e.target.src = DEFAULT_AVATAR}
                                               className="rounded-circle"
                                               alt="student"
                                             />
@@ -300,13 +312,11 @@ const InstructorMessages = () => {
                                     </li>
                                   ))}
                                 </ul>
-                                {/* /Danh sách Student */}
                               </div>
                             </div>
                           </Scrollbars>
                         </div>
                       </div>
-                      {/* /Left sidebar */}
 
                       {/* Khu vực chat chính */}
                       <div className="chat chat-messages" id="middle">
@@ -316,7 +326,7 @@ const InstructorMessages = () => {
                             <div className="user-details mb-0">
                               <figure className="avatar mb-0">
                                 <img
-                                  src={studentInfo.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"}
+                                  src={studentInfo.avatar} onError={(e) => e.target.src = DEFAULT_AVATAR}
                                   className="rounded-circle"
                                   alt="student"
                                 />
@@ -374,13 +384,12 @@ const InstructorMessages = () => {
                               </form>
                             </div>
                           </div>
-                          {/* /Header chat */}
 
                           {/* Nội dung chat */}
                           <div className="chat-body chat-page-group slimscroll">
                             <div className="messages">
                               {messages.map((m, index) => {
-                                const isMe = (m.senderAccountId === currentInstructorAccountId);
+                                const isMe = m.senderAccountId === currentInstructorAccountId;
 
                                 // Format giờ
                                 const dateObj = new Date(m.timestamp);
@@ -430,7 +439,6 @@ const InstructorMessages = () => {
                               })}
                             </div>
                           </div>
-                          {/* /Nội dung chat */}
                         </div>
 
                         {/* Footer gõ tin nhắn */}

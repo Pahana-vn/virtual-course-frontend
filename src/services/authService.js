@@ -8,7 +8,9 @@ export const login = async (email, password) => {
         if (token) {
             document.cookie = `token=${token}; path=/; Secure; HttpOnly; SameSite=Strict`;
             localStorage.setItem("token", token);
+
             localStorage.setItem("accountId", accountId);
+
             if (studentId) {
                 localStorage.setItem("studentId", studentId);
                 window.dispatchEvent(new Event("storage"));
