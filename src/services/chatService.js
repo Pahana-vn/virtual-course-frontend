@@ -50,15 +50,15 @@ export const fetchStudentInfo = async (studentId) => {
     }
 };
 
-export const sendChatMessage = async (messageDTO) => {
-    try {
-        const response = await api.post("chat/sendMessage", messageDTO);
-        return response.data;
-    } catch (error) {
-        console.error("Error sending chat message:", error);
-        throw error;
-    }
-};
+// export const sendChatMessage = async (messageDTO) => {
+//     try {
+//         const response = await api.post("chat/sendMessage", messageDTO);
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error sending chat message:", error);
+//         throw error;
+//     }
+// };
 
 export const fetchStudentInfoByAccountId = async (accountId) => {
     try {

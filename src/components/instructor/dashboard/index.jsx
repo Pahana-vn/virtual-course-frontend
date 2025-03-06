@@ -1,37 +1,37 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import Footer from "../../footer";
-import { InstructorHeader } from "../../instructor/header";
-import { Icon1, Icon2 } from "../../imagepath";
-import InstructorSidebar from "../sidebar";
 import { Link } from "react-router-dom";
+import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
+import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
 import {
   useGetCoursesByInstructorIdQuery,
   useGetInstructorCoursesPurchasedByStudentQuery,
 } from "../../../redux/slices/course/courseApiSlice";
-import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
 import { useInstructorStatisticsQuery } from "../../../redux/slices/instructor/instructorApiSlice";
-import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
+import Footer from "../../footer";
+import { Icon1, Icon2 } from "../../imagepath";
+import { InstructorHeader } from "../../instructor/header";
+import InstructorSidebar from "../sidebar";
 
 export const Dashboard = () => {
   const [isClassAdded, setIsClassAdded] = useState([false]);
   const [currentPage, setCurrentPage] = useState(1);
 
   const formatCurrency = useCurrencyFormatter();
-  
+
   const instructorId = useSelector(selectCurrentInstructor);
 
   const {
     data: instructorCourses,
     error,
     isLoading,
-  } = useGetInstructorCoursesPurchasedByStudentQuery({instructorId:instructorId});
+  } = useGetInstructorCoursesPurchasedByStudentQuery({ instructorId: instructorId });
 
   const { data: instructorStatistics } = useInstructorStatisticsQuery({ id: instructorId });
 
   const {
     data: Icourses,
-  } = useGetCoursesByInstructorIdQuery({instructorId});
+  } = useGetCoursesByInstructorIdQuery({ instructorId });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -83,7 +83,7 @@ export const Dashboard = () => {
                       <Link to="/home">Home</Link>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                    Instructor Dashboard
+                      Instructor Dashboard
                     </li>
                   </ol>
                 </nav>
@@ -167,12 +167,12 @@ export const Dashboard = () => {
                           <tr key={index}>
                             <td>
                               <div className="table-course-detail">
-                                <Link 
-                                to={`/course/${course.id}/course-details`} 
-                                className="course-table-img">
+                                <Link
+                                  to={`/course/${course.id}/course-details`}
+                                  className="course-table-img">
                                   <span>
                                     <img
-                                    style={{ objectFit: 'cover',width:'110px', height: '80px' }}
+                                      style={{ objectFit: 'cover', width: '110px', height: '80px' }}
                                       src={
                                         course.imageCover || "default-image-url"
                                       }
@@ -180,22 +180,22 @@ export const Dashboard = () => {
                                     />
                                   </span>
                                 </Link>
-                                  <Link 
+                                <Link
                                   to={`/course/${course.id}/course-details`} className="course-title d-flex align-items-center justify-content-center"
                                   style={{}}>
-                                    {course.titleCourse}
-                                  </Link>
+                                  {course.titleCourse}
+                                </Link>
                               </div>
                             </td>
                             <td>{course.students || 0}</td>
                             <td>{course.status || "N/A"}</td>
                             <td>
-                            <Link
-                                    to={`/instructor/course-test/${course.id}`}
-                                    className="btn btn-primary"
-                                  >
-                                    Manage Tests
-                                  </Link>
+                              <Link
+                                to={`/instructor/course-test/${course.id}`}
+                                className="btn btn-primary"
+                              >
+                                Manage Tests
+                              </Link>
                             </td>
                           </tr>
                         ))
@@ -268,9 +268,8 @@ export const Dashboard = () => {
                               <div className="course-share d-flex align-items-center justify-content-center">
                                 <Link to="#" onClick={() => toggleClass(index)}>
                                   <i
-                                    className={`fa-regular fa-heart ${
-                                      isClassAdded[index] ? "color-active" : ""
-                                    }`}
+                                    className={`fa-regular fa-heart ${isClassAdded[index] ? "color-active" : ""
+                                      }`}
                                   />
                                 </Link>
                               </div>
@@ -287,7 +286,7 @@ export const Dashboard = () => {
                               </div>
                               <div className="course-view d-flex align-items-center">
                                 <img src={Icon2} alt="Icon" />
-                                <p>{course.duration} mins</p>
+                                <p>{course.duration} hours</p>
                               </div>
                             </div>
                             <div className="rating mb-0">
@@ -295,9 +294,8 @@ export const Dashboard = () => {
                                 .fill(null)
                                 .map((_, i) => (
                                   <i
-                                    className={`fas fa-star ${
-                                      i < course.rating ? "filled" : ""
-                                    } me-1`}
+                                    className={`fas fa-star ${i < course.rating ? "filled" : ""
+                                      } me-1`}
                                     key={i}
                                   />
                                 ))}
@@ -329,9 +327,8 @@ export const Dashboard = () => {
                       {[...Array(totalPages)].map((_, index) => (
                         <li
                           key={index}
-                          className={`page-item ${
-                            currentPage === index + 1 ? "active" : ""
-                          }`}
+                          className={`page-item ${currentPage === index + 1 ? "active" : ""
+                            }`}
                         >
                           <button
                             onClick={() => handlePageChange(index + 1)}

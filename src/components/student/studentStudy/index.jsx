@@ -17,7 +17,6 @@ const StudentStudy = () => {
     enrolled: [],
   });
 
-
   const [hoursPerDayForCourse, setHoursPerDayForCourse] = useState({});
 
   // 2) Lưu deadline (Date) cho từng khoá: { courseId: Date, ... }
@@ -28,61 +27,11 @@ const StudentStudy = () => {
 
   const studentId = localStorage.getItem("studentId");
 
-  // Tuỳ chọn demo cho react-select
-  // const options = [
-  //   { label: "Newly Published", value: "new" },
-  //   { label: "Angular", value: "1" },
-  //   { label: "React", value: "2" },
-  //   { label: "Node", value: "3" },
-  // ];
-
-  // Style react-select
-  // const style = {
-  //   control: (baseStyles, state) => ({
-  //     ...baseStyles,
-  //     backgroundColor: mobileSidebar === "disabled" ? "white" : "#131022",
-  //     width: "100%",
-  //     height: "40px",
-  //     color: "black",
-  //     minHeight: "40px",
-  //     border: "1px solid #e9ecef",
-  //     paddingLeft: "5px",
-  //     boxShadow: state.isFocused ? 0 : 0,
-  //     borderRadius: "10px",
-  //     fontSize: "14px",
-  //     "&:hover": {
-  //       cursor: "pointer",
-  //     },
-  //     outline: "none",
-  //   }),
-  //   menu: (base) => ({ ...base, marginTop: "0px" }),
-  //   menuList: (base) => ({ ...base, padding: "0" }),
-  //   option: (provided) => ({
-  //     ...provided,
-  //     backgroundColor: mobileSidebar === "disabled" ? "#fff" : "#000",
-  //     color: mobileSidebar === "disabled" ? "#000" : "#fff",
-  //     fontSize: "14px",
-  //     "&:hover": {
-  //       backgroundColor: mobileSidebar === "disabled" ? "#FFDEDA" : "#2b2838",
-  //     },
-  //   }),
-  //   indicatorSeparator: () => ({
-  //     display: "none",
-  //   }),
-  //   dropdownIndicator: (base, state) => ({
-  //     ...base,
-  //     color: "black",
-  //     transform: state.selectProps.menuIsOpen ? "rotate(-180deg)" : "rotate(0)",
-  //     transition: "250ms",
-  //   }),
-  // };
-
   // ==================== HÀM TÍNH TOÁN ====================
   // 1. Tính deadline (duration/giờ học mỗi ngày)
   const calculateDeadline = (duration, hoursPerDay) => {
-    // Nếu hoursPerDay < 1 => không set deadline
-    // (trường hợp hiển thị 0 hours/day => No deadline)
-    if (hoursPerDay < 1) return null;
+    // Nếu hoursPerDay < 1 hoặc lớn hơn tổng thời lượng => không set deadline
+    if (hoursPerDay < 1 || hoursPerDay > duration) return null;
 
     const totalDays = Math.ceil(duration / hoursPerDay);
     const deadlineDate = new Date();
@@ -184,7 +133,7 @@ const StudentStudy = () => {
   }, []);
 
   const handleHoursPerDayChange = (courseId, duration, hours) => {
-    if (isNaN(hours) || hours < 0) {
+    if (isNaN(hours) || hours < 0 || hours > duration) {
       hours = 0;
     }
     saveHoursToLocalStorage(courseId, hours);
@@ -433,31 +382,10 @@ const StudentStudy = () => {
                                 <form action="#">
                                   <div className="mycourse-student align-items-center">
                                     <div className="student-search">
-                                      {/* <div className="search-group">
-                                        <Search
-                                          className="searchFeather"
-                                          size={16}
-                                        />
-                                        <input
-                                          type="text"
-                                          className="form-control"
-                                          placeholder="Search our courses"
-                                        />
-                                      </div> */}
+
                                     </div>
                                     <div className="student-filter">
-                                      {/* <div className="input-block select-form mb-0">
-                                        <Select
-                                          className="select country-select"
-                                          name="sellist1"
-                                          options={options}
-                                          defaultValue={options[0]}
-                                          placeholder="Choose"
-                                          // Nếu không dùng filter, có thể bỏ onChange
-                                          // onChange={(val) => setSelectedFilter(val)}
-                                          styles={style}
-                                        />
-                                      </div> */}
+
                                     </div>
                                   </div>
                                 </form>
@@ -476,30 +404,6 @@ const StudentStudy = () => {
                   </div>
                 </div>
               </div>
-
-              {/* PHÂN TRANG (demo) */}
-              {/* <div className="dash-pagination">
-                <div className="row align-items-center">
-                  <div className="col-6">
-                    <p>Page 1 of 2</p>
-                  </div>
-                  <div className="col-6">
-                    <ul className="pagination">
-                      <li className="active">
-                        <Link to="#">1</Link>
-                      </li>
-                      <li>
-                        <Link to="#">2</Link>
-                      </li>
-                      <li>
-                        <Link to="#">
-                          <i className="bx bx-chevron-right" />
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
