@@ -67,9 +67,9 @@ const GridInnerPage = ({ courses }) => {
                           <img src={Messages} alt="Messages" style={{ width: "40px", height: "40px" }} />
                         </Link>
                       </div>
-
                     </div>
                   </div>
+                </div>
 
                   <h3 className="course-title">
                     <Link to={`/course-details/${course.id}`}>{course.titleCourse}</Link>
