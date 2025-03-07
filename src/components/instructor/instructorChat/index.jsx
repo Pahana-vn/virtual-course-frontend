@@ -2,7 +2,7 @@ import { Stomp } from '@stomp/stompjs';
 import React, { useEffect, useRef, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import Scrollbars from "react-custom-scrollbars-2";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SockJS from 'sockjs-client';
 
 import {
@@ -18,33 +18,49 @@ import InstructorSidebar from "../sidebar";
 const DEFAULT_AVATAR = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU";
 
 const InstructorMessages = () => {
-  const currentInstructorAccountId = parseInt(localStorage.getItem('instructorId'), 10);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const currentInstructorId = parseInt(localStorage.getItem('instructorId'), 10);
+  const studentIdFromParams = parseInt(queryParams.get('studentId'), 10);
 
+  const [selectedStudentId, setSelectedStudentId] = useState(studentIdFromParams);
   const [visible, setVisible] = useState(false);
   const [searchChat, setSearchChat] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 992);
 
   const [chatStudents, setChatStudents] = useState([]);
-  const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [currentMsg, setCurrentMsg] = useState('');
+  const messagesContainerRef = useRef(null);
 
   const [studentInfo, setStudentInfo] = useState({
     name: "Select Student to chat",
     avatar: DEFAULT_AVATAR
   });
 
-  const [instructorInfo, setInstructorInfo] = useState({ // Thêm state cho instructorInfo
+  const [instructorInfo, setInstructorInfo] = useState({
     name: "Instructor",
     avatar: DEFAULT_AVATAR
   });
 
   const stompClientRef = useRef(null);
 
+  // Lấy studentId từ URL và cập nhật state
+  useEffect(() => {
+    const studentIdFromParams = parseInt(queryParams.get('studentId'), 10);
+    if (studentIdFromParams) {
+      setSelectedStudentId(studentIdFromParams);
+    } else {
+      console.error("Student ID is missing in the URL");
+    }
+  }, [location.search]);
+
+  // Fetch danh sách học viên và thông tin instructor
   useEffect(() => {
     const fetchRecentChatsData = async () => {
       try {
-        const recentChats = await fetchRecentChatsForInstructor(currentInstructorAccountId);
+        const recentChats = await fetchRecentChatsForInstructor(currentInstructorId);
 
         const students = await Promise.all(
           recentChats.map(async (stuAccId) => {
@@ -66,7 +82,7 @@ const InstructorMessages = () => {
 
     const fetchInstructorInfoData = async () => {
       try {
-        const instructor = await fetchInstructorInfo(currentInstructorAccountId);
+        const instructor = await fetchInstructorInfo(currentInstructorId);
         setInstructorInfo({
           name: instructor.username,
           avatar: instructor.avatar || DEFAULT_AVATAR
@@ -76,28 +92,20 @@ const InstructorMessages = () => {
       }
     };
 
-    if (currentInstructorAccountId) {
+    if (currentInstructorId) {
       fetchRecentChatsData();
       fetchInstructorInfoData();
     }
-  }, [currentInstructorAccountId]);
+  }, [currentInstructorId]);
 
+  // Fetch thông tin học viên, lịch sử chat và kết nối WebSocket
   useEffect(() => {
-    if (!selectedStudentId) return;
+    if (!selectedStudentId) {
+      console.error("Student ID is missing");
+      return;
+    }
 
-    const fetchChatHistoryData = async () => {
-      try {
-        const chatHistory = await fetchChatHistory(currentInstructorAccountId, selectedStudentId);
-        setMessages(chatHistory);
-      } catch (error) {
-        console.error('Error fetching chat history:', error);
-        setMessages([]);
-      }
-    };
-
-    fetchChatHistoryData();
-
-    const loadStudentInfo = async () => {
+    const fetchStudentInfoData = async () => {
       try {
         const student = await fetchStudentInfo(selectedStudentId);
         setStudentInfo({
@@ -109,7 +117,19 @@ const InstructorMessages = () => {
       }
     };
 
-    loadStudentInfo();
+    const fetchChatHistoryData = async () => {
+      try {
+        const chatHistory = await fetchChatHistory(currentInstructorId, selectedStudentId);
+        const sortedMessages = chatHistory.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        setMessages(sortedMessages);
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+        setMessages([]);
+      }
+    };
+
+    fetchStudentInfoData();
+    fetchChatHistoryData();
 
     // Kết nối WebSocket
     const socket = new SockJS('http://localhost:8080/ws-chat');
@@ -118,9 +138,21 @@ const InstructorMessages = () => {
     stompClient.connect({}, (frame) => {
       console.log('Instructor STOMP connected: ' + frame);
 
-      stompClient.subscribe(`/queue/user.${currentInstructorAccountId}`, (messageOutput) => {
+      // Đăng ký nhận tin nhắn từ hàng đợi của instructor
+      stompClient.subscribe(`/queue/user.${currentInstructorId}`, (messageOutput) => {
+        console.log('Received message:', messageOutput.body);
         const msg = JSON.parse(messageOutput.body);
-        setMessages((prev) => [...prev, msg]);
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            ...msg,
+            senderName: msg.senderAccountId === currentInstructorId ? "You" : studentInfo.name,
+            senderAvatar: msg.senderAccountId === currentInstructorId
+              ? instructorInfo.avatar
+              : studentInfo.avatar
+          }
+        ]);
       });
     }, (error) => {
       console.error('STOMP Error', error);
@@ -128,41 +160,45 @@ const InstructorMessages = () => {
 
     stompClientRef.current = stompClient;
 
+    // Cleanup khi component unmount
     return () => {
       if (stompClientRef.current) {
         stompClientRef.current.disconnect();
       }
     };
-  }, [currentInstructorAccountId, selectedStudentId]);
+  }, [currentInstructorId, selectedStudentId]);
 
+  // Xử lý gửi tin nhắn
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!currentMsg.trim() || !selectedStudentId) return;
 
     const chatMessageDTO = {
-      senderAccountId: currentInstructorAccountId,
+      senderAccountId: currentInstructorId,
       receiverAccountId: selectedStudentId,
       content: currentMsg,
-      type: "CHAT"
+      type: "CHAT",
+      timestamp: new Date().toISOString(),
     };
 
     try {
+      // Kiểm tra kết nối WebSocket
       if (stompClientRef.current && stompClientRef.current.connected) {
         // Gửi tin nhắn qua WebSocket
         stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
       }
 
-      // Thêm tin nhắn vào UI ngay lập tức
-      setMessages((prev) => [
-        ...prev,
+      // Cập nhật state để hiển thị tin nhắn ngay lập tức
+      setMessages((prevMessages) => [
+        ...prevMessages,
         {
           ...chatMessageDTO,
           senderName: "You",
-          senderAvatar: instructorInfo.avatar, // Sử dụng avatar của instructor
-          timestamp: new Date().toISOString()
-        }
+          senderAvatar: instructorInfo.avatar,
+        },
       ]);
 
+      // Log thông tin tin nhắn
       const timestamp = new Date().toLocaleString('vi-VN', {
         hour: '2-digit',
         minute: '2-digit',
@@ -170,40 +206,51 @@ const InstructorMessages = () => {
       });
 
       console.log("Gửi tin nhắn:");
-      console.log(`Người gửi: Bạn (ID: ${currentInstructorAccountId})`);
+      console.log(`Người gửi: Bạn (ID: ${currentInstructorId})`);
       console.log(`Người nhận: Học viên (ID: ${selectedStudentId})`);
       console.log(`Nội dung: ${currentMsg}`);
       console.log(`Thời gian: ${timestamp}`);
 
+      // Xóa nội dung tin nhắn
       setCurrentMsg('');
+
+      // Fetch lại lịch sử chat để cập nhật UI
+      await fetchChatHistory(currentInstructorId, selectedStudentId);
+
     } catch (error) {
       console.error('Lỗi khi gửi tin nhắn:', error);
     }
   };
 
+  // Xử lý khi nhấp vào một học viên
   const handleStudentClick = async (stuAccId) => {
-    setSelectedStudentId(stuAccId); // Chọn học viên
-    try {
-      // Lấy lịch sử trò chuyện giữa Instructor và Student
-      const chatHistory = await fetchChatHistory(currentInstructorAccountId, stuAccId);
+    navigate(`/instructor/instructor-messages?studentId=${stuAccId}`); // Cập nhật URL
+    setSelectedStudentId(stuAccId); // Cập nhật state
 
-      // Định dạng các tin nhắn (giống như trong handleInstructorClick)
+    try {
+      const chatHistory = await fetchChatHistory(currentInstructorId, stuAccId);
       const formattedMessages = chatHistory.map(m => ({
         ...m,
-        senderName: m.senderAccountId === currentInstructorAccountId ? "You" : studentInfo.name,
-        senderAvatar: m.senderAccountId === currentInstructorAccountId
-          ? instructorInfo.avatar // Sử dụng avatar của instructor
+        senderName: m.senderAccountId === currentInstructorId ? "You" : studentInfo.name,
+        senderAvatar: m.senderAccountId === currentInstructorId
+          ? instructorInfo.avatar
           : studentInfo.avatar
       }));
-
-      // Cập nhật lại trạng thái tin nhắn
       setMessages(formattedMessages);
     } catch (error) {
       console.error('Error fetching chat history:', error);
-      setMessages([]); // Nếu có lỗi, đặt tin nhắn về mảng trống
+      setMessages([]);
     }
   };
 
+  // Tự động cuộn xuống dưới cùng khi có tin nhắn mới
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // Xử lý thay đổi kích thước màn hình
   useEffect(() => {
     const handleResize = () => setIsSmallScreen(window.innerWidth < 992);
     window.addEventListener("resize", handleResize);
@@ -313,7 +360,7 @@ const InstructorMessages = () => {
                                   </div>
                                 </div>
 
-                                {/* Danh sách Student */}
+                                {/* Danh sách học viên */}
                                 <ul className="user-list">
                                   {chatStudents.map((student) => (
                                     <li
@@ -322,7 +369,7 @@ const InstructorMessages = () => {
                                         "user-list-item chat-user-list " +
                                         (selectedStudentId === student.id ? "active" : "")
                                       }
-                                      onClick={() => handleStudentClick(student.id)}
+                                      onClick={() => handleStudentClick(student.id)} // Xử lý khi nhấp vào học viên
                                     >
                                       <Link to="#">
                                         <div>
@@ -425,19 +472,10 @@ const InstructorMessages = () => {
 
                           {/* Nội dung chat */}
                           <div className="chat-body chat-page-group slimscroll">
-                            <div className="messages">
+                            <div className="messages" ref={messagesContainerRef}>
                               {messages.map((m, index) => {
-                                const isMe = m.senderAccountId === currentInstructorAccountId;
+                                const isMe = m.senderAccountId === currentInstructorId;
 
-                                // Format giờ
-                                const dateObj = new Date(m.timestamp);
-                                const timeStr = dateObj.toLocaleTimeString('en-GB', {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                  timeZone: 'Asia/Ho_Chi_Minh'
-                                });
-
-                                // Style bubble chat
                                 const chatContainerStyle = {
                                   display: 'flex',
                                   alignItems: 'flex-start',
@@ -466,7 +504,7 @@ const InstructorMessages = () => {
                                   <div style={chatContainerStyle} key={index}>
                                     <div style={chatContentStyle}>
                                       <div style={timeStyle}>
-                                        <span>{timeStr}</span>
+                                        <span>{new Date(m.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
                                       </div>
                                       <div style={{ whiteSpace: 'pre-wrap' }}>
                                         {m.content}
@@ -482,33 +520,10 @@ const InstructorMessages = () => {
                         {/* Footer gõ tin nhắn */}
                         <div className="chat-footer">
                           <form onSubmit={handleSendMessage}>
-                            {/* <div className="smile-foot">
-                              <div className="chat-action-btns">
-                                <div className="chat-action-col">
-                                  <Link
-                                    className="action-circle"
-                                    to="#"
-                                    data-bs-toggle="dropdown"
-                                  >
-                                    <i className="fa-solid fa-ellipsis-vertical" />
-                                  </Link>
-                                  <div className="dropdown-menu dropdown-menu-end">
-                                    <Link to="#" className="dropdown-item">
-                                      <span>
-                                        <i className="bx bx-file" />
-                                      </span>
-                                      Document
-                                    </Link>
-                                  </div>
-                                </div>
-                              </div>
-                            </div> */}
                             <div className="smile-foot emoj-action-foot">
-                              {chatStudents.map((student) => (
-                                <Link onClick={() => handleStudentClick(student.id)} key={student.id} to="#" className="action-circle">
-                                  <i className="bx bx-smile" />
-                                </Link>
-                              ))}
+                              <Link to="#" className="action-circle">
+                                <i className="bx bx-smile" />
+                              </Link>
                             </div>
                             <div className="replay-forms">
                               <input
