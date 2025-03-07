@@ -18,26 +18,12 @@ import {
   Icon02,
   Icon03,
   Icon04,
-  Icon10,
-  Icon12,
-  Icon13,
-  Icon14,
-  Icon15,
-  Icon16,
-  Icon17,
-  Icon18,
-  Icon7,
-  Icon8,
-  Icon9,
   Join,
   PencilIcon,
   Share,
 } from "../imagepath";
-import Blog from "./slider/blog";
 import Companies from "./slider/companies";
-import Testimonial from "./slider/testimonial";
 import TopCategory from "./slider/topCategory";
-import TrendingCourse from "./slider/trendingCourse";
 import RoleBasedHeader from "../header/RoleBasedHeader";
 import { useGetCategoriesQuery } from "../../redux/slices/course/categoryApiSlice";
 import FeaturedCourses from "./components/featuredCourses";
@@ -163,17 +149,9 @@ export const Home = () => {
                               delay={1}
                               format={formatValue}
                             />
-                            +
+                            + Students
                           </span>
                         </h2>
-                      </div>
-                      <div className="rating d-flex align-items-center">
-                        <h2 className="d-inline-block average-rating">4.4</h2>
-                        <i className="fas fa-star filled me-1" />
-                        <i className="fas fa-star filled me-1" />
-                        <i className="fas fa-star filled me-1" />
-                        <i className="fas fa-star filled me-1" />
-                        <i className="fas fa-star filled me-1" />
                       </div>
                     </div>
                   </div>
@@ -398,7 +376,7 @@ export const Home = () => {
         {/* /Master Skills */}
 
         {/* Trending Course */}
-        <TrendingCourse />
+        {/* <TrendingCourse /> */}
         {/* Trending Course */}
 
         {/* Companies */}
@@ -460,22 +438,12 @@ export const Home = () => {
         </section>
         {/* /Share knowledge */}
 
-        <section className="section user-love">
-          <div className="container">
-            <div className="section-header white-header aos" data-aos="fade-up">
-              <div className="section-sub-head feature-head text-center">
-                <span>Check out these real reviews</span>
-                <h2>Users-love-us Dont take it from us.</h2>
-              </div>
-            </div>
-          </div>
-        </section>
         {/* Testimonial Carousel */}
-        <Testimonial />
+        {/* <Testimonial /> */}
         {/* Testimonial Carousel */}
 
         {/* Become a instructor */}
-        <section className="section become-instructors aos" data-aos="fade-up">
+        <section className="section become-instructors aos" style={{ paddingTop: "30px" }} data-aos="fade-up">
           <div className="container">
             <div className="row">
               <div className="col-lg-6 col-md-6 d-flex">
@@ -522,182 +490,6 @@ export const Home = () => {
           </div>
         </section>
         {/* /Become a instructor */}
-
-        {/* Blog */}
-        <section className="section latest-blog">
-          <div className="container">
-            <div className="section-header aos" data-aos="fade-up">
-              <div className="section-sub-head feature-head text-center mb-0">
-                <h2>Latest Blogs</h2>
-                <div className="section-text aos" data-aos="fade-up">
-                  <p className="mb-0">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Eget aenean accumsan bibendum gravida maecenas augue
-                    elementum et neque. Suspendisse imperdiet.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <Blog />
-            <div className="enroll-group aos" data-aos="fade-up">
-              <div className="row ">
-                <div className="col-lg-4 col-md-6">
-                  <div className="total-course d-flex align-items-center">
-                    <div className="blur-border">
-                      <div className="enroll-img ">
-                        <img src={Icon7} alt="" className="img-fluid" />
-                      </div>
-                    </div>
-                    <div className="course-count">
-                      <h3>
-                        <span className="counterUp">253,085</span>
-                      </h3>
-                      <p>STUDENTS ENROLLED</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-lg-4 col-md-6">
-                  <div className="total-course d-flex align-items-center">
-                    <div className="blur-border">
-                      <div className="enroll-img ">
-                        <img src={Icon8} alt="" className="img-fluid" />
-                      </div>
-                    </div>
-                    <div className="course-count">
-                      <h3>
-                        <span className="counterUp">1,205</span>
-                      </h3>
-                      <p>TOTAL COURSES</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-lg-4 col-md-6">
-                  <div className="total-course d-flex align-items-center">
-                    <div className="blur-border">
-                      <div className="enroll-img ">
-                        <img src={Icon9} alt="" className="img-fluid" />
-                      </div>
-                    </div>
-                    <div className="course-count">
-                      <h3>
-                        <span className="counterUp">127</span>
-                      </h3>
-                      <p>COUNTRIES</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="lab-course">
-              <div className="section-header aos" data-aos="fade-up">
-                <div className="section-sub-head feature-head text-center">
-                  <h2>
-                    Unlimited access to 360+ courses <br />
-                    and 1,600+ hands-on labs
-                  </h2>
-                </div>
-              </div>
-              <div className="icon-group aos" data-aos="fade-up">
-                <div className="offset-lg-1 col-lg-12">
-                  <div className="row">
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon9} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon10} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon16} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon12} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon13} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon14} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon15} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon16} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon17} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-1 col-3">
-                      <div className="total-course d-flex align-items-center">
-                        <div className="blur-border">
-                          <div className="enroll-img ">
-                            <img src={Icon18} alt="" className="img-fluid" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        {/* /Blog */}
-
         {/* Footer */}
         <Footer />
         {/* /Footer */}

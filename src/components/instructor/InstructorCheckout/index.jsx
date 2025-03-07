@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import Footer from "../../footer";
 import { InstructorHeader } from "../header";
 import { useRequestWithdrawalMutation } from "../../../redux/slices/instructor/instructorTransactionApiSlice";
@@ -17,17 +18,23 @@ const InstructorCheckout = () => {
     e.preventDefault();
   
     if (!amount || amount <= 0) {
-      alert("Please enter a valid withdrawal amount.");
+      toast.error("Please enter a valid withdrawal amount.", {
+        position: "top-right",
+      });
       return;
     }
 
     if (!amount || amount < 10) {
-      alert("Please enter amount from 10 or more.");
+      toast.error("Please enter amount from 10 or more.", {
+        position: "top-right",
+      });
       return;
     }
   
     if (!recipientEmail) {
-      alert("Please enter a valid recipient email.");
+      toast.error("Please enter a valid recipient email.", {
+        position: "top-right",
+      });
       return;
     }
   
@@ -41,7 +48,9 @@ const InstructorCheckout = () => {
           paymentMethod: paymentMethod.toUpperCase(),
         }).unwrap();
   
-        alert("Withdrawal request successful! Transaction is being processed.");
+        toast.success("Withdrawal request successful! Transaction is being processed.", {
+          position: "top-right",
+        });
         
         // Nếu có URL xác nhận của PayPal, chuyển hướng người dùng
         if (response.approvalUrl) {
@@ -50,11 +59,15 @@ const InstructorCheckout = () => {
           navigate("/instructor/deposit-instructor-dashboard");
         }
       } else if (paymentMethod === "VNPAY") {
-        alert("VNPay withdrawal is not implemented yet.");
+        toast.error("VNPay withdrawal is not implemented yet.", {
+          position: "top-right",
+        });
       }
     } catch (error) {
       console.error("Error processing withdrawal:", error);
-      alert(error?.data?.message || "Withdrawal failed. Please try again.");
+      toast.error("Withdrawal failed. Please try again.", {
+        position: "top-right",
+      });
     }finally {
       setIsLoading(false);
     }
@@ -68,6 +81,8 @@ const InstructorCheckout = () => {
   };
 
   return (
+    <>
+    <ToastContainer autoClose={3000} />
     <div className="main-wrapper">
       <style>
         {`
@@ -236,6 +251,7 @@ const InstructorCheckout = () => {
       </section>
       <Footer />
     </div>
+    </>
   );
 };
 
