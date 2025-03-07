@@ -126,7 +126,7 @@ const InstructorCourse = () => {
                                       >
                                         <img
                                           className="img-fluid"
-                                          style={{ objectFit: 'contain', height: '200px' }}
+                                          style={{ objectFit: 'contain', height: '150px' }}
                                           alt={course.titleCourse}
                                           src={course.imageCover}
                                         />

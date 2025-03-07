@@ -176,8 +176,13 @@ export function InstructorHeader() {
                 </Link>
               </li>
               <li>
-                <Link to="/course-grid" onClick={hideMobileMenu}>
-                Category
+                <Link to="/instructor/instructor-dashboard" onClick={hideMobileMenu}>
+                Instructor Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/instructor/deposit-instructor-dashboard" onClick={hideMobileMenu}>
+                Transaction Dashboard
                 </Link>
               </li>
               <li className="login-link">
@@ -337,7 +342,7 @@ export function InstructorHeader() {
                   </div>
                   <Link
                     className="dropdown-item text"
-                    to="/instructor/deposit-instructor-dashboard"
+                    to="/instructor/instructor-dashboard"
                   >
                     <Home
                       size={14}
@@ -348,18 +353,18 @@ export function InstructorHeader() {
                   </Link>
                   <Link
                     className="dropdown-item text"
-                    to="/instructor/instructor-dashboard"
+                    to="/instructor/deposit-instructor-dashboard"
                   >
                     <Home
                       size={14}
                       color={"#FF875A"}
                       className="feather-home me-1"
                     />{" "}
-                   Course Dashboard
+                   Transaction Dashboard
                   </Link>
                   <Link
                     className="dropdown-item text"
-                    to="/instructor/instructor-settings"
+                    to="/instructor/instructor-profile-settings"
                   >
                     <Star
                       size={14}
