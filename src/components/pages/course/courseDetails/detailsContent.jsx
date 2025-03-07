@@ -26,7 +26,6 @@ import {
   Users,
   Video2,
 } from "../../../imagepath";
-import Rating from "./rating";
 import useCurrencyFormatter from "../../../../hooks/useCurrencyFormatter";
 import ReactPlayer from "react-player";
 import Popup from "../../../pages/course/popup/popup";
@@ -190,7 +189,7 @@ const DetailsContent = ({ courseDetails }) => {
                 <div className="card-body">
                   <h5 className="subs-title">Overview</h5>
                   <h6>Course Description</h6>
-                  <p
+                  <p style={{ textAlign: "justify" }}
                     dangerouslySetInnerHTML={{
                       __html: sanitizedCourseDescription,
                     }}
@@ -332,7 +331,7 @@ const DetailsContent = ({ courseDetails }) => {
                         <p>{instructorDetails.title}</p>
                       </div>
                     </div>
-                    <Rating averageRating={instructorDetails.averageRating} />
+                    {/* <Rating averageRating={instructorDetails.averageRating} /> */}
                   </div>
                   <div className="course-info d-flex align-items-center">
                     <div className="cou-info">
@@ -353,7 +352,7 @@ const DetailsContent = ({ courseDetails }) => {
                     </div>
                   </div>
                   <p>{instructorDetails.title}</p>
-                  <div
+                  <div style={{ textAlign: "justify" }}
                     dangerouslySetInnerHTML={{
                       __html: sanitizedInstructorDescription,
                     }}

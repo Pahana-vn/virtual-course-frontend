@@ -45,9 +45,7 @@ const FeaturedCourses = () => {
         </div>
         <div className="section-text aos" data-aos="fade-up">
           <p className="mb-0">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget
-            aenean accumsan bibendum gravida maecenas augue elementum et neque.
-            Suspendisse imperdiet.
+          The Featured Courses section of the Virtual Course Network showcases a curated selection of the best and most popular courses available on the platform. These courses cover a wide range of topics and are designed to help learners acquire new skills and advance their knowledge.
           </p>
         </div>
         <div className="course-feature">
@@ -123,16 +121,6 @@ const FeaturedCourses = () => {
                         </div>
                       </div>
                       <div className="d-flex align-items-center justify-content-between">
-                        <div className="rating m-0">
-                          <i className="fas fa-star filled me-1" />
-                          <i className="fas fa-star filled me-1" />
-                          <i className="fas fa-star filled me-1" />
-                          <i className="fas fa-star filled me-1" />
-                          <i className="fas fa-star" />
-                          <span className="d-inline-block average-rating">
-                            <span>4.0</span> (15)
-                          </span>
-                        </div>
                         <div className="all-btn all-category d-flex align-items-center">
                           <Link to="/checkout" className="btn btn-primary">
                             BUY NOW

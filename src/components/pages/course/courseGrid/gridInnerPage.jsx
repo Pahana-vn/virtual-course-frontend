@@ -83,16 +83,6 @@ const GridInnerPage = ({ courses }) => {
                       <p>{course.duration} {course.duration === 1 ? "hr" : "hrs"}</p>
                     </div>
                   </div>
-                  <div className="rating">
-                    <i className="fas fa-star filled me-1" />
-                    <i className="fas fa-star filled me-1" />
-                    <i className="fas fa-star filled me-1" />
-                    <i className="fas fa-star filled me-1" />
-                    <i className="fas fa-star me-1" />
-                    <span className="d-inline-block average-rating">
-                      <span>4.0</span> (15)
-                    </span>
-                  </div>
                   <div className="all-btn all-category d-flex align-items-center">
                     <Link to={`/checkout/${course.id}`} className="btn btn-primary">
                       BUY NOW
