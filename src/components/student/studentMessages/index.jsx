@@ -44,6 +44,8 @@ const StudentMessages = () => {
     const instructorIdFromParams = parseInt(queryParams.get('instructorId'), 10);
     if (instructorIdFromParams) {
       setSelectedInstructorId(instructorIdFromParams);
+    } else {
+      console.error("Instructor ID is missing in the URL");
     }
   }, [location.search]);
 
@@ -126,7 +128,7 @@ const StudentMessages = () => {
 
     fetchChatHistoryData();
 
-    const stompClient = connectWebSocket(currentUserAccountId, setMessages);
+    const stompClient = connectWebSocket(currentUserAccountId, selectedInstructorId, setMessages);
     stompClientRef.current = stompClient;
 
     const handleResize = () => {
@@ -139,17 +141,17 @@ const StudentMessages = () => {
       if (stompClientRef.current) {
         stompClientRef.current.disconnect();
       }
-      window.removeEventListener("resize", handleResize);
     };
   }, [currentUserAccountId, selectedInstructorId]);
 
-  const connectWebSocket = (currentUserAccountId, setMessages) => {
+  const connectWebSocket = (currentUserAccountId, selectedInstructorId, setMessages) => {
     const socket = new SockJS('http://localhost:8080/ws-chat');
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, (frame) => {
       console.log('Connected: ' + frame);
 
+      // Subscribe to the correct queue
       stompClient.subscribe(`/queue/user.${currentUserAccountId}`, (messageOutput) => {
         console.log('Received message:', messageOutput.body);
         const msg = JSON.parse(messageOutput.body);
@@ -158,9 +160,9 @@ const StudentMessages = () => {
           const newMessages = [...prev, {
             ...msg,
             senderName: msg.senderAccountId === currentUserAccountId ? "You" : instructorInfo.name,
-            // senderAvatar: msg.senderAccountId === currentUserAccountId
-            //   ? studentInfo.avatar
-            //   : instructorInfo.avatar
+            senderAvatar: msg.senderAccountId === currentUserAccountId
+              ? studentInfo.avatar
+              : instructorInfo.avatar
           }];
           return newMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
         });
@@ -179,20 +181,20 @@ const StudentMessages = () => {
         console.error("STOMP connection is not established.");
         return;
       }
-  
+
       const chatMessageDTO = {
         senderAccountId: currentUserAccountId,
-        receiverAccountId: selectedInstructorId,
+        receiverAccountId: selectedInstructorId, // Sử dụng selectedInstructorId
         content: currentMsg,
         type: "CHAT",
         timestamp: new Date().toISOString(),
       };
-  
+
       try {
         console.log('Sending message:', chatMessageDTO);
         stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
   
-        // Add the new message to the state immediately
+        // Thêm tin nhắn mới vào state
         setMessages((prevMessages) => [
           ...prevMessages,
           {
@@ -202,22 +204,22 @@ const StudentMessages = () => {
             timestamp: new Date().toISOString()
           },
         ]);
-  
+
         const timestamp = new Date().toLocaleString('vi-VN', {
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
         });
-  
+
         console.log("Gửi tin nhắn:");
         console.log(`Người gửi: Bạn (ID: ${currentUserAccountId})`);
         console.log(`Người nhận: Instructor (ID: ${selectedInstructorId})`);
         console.log(`Nội dung: ${currentMsg}`);
         console.log(`Thời gian: ${timestamp}`);
-  
+
         // Clear the message input
         setCurrentMsg('');
-  
+
         // Check if instructor is in the list of recent chats
         const isInstructorInList = chatInstructors.some(instructor => instructor.id === selectedInstructorId);
         if (!isInstructorInList) {
@@ -228,20 +230,19 @@ const StudentMessages = () => {
             avatar: instructor.photo,
           }]);
         }
-  
+
         // Fetch chat history again to update the UI with the new message
-        await fetchChatHistory(currentUserAccountId, selectedInstructorId);
-  
+        // await fetchChatHistory(currentUserAccountId, selectedInstructorId);
+
       } catch (error) {
         console.error('Error sending chat message:', error);
       }
     }
   };
-  
 
   const handleInstructorClick = async (id) => {
     navigate(`/student/student-messages?instructorId=${id}`); // Cập nhật URL
-    setSelectedInstructorId(id); // Cập nhật selectedInstructorId
+    setSelectedInstructorId(id); // Cập nhật state
 
     try {
       const chatHistory = await fetchChatHistory(currentUserAccountId, id);
@@ -258,8 +259,6 @@ const StudentMessages = () => {
       setMessages([]);
     }
   };
-
-
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -370,7 +369,7 @@ const StudentMessages = () => {
                                     <li
                                       className={`user-list-item chat-user-list ${selectedInstructorId === instructor.id ? 'active' : ''}`}
                                       key={instructor.id}
-                                      onClick={() => handleInstructorClick(instructor.id)} // Gọi handleInstructorClick khi bấm vào instructor
+                                      onClick={() => handleInstructorClick(instructor.id)} // Pass instructorId
                                     >
                                       <Link to="#">
                                         <div>

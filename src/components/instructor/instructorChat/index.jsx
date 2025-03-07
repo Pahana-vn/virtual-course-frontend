@@ -46,12 +46,17 @@ const InstructorMessages = () => {
 
   const stompClientRef = useRef(null);
 
+  // Lấy studentId từ URL và cập nhật state
   useEffect(() => {
+    const studentIdFromParams = parseInt(queryParams.get('studentId'), 10);
     if (studentIdFromParams) {
       setSelectedStudentId(studentIdFromParams);
+    } else {
+      console.error("Student ID is missing in the URL");
     }
   }, [location.search]);
 
+  // Fetch danh sách học viên và thông tin instructor
   useEffect(() => {
     const fetchRecentChatsData = async () => {
       try {
@@ -93,11 +98,24 @@ const InstructorMessages = () => {
     }
   }, [currentInstructorId]);
 
+  // Fetch thông tin học viên, lịch sử chat và kết nối WebSocket
   useEffect(() => {
     if (!selectedStudentId) {
       console.error("Student ID is missing");
       return;
     }
+
+    const fetchStudentInfoData = async () => {
+      try {
+        const student = await fetchStudentInfo(selectedStudentId);
+        setStudentInfo({
+          name: student.username,
+          avatar: student.avatar || DEFAULT_AVATAR
+        });
+      } catch (error) {
+        console.error('Error fetching student info:', error);
+      }
+    };
 
     const fetchChatHistoryData = async () => {
       try {
@@ -110,32 +128,31 @@ const InstructorMessages = () => {
       }
     };
 
+    fetchStudentInfoData();
     fetchChatHistoryData();
 
-    const loadStudentInfo = async () => {
-      try {
-        const student = await fetchStudentInfo(selectedStudentId);
-        setStudentInfo({
-          name: student.username,
-          avatar: student.avatar || DEFAULT_AVATAR
-        });
-      } catch (error) {
-        console.error('Error fetching student info:', error);
-      }
-    };
-
-    loadStudentInfo();
-
+    // Kết nối WebSocket
     const socket = new SockJS('http://localhost:8080/ws-chat');
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, (frame) => {
       console.log('Instructor STOMP connected: ' + frame);
 
+      // Đăng ký nhận tin nhắn từ hàng đợi của instructor
       stompClient.subscribe(`/queue/user.${currentInstructorId}`, (messageOutput) => {
         console.log('Received message:', messageOutput.body);
         const msg = JSON.parse(messageOutput.body);
-        setMessages((prev) => [...prev, msg]);
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            ...msg,
+            senderName: msg.senderAccountId === currentInstructorId ? "You" : studentInfo.name,
+            senderAvatar: msg.senderAccountId === currentInstructorId
+              ? instructorInfo.avatar
+              : studentInfo.avatar
+          }
+        ]);
       });
     }, (error) => {
       console.error('STOMP Error', error);
@@ -143,6 +160,7 @@ const InstructorMessages = () => {
 
     stompClientRef.current = stompClient;
 
+    // Cleanup khi component unmount
     return () => {
       if (stompClientRef.current) {
         stompClientRef.current.disconnect();
@@ -150,6 +168,7 @@ const InstructorMessages = () => {
     };
   }, [currentInstructorId, selectedStudentId]);
 
+  // Xử lý gửi tin nhắn
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!currentMsg.trim() || !selectedStudentId) return;
@@ -163,23 +182,23 @@ const InstructorMessages = () => {
     };
 
     try {
-      // Check if WebSocket is connected
+      // Kiểm tra kết nối WebSocket
       if (stompClientRef.current && stompClientRef.current.connected) {
-        // Send the message over WebSocket
+        // Gửi tin nhắn qua WebSocket
         stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
       }
 
-      // Immediately update the messages state to reflect the sent message
+      // Cập nhật state để hiển thị tin nhắn ngay lập tức
       setMessages((prevMessages) => [
         ...prevMessages,
         {
           ...chatMessageDTO,
-          senderName: "You", // Set the sender's name
-          senderAvatar: instructorInfo.avatar, // Set the sender's avatar
+          senderName: "You",
+          senderAvatar: instructorInfo.avatar,
         },
       ]);
 
-      // Log the sent message details
+      // Log thông tin tin nhắn
       const timestamp = new Date().toLocaleString('vi-VN', {
         hour: '2-digit',
         minute: '2-digit',
@@ -192,10 +211,10 @@ const InstructorMessages = () => {
       console.log(`Nội dung: ${currentMsg}`);
       console.log(`Thời gian: ${timestamp}`);
 
-      // Clear the input field
+      // Xóa nội dung tin nhắn
       setCurrentMsg('');
 
-      // Optionally fetch the latest chat history to ensure it's up-to-date
+      // Fetch lại lịch sử chat để cập nhật UI
       await fetchChatHistory(currentInstructorId, selectedStudentId);
 
     } catch (error) {
@@ -203,11 +222,11 @@ const InstructorMessages = () => {
     }
   };
 
-
+  // Xử lý khi nhấp vào một học viên
   const handleStudentClick = async (stuAccId) => {
-    navigate(`/instructor/instructor-messages?studentId=${stuAccId}`);
+    navigate(`/instructor/instructor-messages?studentId=${stuAccId}`); // Cập nhật URL
+    setSelectedStudentId(stuAccId); // Cập nhật state
 
-    setSelectedStudentId(stuAccId);
     try {
       const chatHistory = await fetchChatHistory(currentInstructorId, stuAccId);
       const formattedMessages = chatHistory.map(m => ({
@@ -217,8 +236,6 @@ const InstructorMessages = () => {
           ? instructorInfo.avatar
           : studentInfo.avatar
       }));
-
-      // Cập nhật lại trạng thái tin nhắn
       setMessages(formattedMessages);
     } catch (error) {
       console.error('Error fetching chat history:', error);
@@ -226,17 +243,19 @@ const InstructorMessages = () => {
     }
   };
 
-  useEffect(() => {
-    const handleResize = () => setIsSmallScreen(window.innerWidth < 992);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
+  // Tự động cuộn xuống dưới cùng khi có tin nhắn mới
   useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Xử lý thay đổi kích thước màn hình
+  useEffect(() => {
+    const handleResize = () => setIsSmallScreen(window.innerWidth < 992);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="main-wrapper chat-wrapper chat-page main-chat-blk">
@@ -341,7 +360,7 @@ const InstructorMessages = () => {
                                   </div>
                                 </div>
 
-                                {/* Danh sách Student */}
+                                {/* Danh sách học viên */}
                                 <ul className="user-list">
                                   {chatStudents.map((student) => (
                                     <li
@@ -350,7 +369,7 @@ const InstructorMessages = () => {
                                         "user-list-item chat-user-list " +
                                         (selectedStudentId === student.id ? "active" : "")
                                       }
-                                      onClick={() => handleStudentClick(student.id)} // Gọi handleStudentClick khi bấm vào student
+                                      onClick={() => handleStudentClick(student.id)} // Xử lý khi nhấp vào học viên
                                     >
                                       <Link to="#">
                                         <div>
