@@ -269,7 +269,7 @@ export default function StudentHeader() {
                   </li>
 
                   <li>
-                    <Link to="/job-category">Category</Link>
+                    <Link to="/student/student-study">My Learning</Link>
                   </li>
 
                 </ul>
@@ -522,7 +522,7 @@ export default function StudentHeader() {
                         >
                           <Home
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FF875A"}
                             className="headerIcon me-2"
                           />
                           Dashboard
@@ -537,24 +537,24 @@ export default function StudentHeader() {
                         >
                           <User
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FF875A"}
                             className="headerIcon me-2"
                           />
                           Profile
                         </Link>
 
-                        <Link
+                        {/* <Link
                           className="dropdown-item text"
                           to="/student/student-study"
                           onClick={() => setShowProfile(false)}
                         >
                           <User
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FFFFFF"}
                             className="headerIcon me-2"
                           />
                           Study
-                        </Link>
+                        </Link> */}
 
                         <Link
                           className="dropdown-item text"
@@ -563,7 +563,7 @@ export default function StudentHeader() {
                         >
                           <Star
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FF875A"}
                             className="headerIcon me-2"
                           />
                           Setting
@@ -576,7 +576,7 @@ export default function StudentHeader() {
                         >
                           <LogOut
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FF875A"}
                             className="headerIcon me-2"
                           />
                           Logout

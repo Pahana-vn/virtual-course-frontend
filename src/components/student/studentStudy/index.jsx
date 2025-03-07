@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-// import { Search } from "react-feather";
-// import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-// import Select from "react-select";
 import { fetchStudentCourses } from "../../../services/studentService";
 import Footer from "../../footer";
 import { Course10, Icon1, Icon2 } from "../../imagepath";
@@ -19,18 +16,13 @@ const StudentStudy = () => {
 
   const [hoursPerDayForCourse, setHoursPerDayForCourse] = useState({});
 
-  // 2) Lưu deadline (Date) cho từng khoá: { courseId: Date, ... }
   const [deadlineForCourse, setDeadlineForCourse] = useState({});
 
-  // 3) Lưu countdown (timeLeft) cho từng khoá: { courseId: { days, hours, ... } }
   const [timeLeftForCourse, setTimeLeftForCourse] = useState({});
 
   const studentId = localStorage.getItem("studentId");
 
-  // ==================== HÀM TÍNH TOÁN ====================
-  // 1. Tính deadline (duration/giờ học mỗi ngày)
   const calculateDeadline = (duration, hoursPerDay) => {
-    // Nếu hoursPerDay < 1 hoặc lớn hơn tổng thời lượng => không set deadline
     if (hoursPerDay < 1 || hoursPerDay > duration) return null;
 
     const totalDays = Math.ceil(duration / hoursPerDay);
@@ -39,7 +31,6 @@ const StudentStudy = () => {
     return deadlineDate;
   };
 
-  // 2. Tính countdown
   const calculateTimeLeft = (deadline) => {
     const now = new Date();
     const difference = deadline - now;
@@ -54,7 +45,6 @@ const StudentStudy = () => {
     return null;
   };
 
-  // 3. Render chuỗi countdown
   const renderCountdown = (timeLeft) => {
     if (!timeLeft) return "Deadline passed!";
     return `${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s`;
@@ -92,7 +82,6 @@ const StudentStudy = () => {
     localStorage.setItem("deadlines", JSON.stringify(deadlines));
     localStorage.setItem("hoursPerDayCourses", JSON.stringify(hoursData));
 
-    // 2) Update state
     setDeadlineForCourse((prev) => {
       const newDeadlines = { ...prev };
       delete newDeadlines[courseId];
@@ -115,7 +104,6 @@ const StudentStudy = () => {
     const deadlines = JSON.parse(localStorage.getItem("deadlines")) || {};
     const hoursData = JSON.parse(localStorage.getItem("hoursPerDayCourses")) || {};
 
-    // deadline
     const newDeadlineObj = {};
     Object.keys(deadlines).forEach((courseId) => {
       if (deadlines[courseId]) {
@@ -124,7 +112,6 @@ const StudentStudy = () => {
     });
     setDeadlineForCourse(newDeadlineObj);
 
-    // hours
     const newHoursObj = {};
     Object.keys(hoursData).forEach((courseId) => {
       newHoursObj[courseId] = hoursData[courseId];
@@ -196,7 +183,6 @@ const StudentStudy = () => {
 
   const renderCourses = (coursesList) => {
     return coursesList.map((course) => {
-      // Lấy hours từ state (nếu chưa có => 0)
       const hoursValue =
         typeof hoursPerDayForCourse[course.id] === "number"
           ? hoursPerDayForCourse[course.id]

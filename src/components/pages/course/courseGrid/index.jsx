@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Select from "react-select";
-import Footer from "../../../footer";
-import GridInnerPage from "./gridInnerPage";
-import { useGetFilteredCoursesQuery } from "../../../../redux/slices/course/courseApiSlice";
 import { useGetCategoriesQuery } from "../../../../redux/slices/course/categoryApiSlice";
+import { useGetFilteredCoursesQuery } from "../../../../redux/slices/course/courseApiSlice";
 import { useGetAllInstructorsQuery } from "../../../../redux/slices/instructor/instructorApiSlice";
+import Footer from "../../../footer";
 import RoleBasedHeader from "../../../header/RoleBasedHeader";
+import GridInnerPage from "./gridInnerPage";
 
 const option = [
   { label: "Newly published", value: "Newly published" },
@@ -41,7 +41,7 @@ const CourseGrid = () => {
     const delayDebounce = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
     }, 500);
-  
+
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
 
@@ -83,8 +83,8 @@ const CourseGrid = () => {
   } = useGetCategoriesQuery();
 
   const sortedCategories = categories && Array.isArray(categories)
-  ? [...categories].sort((a, b) => b.totalCourses - a.totalCourses)
-  : [];
+    ? [...categories].sort((a, b) => b.totalCourses - a.totalCourses)
+    : [];
 
   const filteredCategories = sortedCategories.filter((category) => category.totalCourses > 0);
 
@@ -95,8 +95,8 @@ const CourseGrid = () => {
   } = useGetAllInstructorsQuery();
 
   const sortedInstructors = instructors && Array.isArray(instructors)
-  ? [...instructors].sort((a, b) => b.totalCourses - a.totalCourses)
-  : [];
+    ? [...instructors].sort((a, b) => b.totalCourses - a.totalCourses)
+    : [];
 
   const filteredInstructors = sortedInstructors.filter((instructor) => instructor.totalCourses > 0);
 
@@ -158,7 +158,7 @@ const CourseGrid = () => {
   return (
     <>
       <div className="main-wrapper">
-      <RoleBasedHeader />
+        <RoleBasedHeader />
 
         <div className="breadcrumb-bar">
           <div className="container">
@@ -196,23 +196,14 @@ const CourseGrid = () => {
                   <div className="row">
                     <div className="col-lg-6">
                       <div className="d-flex align-items-center">
-                        <div className="view-icons">
-                          <Link to="/course-grid" className="grid-view active">
-                            {/* <i className="feather-grid" /> */}
-                            <FeatherIcon icon="grid" />
-                          </Link>
-                          <Link to="/course-list" className="list-view">
-                            {/* <i className="feather-list" /> */}
-                            <FeatherIcon icon="list" />
-                          </Link>
-                        </div>
+
                         <div className="show-result">
                           <h4>
                             {coursesData?.totalElements > 0
                               ? `Showing ${page * size + 1} - ${Math.min(
-                                  (page + 1) * size,
-                                  coursesData.totalElements
-                                )} of ${coursesData.totalElements} results`
+                                (page + 1) * size,
+                                coursesData.totalElements
+                              )} of ${coursesData.totalElements} results`
                               : "No results found"}
                           </h4>
                         </div>
@@ -277,9 +268,8 @@ const CourseGrid = () => {
                       {[...Array(totalPages).keys()].map((pageIndex) => (
                         <li
                           key={pageIndex}
-                          className={`page-item ${
-                            pageIndex === page ? "active" : ""
-                          }`}
+                          className={`page-item ${pageIndex === page ? "active" : ""
+                            }`}
                         >
                           <button
                             className="page-link"
@@ -291,9 +281,8 @@ const CourseGrid = () => {
                       ))}
 
                       <li
-                        className={`page-item ${
-                          page === totalPages - 1 ? "disabled" : ""
-                        }`}
+                        className={`page-item ${page === totalPages - 1 ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link"
@@ -305,7 +294,7 @@ const CourseGrid = () => {
                     </ul>
                   </div>
                 </div>
-                {/* /pagination */}
+                {/* /pagination 2 */}
               </div>
               <div className="col-lg-3 theiaStickySidebar">
                 <div className="stickysidebar">

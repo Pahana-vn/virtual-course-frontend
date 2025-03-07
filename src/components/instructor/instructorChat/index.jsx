@@ -7,6 +7,7 @@ import SockJS from 'sockjs-client';
 
 import {
   fetchChatHistory,
+  fetchInstructorInfo,
   fetchRecentChatsForInstructor,
   fetchStudentInfo,
 } from "../../../services/chatService";
@@ -30,6 +31,11 @@ const InstructorMessages = () => {
 
   const [studentInfo, setStudentInfo] = useState({
     name: "Select Student to chat",
+    avatar: DEFAULT_AVATAR
+  });
+
+  const [instructorInfo, setInstructorInfo] = useState({ // Thêm state cho instructorInfo
+    name: "Instructor",
     avatar: DEFAULT_AVATAR
   });
 
@@ -58,8 +64,21 @@ const InstructorMessages = () => {
       }
     };
 
+    const fetchInstructorInfoData = async () => {
+      try {
+        const instructor = await fetchInstructorInfo(currentInstructorAccountId);
+        setInstructorInfo({
+          name: instructor.username,
+          avatar: instructor.avatar || DEFAULT_AVATAR
+        });
+      } catch (error) {
+        console.error('Error fetching instructor info:', error);
+      }
+    };
+
     if (currentInstructorAccountId) {
       fetchRecentChatsData();
+      fetchInstructorInfoData();
     }
   }, [currentInstructorAccountId]);
 
@@ -139,7 +158,7 @@ const InstructorMessages = () => {
         {
           ...chatMessageDTO,
           senderName: "You",
-          senderAvatar: "path/to/instructor/avatar.jpg",
+          senderAvatar: instructorInfo.avatar, // Sử dụng avatar của instructor
           timestamp: new Date().toISOString()
         }
       ]);
@@ -162,8 +181,27 @@ const InstructorMessages = () => {
     }
   };
 
-  const handleStudentClick = (stuAccId) => {
-    setSelectedStudentId(stuAccId);
+  const handleStudentClick = async (stuAccId) => {
+    setSelectedStudentId(stuAccId); // Chọn học viên
+    try {
+      // Lấy lịch sử trò chuyện giữa Instructor và Student
+      const chatHistory = await fetchChatHistory(currentInstructorAccountId, stuAccId);
+
+      // Định dạng các tin nhắn (giống như trong handleInstructorClick)
+      const formattedMessages = chatHistory.map(m => ({
+        ...m,
+        senderName: m.senderAccountId === currentInstructorAccountId ? "You" : studentInfo.name,
+        senderAvatar: m.senderAccountId === currentInstructorAccountId
+          ? instructorInfo.avatar // Sử dụng avatar của instructor
+          : studentInfo.avatar
+      }));
+
+      // Cập nhật lại trạng thái tin nhắn
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error('Error fetching chat history:', error);
+      setMessages([]); // Nếu có lỗi, đặt tin nhắn về mảng trống
+    }
   };
 
   useEffect(() => {
@@ -444,7 +482,7 @@ const InstructorMessages = () => {
                         {/* Footer gõ tin nhắn */}
                         <div className="chat-footer">
                           <form onSubmit={handleSendMessage}>
-                            <div className="smile-foot">
+                            {/* <div className="smile-foot">
                               <div className="chat-action-btns">
                                 <div className="chat-action-col">
                                   <Link
@@ -464,11 +502,13 @@ const InstructorMessages = () => {
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                             <div className="smile-foot emoj-action-foot">
-                              <Link to="#" className="action-circle">
-                                <i className="bx bx-smile" />
-                              </Link>
+                              {chatStudents.map((student) => (
+                                <Link onClick={() => handleStudentClick(student.id)} key={student.id} to="#" className="action-circle">
+                                  <i className="bx bx-smile" />
+                                </Link>
+                              ))}
                             </div>
                             <div className="replay-forms">
                               <input
@@ -502,4 +542,4 @@ const InstructorMessages = () => {
   );
 };
 
-export default InstructorMessages;
+export default InstructorMessages
