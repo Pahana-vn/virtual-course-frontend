@@ -8,9 +8,9 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "Instructor", id })),
-              { type: "Instructor", id: "LIST" },
-            ]
+            ...result.map(({ id }) => ({ type: "Instructor", id })),
+            { type: "Instructor", id: "LIST" },
+          ]
           : [{ type: "Instructor", id: "LIST" }],
     }),
 
@@ -96,11 +96,23 @@ export const instructorApiSlice = baseApiSlice.injectEndpoints({
         return currentArg !== previousArg;
       },
     }),
+    getInstructorAccountId: builder.query({
+      query: (instructorId) => ({
+        url: `/instructors/${instructorId}/account-id`,
+      }),
+    }),
     updateInstructorProfile: builder.mutation({
       query: ({ id, profileData }) => ({
         url: `/instructors/${id}/instructor-profile`,
         method: "PUT",
         body: profileData,
+      }),
+    }),
+    changePassword: builder.mutation({
+      query: (changePasswordDTO) => ({
+        url: `/instructors/change-password`,  // Endpoint đổi mật khẩu
+        method: "PUT",
+        body: changePasswordDTO,
       }),
     }),
   }),
@@ -114,5 +126,7 @@ export const {
   useInstructorAvatarQuery,
   useInstructorDetailsQuery,
   useInstructorProfileQuery,
+  useGetInstructorAccountIdQuery,
   useUpdateInstructorProfileMutation,
+  useChangePasswordMutation,
 } = instructorApiSlice;

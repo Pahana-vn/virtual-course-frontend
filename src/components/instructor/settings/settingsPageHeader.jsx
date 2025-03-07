@@ -11,9 +11,9 @@ const SettingsPageHeader = () => {
         <ul className="settings-pg-links">
           <li>
             <Link
-              to="/instructor/instructor-settings"
+              to="/instructor/instructor-profile-settings"
               className={
-                location.pathname === "/instructor/instructor-settings"
+                location.pathname === "/instructor/instructor-profile-settings"
                   ? "active"
                   : ""
               }
@@ -35,7 +35,7 @@ const SettingsPageHeader = () => {
               Change Password
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               to="/instructor/instructor-setting-notifications"
               className={
@@ -74,7 +74,7 @@ const SettingsPageHeader = () => {
               <i className="bx bx-error-alt" />
               Delete Account
             </Link>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>

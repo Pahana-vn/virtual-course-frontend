@@ -44,6 +44,7 @@ export default function TransactionInstructor() {
                             <th>Referred ID</th>
                             <th>Details</th>
                             <th>Amount</th>
+                            <th>Status</th>
                             <th>Post Balance</th>
                           </tr>
                         </thead>
@@ -67,6 +68,11 @@ export default function TransactionInstructor() {
                                       ? "+ "
                                       : "- "}
                                     {formatCurrency(item.amount)}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className="badge info-low">
+                                    {item.statusTransaction}
                                   </span>
                                 </td>
                                 <td>{formatCurrency(item.walletBalance)}</td>

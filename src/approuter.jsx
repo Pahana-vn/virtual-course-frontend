@@ -110,6 +110,11 @@ import NewPassword from "./components/pages/newPassword";
 import Failure from "./components/pages/payment/Failure.jsx";
 import Success from "./components/pages/payment/Success.jsx";
 import SuccessVnpay from "./components/pages/payment/SuccessVnpay.jsx";
+import RegisterOne from "./components/pages/registerInstructor/register1";
+import RegisterTwo from "./components/pages/registerInstructor/register2";
+import RegisterThree from "./components/pages/registerInstructor/register3";
+import RegisterFour from "./components/pages/registerInstructor/register4";
+import RegisterFive from "./components/pages/registerInstructor/register5";
 import CourseMessage from "./components/student/courseMessage";
 import CourseStudent from "./components/student/courseStudent";
 import CourseWishlist from "./components/student/courseWishlist";
@@ -125,6 +130,7 @@ import StudentDashboard from "./components/student/studentDashboard/index.jsx";
 import StudentFinalTest from "./components/student/studentFinalTest/StudentFinalTest";
 import StudentLearningSchedule from "./components/student/studentLearningSchedule/index.jsx";
 import StudentMessages from "./components/student/studentMessages/index.jsx";
+import InstructorMessages from "./components/instructor/instructorChat/index.jsx";
 import StudentOrderHistory from "./components/student/studentOrderHistory/index.jsx";
 import StudentProfile from "./components/student/studentProfile/index.jsx";
 import StudentQA from "./components/student/studentQA/index.jsx";
@@ -135,11 +141,9 @@ import StudentStudy from "./components/student/studentStudy/index.jsx";
 import StudentTestResult from "./components/student/studentTestResult/StudentTestResult.jsx";
 import StudentTicket from "./components/student/studentTicket/index.jsx";
 import StudentWishlist from "./components/student/studentWishlist/index.jsx";
-import RegisterFive from "./components/pages/registerInstructor/register5";
-import RegisterFour from "./components/pages/registerInstructor/register4";
-import RegisterThree from "./components/pages/registerInstructor/register3";
-import RegisterTwo from "./components/pages/registerInstructor/register2";
-import RegisterOne from "./components/pages/registerInstructor/register1";
+import VerifyEmailPage from "./components/pages/verify/VerifyEmailPage";
+import ResendVerificationEmail from "./components/pages/verify/ResendVerificationEmail";
+import VerifyEmailNotice from "./components/pages/verify/VerifyEmailNotice";
 
 
 const Approuter = () => {
@@ -157,7 +161,9 @@ const Approuter = () => {
         <Route path="/register3" element={<RegisterThree />} />
         <Route path="/register4" element={<RegisterFour />} />
         <Route path="/register5" element={<RegisterFive />} />
-
+        <Route path="/verify/:token" element={<VerifyEmailPage />} />
+        <Route path="/resend-verification" element={<ResendVerificationEmail />} />
+        <Route path="/verify-email-notice" element={<VerifyEmailNotice />} />
 
         {/* Blog */}
         <Route path="/blog-list" element={<BlogList />} />
@@ -190,9 +196,9 @@ const Approuter = () => {
           element={<StudentTestResult />}
         />
         <Route
-            path="/instructor/:instructorId/instructor-profile"
-            element={<InstructorProfile />}
-          />
+          path="/instructor/:instructorId/instructor-profile"
+          element={<InstructorProfile />}
+        />
         <Route path="/come-soon" element={<ComingSoon />} />
         <Route path="/error-404" element={<Error404 />} />
         <Route path="/error-500" element={<Error500 />} />
@@ -300,9 +306,9 @@ const Approuter = () => {
             element={<InstructorChat />}
           />
           <Route
-          path="/instructor/instructor-notifications"
-          element={<InstructorNotification />}
-        />
+            path="/instructor/instructor-notifications"
+            element={<InstructorNotification />}
+          />
           <Route
             path="/instructor/instructor-delete-profile"
             element={<InstructorDeleteProfile />}
@@ -464,7 +470,7 @@ const Approuter = () => {
             path="/student/student-dashboard/:studentId"
             element={<StudentDashboard />}
           />
-          
+
           <Route
             path="/student/student-profile/:studentId"
             element={<StudentProfile />}
@@ -489,10 +495,17 @@ const Approuter = () => {
           />
           <Route path="/student/student-qa" element={<StudentQA />} />
           <Route path="/student/student-study" element={<StudentStudy />} />
+
           <Route
             path="/student/student-messages"
             element={<StudentMessages />}
           />
+
+          <Route
+            path="/instructor/instructor-messages"
+            element={<InstructorMessages />}
+          />
+
           <Route path="/student/students-grid" element={<StudentsGrid />} />
           <Route path="/student/students-grid2" element={<StudentsGrid2 />} />
           <Route path="/student/students-list" element={<StudentsList />} />

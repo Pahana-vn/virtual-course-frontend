@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { fetchCourseById } from "../../../services/courseService";
 import { createPaypalPayment, createPaypalPaymentForCart, createVnpayPayment, createVnpayPaymentForCart } from "../../../services/paymentService";
 import { fetchCartItems } from "../../../services/studentService";
@@ -11,26 +13,26 @@ const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
   const [singleCourse, setSingleCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState("VNPAY"); // Default là VNPAY hoặc PAYPAL
-  const studentId = localStorage.getItem("studentId"); // Lấy studentId từ LocalStorage
+  const [paymentMethod, setPaymentMethod] = useState("VNPAY");
+  const studentId = localStorage.getItem("studentId");
 
   useEffect(() => {
     const loadCheckoutData = async () => {
       if (courseId) {
-        // Lấy 1 course
         try {
           const course = await fetchCourseById(courseId);
           setSingleCourse(course);
         } catch (error) {
           console.error("Error fetching course details:", error);
+          toast.error("Error fetching course details");
         }
       } else {
-        // Lấy các course trong cart
         try {
           const response = await fetchCartItems(studentId);
           setCartItems(response);
         } catch (error) {
           console.error("Error fetching cart items:", error);
+          toast.error("Error fetching cart items");
         }
       }
       setLoading(false);
@@ -50,41 +52,40 @@ const Checkout = () => {
 
   const handlePayment = async (e) => {
     e.preventDefault();
-    if (paymentMethod === "PAYPAL") {
-      try {
+    try {
+      if (paymentMethod === "PAYPAL") {
         if (courseId) {
           const approvalUrl = await createPaypalPayment(courseId);
           window.location.href = approvalUrl;
         } else {
           if (cartItems.length === 0) {
-            alert("No courses in cart.");
+            toast.warning("No courses in cart.");
             return;
           }
           const courseIds = cartItems.map(item => item.course.id);
           const approvalUrl = await createPaypalPaymentForCart(courseIds);
           window.location.href = approvalUrl;
         }
-      } catch (error) {
-        console.error("Error creating PayPal payment:", error);
-        alert("Error creating PayPal payment");
-      }
-    } else if (paymentMethod === "VNPAY") {
-      try {
+      } else if (paymentMethod === "VNPAY") {
         if (courseId) {
           const paymentUrl = await createVnpayPayment(courseId);
           window.location.href = paymentUrl;
         } else {
           if (cartItems.length === 0) {
-            alert("No courses in cart.");
+            toast.warning("No courses in cart.");
             return;
           }
           const courseIds = cartItems.map(item => item.course.id);
           const paymentUrl = await createVnpayPaymentForCart(courseIds);
           window.location.href = paymentUrl;
         }
-      } catch (error) {
-        console.error("Error creating VNPay payment:", error);
-        alert("Error creating VNPay payment");
+      }
+    } catch (error) {
+      console.error("Error creating payment:", error);
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Error creating payment");
       }
     }
   };
@@ -235,7 +236,7 @@ const Checkout = () => {
                             <h3>{singleCourse.titleCourse}</h3>
                             <p>{singleCourse.description}</p>
                             <h2 className="course-price">
-                              <span>$</span>{singleCourse.basePrice}
+                              <span></span>{singleCourse.basePrice.toLocaleString()} VND
                             </h2>
                           </div>
                         </div>
@@ -247,7 +248,7 @@ const Checkout = () => {
                               <h3>{item.course.titleCourse}</h3>
                               <p>{item.course.description}</p>
                               <h2 className="course-price">
-                                <span>$</span>{item.course.basePrice}
+                                <span></span>{item.course.basePrice.toLocaleString()} VND
                               </h2>
                             </div>
                           </div>
@@ -255,7 +256,7 @@ const Checkout = () => {
                       ) : (
                         <p>No courses selected.</p>
                       )}
-                      <h3 className="total-price">Total: ${calculateTotal().toFixed(2)}</h3>
+                      <h3 className="total-price">Total: {calculateTotal().toLocaleString()} VND</h3>
                     </div>
                   </div>
                 </div>
@@ -265,6 +266,7 @@ const Checkout = () => {
         </div>
       </section>
       <Footer />
+      <ToastContainer />
     </div>
   );
 };

@@ -1,11 +1,55 @@
-import React from "react";
+import React, { useState } from "react";
 import { InstructorHeader } from "../header";
 import InstructorSidebar from "../sidebar";
 import Footer from "../../footer";
 import SettingsPageHeader from "./settingsPageHeader";
 import { Link } from "react-router-dom";
+import { useChangePasswordMutation } from "../../../redux/slices/instructor/instructorApiSlice";
 
 const InstructorChangePassword = () => {
+  
+  const [changePassword ] = useChangePasswordMutation();
+
+  const [formData, setFormData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+
+    if (!formData.currentPassword.trim()) {
+      alert("Current password is required.");
+      return;
+    }
+    if (formData.newPassword.length < 8) {
+      alert("New password must be at least 8 characters long.");
+      return;
+    }
+    if (formData.newPassword === formData.currentPassword) {
+      alert("New password cannot be the same as the current password.");
+      return;
+    }
+    if (formData.newPassword !== formData.confirmPassword) {
+      alert("New password and confirmation password do not match.");
+      return;
+    }
+
+    try {
+      const response = await changePassword(formData).unwrap();
+      alert(response.message || "Password changed successfully!");
+    } catch (error) {
+      alert(error.response?.data?.error || "Password not match.");
+    }
+  };
   return (
     <div className="main-wrapper">
       <InstructorHeader activeMenu={"Settings"} />
@@ -50,7 +94,7 @@ const InstructorChangePassword = () => {
                     </p>
                   </div>
                   <SettingsPageHeader/>
-                  <form>
+                  <form onSubmit={handleSubmit}>
                     <div className="checkout-form settings-wrap">
                       <div className="row">
                         <div className="col-md-6">
@@ -58,20 +102,40 @@ const InstructorChangePassword = () => {
                             <label className="form-label">
                               Current Password
                             </label>
-                            <input type="password" className="form-control" />
+                            <input 
+                            type="password"
+                            name="currentPassword"
+                            value={formData.currentPassword}
+                            onChange={handleChange}
+                            required
+                            className="form-control" />
                           </div>
                           <div className="input-block">
                             <label className="form-label">New Password</label>
-                            <input type="password" className="form-control" />
+                            <input
+                              type="password"
+                              name="newPassword"
+                              className="form-control"
+                              value={formData.newPassword}
+                              onChange={handleChange}
+                              required
+                            />
                           </div>
                           <div className="input-block">
                             <label className="form-label">
                               Re-type New Password
                             </label>
-                            <input type="password" className="form-control" />
+                            <input
+                              type="password"
+                              name="confirmPassword"
+                              className="form-control"
+                              value={formData.confirmPassword}
+                              onChange={handleChange}
+                              required
+                            />
                           </div>
                           <button className="btn btn-primary" type="submit">
-                            Reset Password
+                          Change Password
                           </button>
                         </div>
                       </div>

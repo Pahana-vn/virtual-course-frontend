@@ -1,8 +1,7 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { logo } from "../../imagepath";
 import DarkMode from "../../common/darkMode";
+import { logo } from "../../imagepath";
 // eslint-disable-next-line react/prop-types
 const PageHeader = ({ activeMenu }) => {
   const [mobileSubMenu, setMobileSubMenu] = useState(false);
@@ -754,7 +753,7 @@ const PageHeader = ({ activeMenu }) => {
                   </ul>
                 </div>
                 <ul className="nav header-navbar-rht">
-                <DarkMode/>
+                  <DarkMode />
                   <li className="nav-item">
                     <Link className="nav-link header-sign" to="/login">
                       Signin

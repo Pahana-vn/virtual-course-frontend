@@ -39,6 +39,20 @@ export const testApiSlice = baseApiSlice.injectEndpoints({
       : [{ type: "Test", id: `${id}-${courseId}` }],
     }),
 
+    // Cập nhật trạng thái isFinalTest cho bài test
+    updateFinalTestStatus: builder.mutation({
+      query: ({ testId, isFinalTest }) => ({
+        url: `/tests/${testId}/final-test`,
+        method: "PUT",
+        body: { isFinalTest },
+      }),
+      invalidatesTags: (result, error, { testId }) => [{ type: "Test", id: testId }],
+    }),
+
+    getTestSubmissions: builder.query({
+      query: ({ testId }) => `/tests/${testId}/submissions`,
+    }),
+
     // Thêm, sửa, xóa bài test
     manageTests: builder.mutation({
       query: ({ courseId, testId, test, method }) => {
@@ -77,5 +91,7 @@ export const testApiSlice = baseApiSlice.injectEndpoints({
 export const { 
   useGetTestsByCourseQuery,
   useGetInstructorCourseTestsQuery,
+  useUpdateFinalTestStatusMutation,
+  useLazyGetTestSubmissionsQuery,
   useManageTestsMutation 
 } = testApiSlice;

@@ -175,35 +175,15 @@ export function InstructorHeader() {
                   Course
                 </Link>
               </li>
-
-              <li className="has-submenu">
-                <Link to="">
-                  Pages
-                  <i
-                    className="fas fa-chevron-down"
-                    onClick={openMobileSubMenu4}
-                  ></i>
+              <li>
+                <Link to="/instructor/instructor-dashboard" onClick={hideMobileMenu}>
+                Instructor Dashboard
                 </Link>
-                <ul
-                  className={mobileSubMenu4 ? "submenu submenuShow" : "submenu"}
-                >
-                  <li>
-                    <Link to="/job-category">Category</Link>
-                  </li>
-
-                  <li>
-                    <Link to="/faq">FAQ</Link>
-                  </li>
-                  <li>
-                    <Link to="/support">Support</Link>
-                  </li>
-                </ul>
               </li>
               <li>
-                <Link to="/support">About us</Link>
-              </li>
-              <li className="has-submenu">
-                <Link to="/blog-modern">Blog</Link>
+                <Link to="/instructor/deposit-instructor-dashboard" onClick={hideMobileMenu}>
+                Transaction Dashboard
+                </Link>
               </li>
               <li className="login-link">
                 <Link to="/login">Login / Signup</Link>
@@ -212,7 +192,7 @@ export function InstructorHeader() {
             <ul className="nav header-navbar-rht">
               <DarkMode />
               <li className="nav-item">
-                <Link to="/course-message">
+                <Link to="/instructor/instructor-messages">
                   <img src={Messages} alt="img" />
                 </Link>
               </li>
@@ -362,7 +342,7 @@ export function InstructorHeader() {
                   </div>
                   <Link
                     className="dropdown-item text"
-                    to="/instructor/deposit-instructor-dashboard"
+                    to="/instructor/instructor-dashboard"
                   >
                     <Home
                       size={14}
@@ -373,18 +353,18 @@ export function InstructorHeader() {
                   </Link>
                   <Link
                     className="dropdown-item text"
-                    to="/instructor/instructor-dashboard"
+                    to="/instructor/deposit-instructor-dashboard"
                   >
                     <Home
                       size={14}
                       color={"#FF875A"}
                       className="feather-home me-1"
                     />{" "}
-                   Course Dashboard
+                   Transaction Dashboard
                   </Link>
                   <Link
                     className="dropdown-item text"
-                    to="/instructor/instructor-settings"
+                    to="/instructor/instructor-profile-settings"
                   >
                     <Star
                       size={14}

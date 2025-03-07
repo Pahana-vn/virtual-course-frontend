@@ -5,6 +5,7 @@ import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
 import StudentSettingPageHeader from "./settingPageHeader";
 
+const DEFAULT_AVATAR = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU";
 const StudentSetting = () => {
   const navigate = useNavigate();
   const studentId = localStorage.getItem("studentId");
@@ -23,14 +24,14 @@ const StudentSetting = () => {
     address: "",
     gender: "",
     phone: "",
-    avatar: "",
+    avatar: DEFAULT_AVATAR,
     bio: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState({});
 
-  // Lấy dữ liệu sinh viên từ API khi trang tải
   useEffect(() => {
     const getStudentData = async () => {
       try {
@@ -43,7 +44,7 @@ const StudentSetting = () => {
           address: data.address || "Not Set",
           gender: data.gender || "OTHER",
           phone: data.phone || "",
-          avatar: data.avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU",
+          avatar: data.avatar || DEFAULT_AVATAR,
           bio: data.bio || "No bio yet.",
         });
       } catch (error) {
@@ -55,7 +56,28 @@ const StudentSetting = () => {
     }
   }, [studentId]);
 
-  // Xử lý thay đổi giá trị input
+  const validateForm = (data) => {
+    let errors = {};
+
+    if (!data.username || data.username.trim() === "") {
+      errors.username = "Username is required.";
+    } else {
+      data.username = data.username.trim();
+    }
+
+    if (!/^\d{10}$/.test(data.phone)) {
+      errors.phone = "Phone number must be exactly 10 digits.";
+    }
+
+    const today = new Date();
+    const dob = new Date(data.dob);
+    if (dob > today) {
+      errors.dob = "Date of birth cannot be in the future.";
+    }
+
+    return errors;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setStudent((prev) => ({ ...prev, [name]: value }));
@@ -65,21 +87,26 @@ const StudentSetting = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Hiển thị ảnh ngay lập tức
     const fileUrl = URL.createObjectURL(file);
     setStudent((prev) => ({ ...prev, avatar: fileUrl }));
   };
 
-  // Trong handleSubmit (khi cập nhật profile):
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setErrors({});
+
+    const validationErrors = validateForm(student);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setLoading(false);
+      return;
+    }
 
     try {
       const updatedStudent = { ...student };
 
-      // Kiểm tra nếu avatar là ảnh mới
       if (student.avatar && student.avatar.includes("blob:")) {
         const formData = new FormData();
         formData.append("file", e.target.avatar.files[0]);
@@ -95,7 +122,6 @@ const StudentSetting = () => {
         updatedStudent.avatar = fileUrl;
       }
 
-      // Gửi yêu cầu cập nhật profile (bao gồm username)
       await updateStudentProfile(studentId, updatedStudent);
       setMessage("Profile updated successfully!");
 
@@ -112,10 +138,7 @@ const StudentSetting = () => {
   return (
     <div className="main-wrapper">
       <>
-        {/* Header */}
         <StudentHeader activeMenu={"Settings"} />
-        {/* /Header */}
-        {/* Breadcrumb */}
         <div className="breadcrumb-bar breadcrumb-bar-info">
           <div className="container">
             <div className="row">
@@ -137,15 +160,10 @@ const StudentSetting = () => {
             </div>
           </div>
         </div>
-        {/* /Breadcrumb */}
-        {/* Page Content */}
         <div className="page-content">
           <div className="container">
             <div className="row">
-              {/* Sidebar */}
               <StudentSidebar />
-              {/* /Sidebar */}
-              {/* Student Settings */}
               <div className="col-xl-9 col-lg-9">
                 <div className="settings-widget card-details">
                   <div className="settings-menu p-0">
@@ -160,7 +178,8 @@ const StudentSetting = () => {
                         <div className="course-group-img profile-edit-field d-flex align-items-center">
                           <Link to="/student/student-profile" className="profile-pic">
                             <img
-                              src={student.avatar} // Hiển thị đường dẫn đầy đủ
+                              src={student.avatar}
+                              onError={(e) => (e.target.src = DEFAULT_AVATAR)}
                               alt="Avatar"
                               className="img-fluid"
                             />
@@ -179,7 +198,7 @@ const StudentSetting = () => {
                                   </div>
                                 </div>
                                 <div className="img-delete">
-                                  <Link to="#" className="delete-icon" onClick={() => setStudent({ ...student, avatar: "http://localhost:8080/uploads/student/default-avatar.png" })}>
+                                  <Link to="#" className="delete-icon" onClick={() => setStudent({ ...student, avatar: DEFAULT_AVATAR })}>
                                     <i className="bx bx-trash" />
                                   </Link>
                                 </div>
@@ -196,42 +215,39 @@ const StudentSetting = () => {
                         </div>
                         {message && <p className="alert alert-info">{message}</p>}
                         <div className="row">
-                          {/* First Name */}
                           <div className="col-md-6">
                             <div className="input-block">
                               <label className="form-label">First Name</label>
                               <input type="text" name="firstName" value={student.firstName} onChange={handleChange} className="form-control" />
                             </div>
                           </div>
-                          {/* Last Name */}
                           <div className="col-md-6">
                             <div className="input-block">
                               <label className="form-label">Last Name</label>
                               <input type="text" name="lastName" value={student.lastName} onChange={handleChange} className="form-control" />
                             </div>
                           </div>
-                          {/* Username */}
                           <div className="col-md-6">
                             <div className="input-block">
                               <label className="form-label">Username</label>
-                              <input type="text" name="username" value={student.username} onChange={handleChange} className="form-control" />
+                              <input type="text" name="username" value={student.username} onChange={handleChange} className={`form-control ${errors.username ? "is-invalid" : ""}`} />
+                              {errors.username && <div className="invalid-feedback">{errors.username}</div>}
                             </div>
                           </div>
-                          {/* Phone Number */}
                           <div className="col-md-6">
                             <div className="input-block">
                               <label className="form-label">Phone Number</label>
-                              <input type="text" name="phone" value={student.phone} onChange={handleChange} className="form-control" />
+                              <input type="text" name="phone" value={student.phone} onChange={handleChange} className={`form-control ${errors.phone ? "is-invalid" : ""}`} />
+                              {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
                             </div>
                           </div>
-                          {/* Date of Birth */}
                           <div className="col-md-6">
                             <div className="input-block">
                               <label className="form-label">Date of Birth</label>
-                              <input type="date" name="dob" value={student.dob ? student.dob.substring(0, 10) : ""} onChange={handleChange} className="form-control" />
+                              <input type="date" name="dob" value={student.dob ? student.dob.substring(0, 10) : ""} onChange={handleChange} className={`form-control ${errors.dob ? "is-invalid" : ""}`} />
+                              {errors.dob && <div className="invalid-feedback">{errors.dob}</div>}
                             </div>
                           </div>
-                          {/* Gender */}
                           <div className="col-md-6">
                             <div className="input-block">
                               <label className="form-label">Gender</label>
@@ -243,21 +259,18 @@ const StudentSetting = () => {
                               </select>
                             </div>
                           </div>
-                          {/* Address */}
                           <div className="col-md-12">
                             <div className="input-block">
                               <label className="form-label">Address</label>
                               <input type="text" name="address" value={student.address} onChange={handleChange} className="form-control" />
                             </div>
                           </div>
-                          {/* Bio */}
                           <div className="col-md-12">
                             <div className="input-block">
                               <label className="form-label">Bio</label>
                               <textarea name="bio" value={student.bio} onChange={handleChange} className="form-control" />
                             </div>
                           </div>
-                          {/* Submit Button */}
                           <div className="col-md-12">
                             <button className="btn btn-primary" type="submit" disabled={loading}>
                               {loading ? "Updating..." : "Update Profile"}
@@ -269,7 +282,6 @@ const StudentSetting = () => {
                   </div>
                 </div>
               </div>
-              {/* /Student Settings */}
             </div>
           </div>
         </div>

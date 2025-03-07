@@ -1,16 +1,23 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import {  Icon1, Icon2 } from "../../../components/imagepath";
+import { Link, useNavigate } from "react-router-dom";
+import { Icon1, Icon2, Messages } from "../../../components/imagepath";
 import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 import { useGetAllCoursesByStatusQuery } from "../../../redux/slices/course/courseApiSlice";
 const FeaturedCourses = () => {
-  const { data: courses, error, isLoading } = useGetAllCoursesByStatusQuery({status : "PUBLISHED"});
-
-  const toggleClass = () => {
-    // Thêm logic toggleClass ở đây nếu cần
-  };
-
+  const navigate = useNavigate();
+  const { data: courses, error, isLoading } = useGetAllCoursesByStatusQuery({ status: "PUBLISHED" });
   const formatCurrency = useCurrencyFormatter();
+
+  
+  const handleChatClick = (instructorId) => {
+    const studentId = localStorage.getItem("studentId");
+
+    if (!studentId) {
+      navigate("/login");
+    } else {
+      navigate(`/student/student-messages?instructorId=${instructorId}`);
+    }
+  };
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -38,14 +45,12 @@ const FeaturedCourses = () => {
         </div>
         <div className="section-text aos" data-aos="fade-up">
           <p className="mb-0">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget
-            aenean accumsan bibendum gravida maecenas augue elementum et neque.
-            Suspendisse imperdiet.
+          The Featured Courses section of the Virtual Course Network showcases a curated selection of the best and most popular courses available on the platform. These courses cover a wide range of topics and are designed to help learners acquire new skills and advance their knowledge.
           </p>
         </div>
         <div className="course-feature">
           <div className="row">
-            {courses.map((course) => (
+            {courses?.map((course) => (
               <div className="col-lg-4 col-md-6 d-flex" key={course.id}>
                 <div className="course-box d-flex aos" data-aos="fade-up">
                   <div className="product">
@@ -53,7 +58,7 @@ const FeaturedCourses = () => {
                       <Link to={`/course-details/${course.id}`}>
                         <img
                           className="img-fluid"
-                          style={{ objectFit: 'cover', height: '300px' }}
+                          style={{ objectFit: 'contain', height: '300px' }}
                           alt={course.titleCourse}
                           src={course.imageCover || "default-image.jpg"}
                         />
@@ -82,15 +87,23 @@ const FeaturedCourses = () => {
                             </h4>
                             <p>Instructor</p>
                           </div>
+
+                          <div className="nav-item ms-2"
+                            onClick={() => handleChatClick(course.instructorId)}>
+                            <Link to="/student/student-messages">
+                              <img src={Messages} alt="Messages" style={{ width: "40px", height: "40px" }} />
+                            </Link>
+                          </div>
+
                         </div>
-                        <div className="course-share d-flex align-items-center justify-content-center">
+                        {/* <div className="course-share d-flex align-items-center justify-content-center">
                           <Link to="#">
                             <i
                               onClick={toggleClass}
                               className="fa-regular fa-heart"
                             />
                           </Link>
-                        </div>
+                        </div> */}
                       </div>
                       <h3 className="course-title instructor-text">
                         <Link to={`/course/${course.id}/course-details`}>
@@ -99,25 +112,15 @@ const FeaturedCourses = () => {
                       </h3>
                       <div className="course-info d-flex align-items-center">
                         <div className="rating-img d-flex align-items-center">
-                          <img src={ Icon1} alt="" />
+                          <img src={Icon1} alt="" />
                           <p>{course.totalLectures}+ Lessons</p>
                         </div>
                         <div className="course-view d-flex align-items-center">
                           <img src={ Icon2} alt="" />
-                          <p>{course.duration} min</p>
+                          <p>{course.duration} {course.duration === 1 ? "hr" : "hrs"}</p>
                         </div>
                       </div>
                       <div className="d-flex align-items-center justify-content-between">
-                        <div className="rating m-0">
-                          <i className="fas fa-star filled me-1" />
-                          <i className="fas fa-star filled me-1" />
-                          <i className="fas fa-star filled me-1" />
-                          <i className="fas fa-star filled me-1" />
-                          <i className="fas fa-star" />
-                          <span className="d-inline-block average-rating">
-                            <span>4.0</span> (15)
-                          </span>
-                        </div>
                         <div className="all-btn all-category d-flex align-items-center">
                           <Link to="/checkout" className="btn btn-primary">
                             BUY NOW

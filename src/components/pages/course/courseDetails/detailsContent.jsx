@@ -1,12 +1,15 @@
 import DOMPurify from "dompurify";
-import FeatherIcon from "feather-icons-react";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import useLectureDurations from "../../../../hooks/useLectureDurations";
 import { useInstructorDetailsQuery } from "../../../../redux/slices/instructor/instructorApiSlice";
-import { addCourseToCart, addCourseToWishlist, fetchCartItems } from "../../../../services/studentService";
+import {
+  addCourseToCart,
+  addCourseToWishlist,
+  fetchCartItems,
+} from "../../../../services/studentService";
 import {
   Chapter,
   Chart,
@@ -20,31 +23,51 @@ import {
   Play,
   Teacher,
   Timer2,
-  User1,
   Users,
   Video2,
 } from "../../../imagepath";
-import Rating from "./rating";
 import useCurrencyFormatter from "../../../../hooks/useCurrencyFormatter";
-
-
+import ReactPlayer from "react-player";
+import Popup from "../../../pages/course/popup/popup";
 const DetailsContent = ({ courseDetails }) => {
-
   const [openStates, setOpenStates] = useState([]);
+  const [isPopupOpen, setPopupOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
   const [cartCourses, setCartCourses] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(false);
   const [cartLoading, setCartLoading] = useState(false);
-  const [studentId, setStudentId] = useState(() => localStorage.getItem("studentId") || "");
+  const [studentId, setStudentId] = useState(
+    () => localStorage.getItem("studentId") || ""
+  );
   const formatCurrency = useCurrencyFormatter();
+
   // Derived states
   const instructorIdNumber = Number(courseDetails.instructorId);
   const durations = useLectureDurations(
     courseDetails.sections.flatMap((section) => section.lectures || [])
   );
 
+  const openPopup = (videoLink) => {
+    const embedUrl = videoLink.replace(
+      "https://www.youtube.com/watch?v=",
+      "https://www.youtube.com/embed/"
+    );
+    setVideoUrl(embedUrl); // Cập nhật URL video
+    setPopupOpen(true); // Mở popup
+  };
+
+  const closePopup = () => {
+    setPopupOpen(false); // Đóng popup
+    setVideoUrl(""); // Reset URL video
+  };
+
   // Fetch instructor details
-  const { data: instructorDetails, isLoading, isError } = useInstructorDetailsQuery({
+  const {
+    data: instructorDetails,
+    isLoading,
+    isError,
+  } = useInstructorDetailsQuery({
     id: instructorIdNumber,
   });
 
@@ -136,7 +159,7 @@ const DetailsContent = ({ courseDetails }) => {
         toast.info(result.message);
       } else {
         toast.success("Added to wishlist successfully!");
-        setWishlist([...wishlist, courseDetails.id]); // Update wishlist state
+        setWishlist([...wishlist, courseDetails.id]);
       }
     } catch (error) {
       toast.error("Add to wishlist failed.");
@@ -145,9 +168,12 @@ const DetailsContent = ({ courseDetails }) => {
     }
   };
 
-  // Sanitize descriptions for security
-  const sanitizedCourseDescription = DOMPurify.sanitize(courseDetails.description);
-  const sanitizedInstructorDescription = DOMPurify.sanitize(instructorDetails?.bio);
+  const sanitizedCourseDescription = DOMPurify.sanitize(
+    courseDetails.description
+  );
+  const sanitizedInstructorDescription = DOMPurify.sanitize(
+    instructorDetails?.bio
+  );
 
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error loading instructor details.</p>;
@@ -163,8 +189,10 @@ const DetailsContent = ({ courseDetails }) => {
                 <div className="card-body">
                   <h5 className="subs-title">Overview</h5>
                   <h6>Course Description</h6>
-                  <p
-                    dangerouslySetInnerHTML={{ __html: sanitizedCourseDescription }}
+                  <p style={{ textAlign: "justify" }}
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizedCourseDescription,
+                    }}
                   ></p>
                   {courseDetails.sections &&
                     courseDetails.sections.length > 0 && (
@@ -203,7 +231,7 @@ const DetailsContent = ({ courseDetails }) => {
                     </div>
                   </div>
                   {courseDetails.sections &&
-                    courseDetails.sections.length > 0 ? (
+                  courseDetails.sections.length > 0 ? (
                     courseDetails.sections.map((section, sectionIndex) => (
                       <div key={section.id} className="course-card">
                         <h6 className="cou-title">
@@ -220,28 +248,43 @@ const DetailsContent = ({ courseDetails }) => {
                             }}
                             aria-controls={`section-${sectionIndex}`}
                           >
-                            {`Section ${sectionIndex + 1}: ${section.titleSection}`}
+                            {`Section ${sectionIndex + 1}: ${
+                              section.titleSection
+                            }`}
                           </Link>
                         </h6>
                         <div
                           id={`section-${sectionIndex}`}
-                          className={`card-collapse collapse ${openStates[sectionIndex] ? "show" : ""
-                            }`}
+                          className={`card-collapse collapse ${
+                            openStates[sectionIndex] ? "show" : ""
+                          }`}
                         >
                           <ul>
                             {section.lectures && section.lectures.length > 0 ? (
-                              section.lectures.map((lecture) => (
+                              section.lectures.map((lecture, lectureIndex) => (
                                 <li key={lecture.id}>
                                   <p>
                                     <img src={Play} alt="" className="me-2" />
                                     {lecture.titleLecture}
                                   </p>
                                   <div>
-                                    <Link to={lecture.lectureVideo || "#"}>
-                                      Preview
-                                    </Link>
+                                    {sectionIndex === 0 &&
+                                      lectureIndex === 0 && (
+                                        <i
+                                          onClick={() =>
+                                            openPopup(courseDetails.urlVideo)
+                                          }
+                                        >
+                                          <img
+                                            src={Play}
+                                            alt=""
+                                            className="me-2"
+                                          />
+                                        </i>
+                                      )}
                                     <span>
-                                    Duration: {`${durations[lecture.id]} mm:ss` || "N/A"}
+                                      {`${durations[lecture.id]} mm:ss` ||
+                                        "N/A"}
                                     </span>
                                   </div>
                                 </li>
@@ -258,6 +301,7 @@ const DetailsContent = ({ courseDetails }) => {
                   )}
                 </div>
               </div>
+              {videoUrl && <ReactPlayer url={videoUrl} />}
               {/* /Course Content */}
               {/* Instructor */}
               <div className="card instructor-sec">
@@ -266,7 +310,9 @@ const DetailsContent = ({ courseDetails }) => {
                   <div className="instructor-wrap">
                     <div className="about-instructor">
                       <div className="abt-instructor-img">
-                        <Link to={`/instructor/${courseDetails.instructorId}/instructor-profile`}>
+                        <Link
+                          to={`/instructor/${courseDetails.instructorId}/instructor-profile`}
+                        >
                           <img
                             src={instructorDetails.photo}
                             alt="img"
@@ -276,14 +322,16 @@ const DetailsContent = ({ courseDetails }) => {
                       </div>
                       <div className="instructor-detail">
                         <h5>
-                          <Link to={`/instructor/${courseDetails.instructorId}/instructor-profile`}>
+                          <Link
+                            to={`/instructor/${courseDetails.instructorId}/instructor-profile`}
+                          >
                             {`${instructorDetails.firstName} ${instructorDetails.lastName}`}
                           </Link>
                         </h5>
                         <p>{instructorDetails.title}</p>
                       </div>
                     </div>
-                    <Rating averageRating={instructorDetails.averageRating} />
+                    {/* <Rating averageRating={instructorDetails.averageRating} /> */}
                   </div>
                   <div className="course-info d-flex align-items-center">
                     <div className="cou-info">
@@ -296,7 +344,7 @@ const DetailsContent = ({ courseDetails }) => {
                     </div>
                     <div className="cou-info">
                       <img src={Icon2} alt="" />
-                      <p>{courseDetails.duration} minutes</p>
+                      <p>{courseDetails.duration} {courseDetails.duration === 1 ? "hr" : "hrs"}</p>
                     </div>
                     <div className="cou-info">
                       <img src={People} alt="" />
@@ -304,109 +352,15 @@ const DetailsContent = ({ courseDetails }) => {
                     </div>
                   </div>
                   <p>{instructorDetails.title}</p>
-                  <div
-                    dangerouslySetInnerHTML={{ __html: sanitizedInstructorDescription }}
+                  <div style={{ textAlign: "justify" }}
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizedInstructorDescription,
+                    }}
                   ></div>
                 </div>
               </div>
               {/* /Instructor */}
-              {/* Reviews */}
-              <div className="card review-sec">
-                <div className="card-body">
-                  <h5 className="subs-title">Reviews</h5>
-                  <div className="instructor-wrap">
-                    <div className="about-instructor">
-                      <div className="abt-instructor-img">
-                        <Link to="instructor-profile">
-                          <img src={User1} alt="img" className="img-fluid" />
-                        </Link>
-                      </div>
-                      <div className="instructor-detail">
-                        <h5>
-                          <Link to="/instructor/instructor-profile">
-                            Nicole Brown
-                          </Link>
-                        </h5>
-                        <p>UX/UI Designer</p>
-                      </div>
-                    </div>
-                    <div className="rating">
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star filled me-1" />
-                      <i className="fas fa-star me-1" />
-                      <span className="d-inline-block average-rating">
-                        4.5 Instructor Rating
-                      </span>
-                    </div>
-                  </div>
-                  <p className="rev-info">
-                    “ This is the second Photoshop course I have completed with
-                    Cristian. Worth every penny and recommend it highly. To get
-                    the most out of this course, its best to to take the
-                    Beginner to Advanced course first. The sound and video
-                    quality is of a good standard. Thank you Cristian. “
-                  </p>
-                  <Link to="#" className=" btn-reply">
-                    {/* <i className="feather-corner-up-left" /> */}
-                    <FeatherIcon icon="corner-up-left" />
-                    Reply
-                  </Link>
-                </div>
-              </div>
-              {/* /Reviews */}
-              {/* Comment */}
-              <div className="card comment-sec">
-                <div className="card-body">
-                  <h5 className="subs-title">Post A comment</h5>
-                  <form action="#">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="input-block">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Full Name"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="input-block">
-                          <input
-                            type="email"
-                            className="form-control"
-                            placeholder="Email"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="input-block">
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Subject"
-                      />
-                    </div>
-                    <div className="input-block">
-                      <textarea
-                        rows={4}
-                        className="form-control"
-                        placeholder="Your Comments"
-                        defaultValue={""}
-                      />
-                    </div>
-                    <div className="submit-section">
-                      <button className=" submit-btn" type="submit">
-                        Submit
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              {/* /Comment */}
             </div>
-
             <div className="col-lg-4">
               <div className="sidebar-sec">
                 <div className="video-sec vid-bg">
@@ -434,18 +388,31 @@ const DetailsContent = ({ courseDetails }) => {
                         </div>
                         <div className="row gx-2">
                           <div className="col-md-6 addHeart">
-                            <button className="btn btn-wish w-100" onClick={handleAddToCart} disabled={cartLoading}>
-                              {cartLoading ? "Adding to cart..." : "Add to cart"}
+                            <button
+                              className="btn btn-wish w-100"
+                              onClick={handleAddToCart}
+                              disabled={cartLoading}
+                            >
+                              {cartLoading
+                                ? "Adding to cart..."
+                                : "Add to cart"}
                             </button>
                           </div>
 
                           <div className="col-md-6 addHeart">
-                            <button className="btn btn-wish w-100" onClick={handleAddToWishlist} disabled={loading}>
+                            <button
+                              className="btn btn-wish w-100"
+                              onClick={handleAddToWishlist}
+                              disabled={loading}
+                            >
                               {loading ? "Adding..." : "Add to favorites"}
                             </button>
                           </div>
                         </div>
-                        <Link to={`/checkout/${courseDetails.id}`} className="btn btn-enroll w-100">
+                        <Link
+                          to={`/checkout/${courseDetails.id}`}
+                          className="btn btn-enroll w-100"
+                        >
                           Buy now
                         </Link>
                       </div>
@@ -461,11 +428,13 @@ const DetailsContent = ({ courseDetails }) => {
                     </div>
                     <ul>
                       <li>
-                        <img src={Import} className="me-2" alt="" /> {courseDetails.duration} minutes
-                        on-demand videos
+                        <img src={Import} className="me-2" alt="" />{" "}
+                        {courseDetails.duration} {courseDetails.duration === 1 ? "hr" : "hrs"} on-demand
+                        videos
                       </li>
                       <li>
-                        <img src={Play} className="me-2" alt="" /> {courseDetails.totalArticles} downloadable resources
+                        <img src={Play} className="me-2" alt="" />{" "}
+                        {courseDetails.totalArticles} downloadable resources
                       </li>
                       <li>
                         <img src={Key} className="me-2" alt="" /> Full lifetime
@@ -476,7 +445,8 @@ const DetailsContent = ({ courseDetails }) => {
                         mobile and website
                       </li>
                       <li>
-                        <img src={Cloud} className="me-2" alt="" /> Assignments on articles
+                        <img src={Cloud} className="me-2" alt="" /> Assignments
+                        on articles
                       </li>
                       <li>
                         <img src={Teacher} className="me-2" alt="" />{" "}
@@ -495,11 +465,13 @@ const DetailsContent = ({ courseDetails }) => {
                     <ul>
                       <li>
                         <img src={Users} className="me-2" alt="" /> Enrolled:{" "}
-                        <span>{courseDetails.totalPurchasedStudents} students</span>
+                        <span>
+                          {courseDetails.totalPurchasedStudents} students
+                        </span>
                       </li>
                       <li>
                         <img src={Timer2} className="me-2" alt="" /> Duration:{" "}
-                        <span>{courseDetails.duration} minutes</span>
+                        <span>{courseDetails.duration} {courseDetails.duration === 1 ? "hr" : "hrs"}</span>
                       </li>
                       <li>
                         <img src={Chapter} className="me-2" alt="" /> Chapters:{" "}
@@ -510,7 +482,7 @@ const DetailsContent = ({ courseDetails }) => {
                         <span> {courseDetails.totalLectures} videos</span>
                       </li>
                       <li>
-                        <img src={Chart} className="me-2" alt="" /> Level: 
+                        <img src={Chart} className="me-2" alt="" /> Level:
                         <span>{courseDetails.level}</span>
                       </li>
                     </ul>
@@ -522,6 +494,13 @@ const DetailsContent = ({ courseDetails }) => {
           </div>
         </div>
       </section>
+      <Popup
+        isOpen={isPopupOpen}
+        title="Course Video"
+        onClose={closePopup}
+      >
+        {videoUrl && <ReactPlayer url={videoUrl} />}
+      </Popup>
     </>
   );
 };
@@ -535,11 +514,11 @@ DetailsContent.propTypes = {
     basePrice: PropTypes.number,
     duration: PropTypes.number,
     instructorId: PropTypes.number,
-    level:PropTypes.level,
-    totalPurchasedStudents:PropTypes.number,
-    totalSections:PropTypes.number,
-    totalLectures:PropTypes.number,
-    totalArticles:PropTypes.number,
+    level: PropTypes.level,
+    totalPurchasedStudents: PropTypes.number,
+    totalSections: PropTypes.number,
+    totalLectures: PropTypes.number,
+    totalArticles: PropTypes.number,
     sections: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number,

@@ -10,18 +10,18 @@ export const prepareCourseData = (courseSlice, instructor, courseId) => {
     imageCover: courseSlice.mediaInfo.imageFileName || "",
     urlVideo: courseSlice.mediaInfo.videoUrl || "",
     process: 0,
-    duration: courseId
-      ? courseSlice.basicInfo.duration
-      : courseSlice.curriculumInfo.sections.reduce(
-          (totalDuration, section) => {
-            const sectionDuration = section.lectures.reduce(
-              (sum, lecture) => sum + (lecture?.videoDuration || 0),
-              0
-            );
-            return totalDuration + sectionDuration;
-          },
-          0
-        ),
+    duration: Math.ceil(
+      courseSlice.curriculumInfo.sections.reduce(
+        (totalDuration, section) => {
+          const sectionDuration = section.lectures.reduce(
+            (sum, lecture) => sum + (lecture?.videoDuration || 0),
+            0
+          );
+          return totalDuration + sectionDuration;
+        },
+        0
+      ) / 3600
+    ),
     basePrice: Number(courseSlice.settingsInfo.basePrice) || 0,
     status: courseSlice.settingsInfo.visibility === 2 ? "PUBLISHED" : "PENDING",
 

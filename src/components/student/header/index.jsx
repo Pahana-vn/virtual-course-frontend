@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { Home, LogOut, Star, User } from "react-feather";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logoVirtual from "../../../assets/img/logo.png";
@@ -17,7 +17,7 @@ import {
   removeCourseFromWishlist,
 } from "../../../services/studentService";
 import DarkMode from "../../common/darkMode";
-import { Cart, logo, Messages, Wish, User16 } from "../../imagepath";
+import { Cart, logo, Messages, Wish } from "../../imagepath";
 import "./StudentHeader1.css";
 
 export default function StudentHeader() {
@@ -38,7 +38,7 @@ export default function StudentHeader() {
   };
 
   // Mobile Menu toggle
-  const [setMobileMenu] = useState(false);
+  const [mobileMenu, setMobileMenu] = useState(false);
   const [mobileSubMenu4, setMobileSubMenu4] = useState(false);
 
   const cartRef = useRef();
@@ -55,7 +55,7 @@ export default function StudentHeader() {
 
   const [student, setStudent] = useState({
     username: "",
-    avatar: User16,
+    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU",
   });
 
   useOnClickOutside(profileRef, () => setShowProfile(false));
@@ -66,9 +66,10 @@ export default function StudentHeader() {
       if (!studentId) return;
       try {
         const studentData = await fetchStudentByStudentId(studentId);
+        console.log("Fetched student data:", studentData);
         setStudent({
           username: studentData.username || "Student",
-          avatar: studentData.avatar || User16,
+          avatar: studentData.avatar ? studentData.avatar : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU",
         });
       } catch (error) {
         console.error("❌ Error fetching student data:", error);
@@ -77,7 +78,7 @@ export default function StudentHeader() {
     getStudentData();
   }, [studentId]);
 
-  // Check login status and fetch data from token
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const studentId = localStorage.getItem("studentId");
@@ -88,9 +89,6 @@ export default function StudentHeader() {
     }
   }, []);
 
-
-
-  // Fetch Cart and Wishlist data after login
   const fetchCartAndWishlistData = async (studentId) => {
     if (!studentId) return;
 
@@ -199,6 +197,11 @@ export default function StudentHeader() {
   };
   // Mobile Menu Handlers
 
+  const openMobileMenu = () => {
+    document.body.classList.add("menu-opened");
+    setMobileMenu(true);
+  };
+
   const hideMobileMenu = () => {
     document.body.classList.remove("menu-opened");
     setMobileMenu(false);
@@ -223,7 +226,7 @@ export default function StudentHeader() {
           >
             <div className="container">
               <div className="navbar-header">
-                <Link to="#" id="mobile_btn">
+                <Link to="#" id="mobile_btn" onClick={openMobileMenu}>
                   <span className="bar-icon">
                     <span></span>
                     <span></span>
@@ -265,36 +268,10 @@ export default function StudentHeader() {
                     </Link>
                   </li>
 
-                  <li className="has-submenu">
-                    <Link to="#">
-                      Pages
-                      <i
-                        className="fas fa-chevron-down"
-                        onClick={openMobileSubMenu4}
-                      ></i>
-                    </Link>
-                    <ul
-                      className={
-                        mobileSubMenu4 ? "submenu submenuShow" : "submenu"
-                      }
-                    >
-                      <li>
-                        <Link to="/job-category">Category</Link>
-                      </li>
-                      <li>
-                        <Link to="/faq">FAQ</Link>
-                      </li>
-                      <li>
-                        <Link to="/support">Support</Link>
-                      </li>
-                    </ul>
-                  </li>
                   <li>
-                    <Link to="/support">About us</Link>
+                    <Link to="/student/student-study">My Learning</Link>
                   </li>
-                  <li className="has-submenu">
-                    <Link to="/blog-modern">Blog</Link>
-                  </li>
+
                 </ul>
               </div>
 
@@ -516,7 +493,7 @@ export default function StudentHeader() {
                         onClick={profileClick}
                       >
                         <span className="user-img">
-                          <img src={User16} alt="User" />
+                          <img src={student.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"} alt="User" />
                           <span className="status online"></span>
                         </span>
                       </Link>
@@ -526,8 +503,7 @@ export default function StudentHeader() {
                       >
                         <div className="user-header d-flex align-items-center p-2 border-bottom">
                           <div className="avatar avatar-sm">
-                            <img
-                              src={User16}
+                            <img src={student.avatar} onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"}
                               alt="User Image"
                               className="avatar-img rounded-circle"
                             />
@@ -546,7 +522,7 @@ export default function StudentHeader() {
                         >
                           <Home
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FF875A"}
                             className="headerIcon me-2"
                           />
                           Dashboard
@@ -561,24 +537,24 @@ export default function StudentHeader() {
                         >
                           <User
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FF875A"}
                             className="headerIcon me-2"
                           />
                           Profile
                         </Link>
 
-                        <Link
+                        {/* <Link
                           className="dropdown-item text"
                           to="/student/student-study"
                           onClick={() => setShowProfile(false)}
                         >
                           <User
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FFFFFF"}
                             className="headerIcon me-2"
                           />
                           Study
-                        </Link>
+                        </Link> */}
 
                         <Link
                           className="dropdown-item text"
@@ -587,7 +563,7 @@ export default function StudentHeader() {
                         >
                           <Star
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FF875A"}
                             className="headerIcon me-2"
                           />
                           Setting
@@ -600,7 +576,7 @@ export default function StudentHeader() {
                         >
                           <LogOut
                             size={14}
-                            color={"#FF875A"}
+                            // color={"#FF875A"}
                             className="headerIcon me-2"
                           />
                           Logout
@@ -625,6 +601,9 @@ export default function StudentHeader() {
               </ul>
             </div>
           </nav>
+          <div
+            className={mobileMenu ? "sidebar-overlay opened" : "sidebar-overlay"}
+          ></div>
         </div>
       </header>
     </>

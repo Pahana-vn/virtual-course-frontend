@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import PageHeader from "../header";
+import PageHeader from "../../student/header/index";
 import Footer from "../../footer";
 
 import { Link } from "react-router-dom";

@@ -69,9 +69,7 @@ const TopCategory = () => {
         </div>
         <div className="section-text aos" data-aos="fade-up">
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget aenean
-            accumsan bibendum gravida maecenas augue elementum et neque.
-            Suspendisse imperdiet.
+          The Categories of courses in the Virtual Course Network are designed to help learners easily find courses based on their interests and career goals, ranging from technology and business to arts and personal development.
           </p>
         </div>
         <OwlCarousel

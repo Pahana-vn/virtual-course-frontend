@@ -10,13 +10,12 @@ const StudentFinalTest = () => {
     const studentId = localStorage.getItem('studentId');
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
-    const [timeLeft, setTimeLeft] = useState(60 * 60); // 60 phút
+    const [timeLeft, setTimeLeft] = useState(60 * 60);
     const navigate = useNavigate();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false); // Biến để kiểm tra bài đã nộp chưa
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
-    // Fetch danh sách câu hỏi
     useEffect(() => {
         if (!testId) return;
 
@@ -32,7 +31,6 @@ const StudentFinalTest = () => {
         fetchQuestions();
     }, [testId]);
 
-    // Đếm ngược thời gian
     useEffect(() => {
         const timer = setInterval(() => {
             setTimeLeft(t => (t > 0 ? t - 1 : 0));
@@ -40,14 +38,12 @@ const StudentFinalTest = () => {
         return () => clearInterval(timer);
     }, []);
 
-    // Tự động nộp bài khi hết thời gian
     useEffect(() => {
         if (timeLeft === 0 && !isSubmitted) {
-            handleSubmit(); // Gọi hàm nộp bài
+            handleSubmit();
         }
     }, [timeLeft, isSubmitted]);
 
-    // Xử lý thay đổi lựa chọn câu trả lời
     const handleOptionChange = (qId, optId, checked, type) => {
         setAnswers(prev => {
             const prevSelected = prev[qId] || [];
@@ -67,8 +63,8 @@ const StudentFinalTest = () => {
 
     // Hàm nộp bài
     const handleSubmit = async () => {
-        if (isSubmitted) return; // Nếu đã nộp rồi thì không làm gì cả
-        setIsSubmitted(true); // Đánh dấu là đã nộp
+        if (isSubmitted) return;
+        setIsSubmitted(true);
 
         const submission = {
             studentId: parseInt(studentId),
@@ -89,20 +85,17 @@ const StudentFinalTest = () => {
         }
     };
 
-    // Tính toán thời gian còn lại
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
 
     const currentQuestion = questions[currentQuestionIndex];
 
-    // Điều hướng câu hỏi trước đó
     const goPrev = () => {
         if (currentQuestionIndex > 0) {
             setCurrentQuestionIndex(currentQuestionIndex - 1);
         }
     };
 
-    // Điều hướng câu hỏi tiếp theo
     const goNext = () => {
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -124,7 +117,6 @@ const StudentFinalTest = () => {
                 }}
             >
                 <div style={{ width: '80%' }}>
-                    {/* Thanh thời gian */}
                     <div
                         style={{
                             backgroundColor: '#000',
@@ -143,10 +135,9 @@ const StudentFinalTest = () => {
                                 {minutes}m {seconds < 10 ? `0${seconds}` : seconds}s
                             </span>
                         </div>
-                        <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>TIME LEFT IN 40m</div>
+                        <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>TIME LEFT IN 60m</div>
                     </div>
 
-                    {/* Thanh điều hướng câu hỏi */}
                     <div
                         style={{
                             backgroundColor: '#fff',
@@ -226,7 +217,6 @@ const StudentFinalTest = () => {
                         </button>
                     </div>
 
-                    {/* Nội dung câu hỏi */}
                     <div style={{ flex: '1', padding: '20px', display: 'flex', flexDirection: 'column' }}>
                         {currentQuestion ? (
                             <div
@@ -277,7 +267,6 @@ const StudentFinalTest = () => {
                             <div style={{ textAlign: 'center', marginTop: '50px' }}>No questions available.</div>
                         )}
 
-                        {/* Nút nộp bài */}
                         <div style={{ marginTop: '20px', textAlign: 'right', marginBottom: '20px' }}>
                             <button
                                 onClick={() => setShowConfirmationModal(true)}
@@ -300,7 +289,6 @@ const StudentFinalTest = () => {
             </div>
             <Footer />
 
-            {/* Modal xác nhận nộp bài */}
             {showConfirmationModal && (
                 <div
                     style={{

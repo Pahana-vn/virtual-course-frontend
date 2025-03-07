@@ -1,26 +1,22 @@
 import DOMPurify from "dompurify";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
+import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 import { useGetInstructorCoursesQuery } from "../../../redux/slices/course/courseApiSlice";
-import {
-  useInstructorDetailsQuery,
-} from "../../../redux/slices/instructor/instructorApiSlice";
+import { useInstructorDetailsQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 import Footer from "../../footer";
+import RoleBasedHeader from "../../header/RoleBasedHeader";
 import {
-  AddressIcon,
   CoursesIcon,
-  EmailIcon,
   Icon1,
   Icon2,
-  PhoneIcon,
-  ReviewIcon,
   TtlStudIcon,
-  User1,
 } from "../../imagepath";
-import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
-import RoleBasedHeader from "../../header/RoleBasedHeader";
+import { useSelector } from "react-redux";
+import { selectCurrentRoles } from "../../../redux/slices/auth/authSlice";
 
 export default function InstructorProfile() {
+  const roles = useSelector(selectCurrentRoles);
   const formatCurrency = useCurrencyFormatter();
   const { instructorId } = useParams();
   const {
@@ -123,16 +119,18 @@ export default function InstructorProfile() {
                       </Link>
                     </li>
                   )}
-                  <li className="list-inline-item">
-                    <div className="all-btn all-category d-flex align-items-center">
-                      <Link
-                        to={`/chat/${instructorId}`}
-                        className="btn btn-primary bg-success"
-                      >
-                        CHAT NOW
-                      </Link>
-                    </div>
-                  </li>
+                  {roles && roles.includes("ROLE_INSTRUCTOR") ? null : (
+                    <li className="list-inline-item">
+                      <div className="all-btn all-category d-flex align-items-center">
+                        <Link
+                          to={`/student/student-messages?instructorId=${instructorId}`}
+                          className="btn btn-primary bg-success"
+                        >
+                          CHAT NOW
+                        </Link>
+                      </div>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
@@ -233,8 +231,8 @@ export default function InstructorProfile() {
                                   <img
                                     className="img-fluid"
                                     style={{
-                                      objectFit: "cover",
-                                      height: "300px",
+                                      objectFit: "contain",
+                                      height: "200px",
                                     }}
                                     alt={course.titleCourse}
                                     src={course.imageCover}
@@ -286,19 +284,8 @@ export default function InstructorProfile() {
                                   </div>
                                   <div className="course-view d-flex align-items-center">
                                     <img src={Icon2} alt="" />
-                                    <p>{course.duration} mins</p>
+                                    <p>{course.duration} {course.duration === 1 ? "hr" : "hrs"}</p>
                                   </div>
-                                </div>
-                                <div className="rating">
-                                  <i className="fas fa-star filled"></i>
-                                  <i className="fas fa-star filled"></i>
-                                  <i className="fas fa-star filled"></i>
-                                  <i className="fas fa-star filled"></i>
-                                  <i className="fas fa-star"></i>
-                                  <span className="d-inline-block average-rating">
-                                    <span>{course.rating}</span> (
-                                    {course.reviews} reviews)
-                                  </span>
                                 </div>
                                 <div className="all-btn all-category d-flex align-items-center">
                                   <Link
@@ -320,165 +307,6 @@ export default function InstructorProfile() {
                 </div>
               </div>
               {/*Courses Content  */}
-
-              {/* Reviews */}
-              <div className="card review-sec">
-                <div className="card-body">
-                  <h5 className="subs-title">Reviews</h5>
-                  <div className="review-item">
-                    <div className="instructor-wrap border-0 m-0">
-                      <div className="about-instructor">
-                        <div className="abt-instructor-img">
-                          <Link to="instructor-profile">
-                            <img src={User1} alt="img" className="img-fluid" />
-                          </Link>
-                        </div>
-                        <div className="instructor-detail">
-                          <h5>
-                            <Link to="instructor-profile">Nicole Brown</Link>
-                          </h5>
-                          <p>UX/UI Designer</p>
-                        </div>
-                      </div>
-                      <div className="rating">
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star"></i>
-                      </div>
-                    </div>
-                    <p className="rev-info">
-                      “ This is the second Photoshop course I have completed
-                      with Cristian. Worth every penny and recommend it highly.
-                      To get the most out of this course, its best to to take
-                      the Beginner to Advanced course first. The sound and video
-                      quality is of a good standard. Thank you Cristian. “
-                    </p>
-                    <Link to="#" className="btn btn-reply">
-                      <i className="feather-corner-up-left"></i> Reply
-                    </Link>
-                  </div>
-                  <div className="review-item">
-                    <div className="instructor-wrap border-0 m-0">
-                      <div className="about-instructor">
-                        <div className="abt-instructor-img">
-                          <Link to="instructor-profile">
-                            <img src={User1} alt="img" className="img-fluid" />
-                          </Link>
-                        </div>
-                        <div className="instructor-detail">
-                          <h5>
-                            <Link to="instructor-profile">Nicole Brown</Link>
-                          </h5>
-                          <p>UX/UI Designer</p>
-                        </div>
-                      </div>
-                      <div className="rating">
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star"></i>
-                      </div>
-                    </div>
-                    <p className="rev-info">
-                      “ This is the second Photoshop course I have completed
-                      with Cristian. Worth every penny and recommend it highly.
-                      To get the most out of this course, its best to to take
-                      the Beginner to Advanced course first. The sound and video
-                      quality is of a good standard. Thank you Cristian. “
-                    </p>
-                    <Link to="#" className="btn btn-reply">
-                      <i className="feather-corner-up-left"></i> Reply
-                    </Link>
-                  </div>
-                  <div className="review-item">
-                    <div className="instructor-wrap border-0 m-0">
-                      <div className="about-instructor">
-                        <div className="abt-instructor-img">
-                          <Link to="instructor-profile">
-                            <img src={User1} alt="img" className="img-fluid" />
-                          </Link>
-                        </div>
-                        <div className="instructor-detail">
-                          <h5>
-                            <Link to="instructor-profile">Nicole Brown</Link>
-                          </h5>
-                          <p>UX/UI Designer</p>
-                        </div>
-                      </div>
-                      <div className="rating">
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star filled"></i>
-                        <i className="fas fa-star"></i>
-                      </div>
-                    </div>
-                    <p className="rev-info">
-                      “ This is the second Photoshop course I have completed
-                      with Cristian. Worth every penny and recommend it highly.
-                      To get the most out of this course, its best to to take
-                      the Beginner to Advanced course first. The sound and video
-                      quality is of a good standard. Thank you Cristian. “
-                    </p>
-                    <Link to="#" className="btn btn-reply">
-                      <i className="feather-corner-up-left"></i> Reply
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              {/* Reviews */}
-
-              {/* Comment */}
-              <div className="card comment-sec">
-                <div className="card-body">
-                  <h5 className="subs-title">Add a review</h5>
-                  <form>
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="input-block">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Full Name"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="input-block">
-                          <input
-                            type="email"
-                            className="form-control"
-                            placeholder="Email"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="input-block">
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Subject"
-                      />
-                    </div>
-                    <div className="input-block">
-                      <textarea
-                        rows="4"
-                        className="form-control"
-                        placeholder="Your Comments"
-                      ></textarea>
-                    </div>
-                    <div className="submit-section">
-                      <button className="btn submit-btn" type="submit">
-                        Submit
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              {/* comment */}
             </div>
 
             <div className="col-lg-4">
@@ -508,30 +336,6 @@ export default function InstructorProfile() {
                 <div className="card-body">
                   <h5 className="subs-title">Profile Overview</h5>
 
-                  {/* Đánh giá trung bình */}
-                  <div className="rating-grp">
-                    <div className="rating">
-                      {[...Array(5)].map((_, index) => (
-                        <i
-                          key={index}
-                          className={`fas fa-star ${
-                            index < Math.round(instructor.averageRating)
-                              ? "filled"
-                              : ""
-                          }`}
-                        ></i>
-                      ))}
-                      <span className="d-inline-block average-rating">
-                        <span>{instructor.averageRating.toFixed(1)}</span> (0)
-                      </span>
-                    </div>
-                    <div className="course-share d-flex align-items-center justify-content-center">
-                      <Link to="#rate">
-                        <i className="fa-regular fa-heart"></i>
-                      </Link>
-                    </div>
-                  </div>
-
                   {/* Thống kê hồ sơ */}
                   <div className="profile-overview-list">
                     <div className="list-grp-blk d-flex">
@@ -553,68 +357,10 @@ export default function InstructorProfile() {
                         <p>Total Students</p>
                       </div>
                     </div>
-
-                    <div className="list-grp-blk d-flex">
-                      <div className="flex-shrink-0">
-                        <img src={ReviewIcon} alt="Reviews" />
-                      </div>
-                      <div className="list-content-blk flex-grow-1 ms-3">
-                        <h5>3</h5>
-                        <p>Reviews</p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
               {/* Right Sidebar Profile Overview */}
-
-              {/* Right Contact Details */}
-              <div className="card overview-sec">
-                <div className="card-body">
-                  <h5 className="subs-title">Contact Details</h5>
-                  <div className="contact-info-list">
-                    <div className="edu-wrap">
-                      <div className="edu-name">
-                        <span>
-                          <img src={EmailIcon} alt="Address" />
-                        </span>
-                      </div>
-                      <div className="edu-detail">
-                        <h6>Email</h6>
-                        <p>
-                          <Link to="#">{instructor.email}</Link>
-                        </p>
-                      </div>
-                    </div>
-                    <div className="edu-wrap">
-                      <div className="edu-name">
-                        <span>
-                          <img src={AddressIcon} alt="Address" />
-                        </span>
-                      </div>
-                      <div className="edu-detail">
-                        <h6>Address</h6>
-                        <p>{instructor.address}</p>
-                      </div>
-                    </div>
-                    <div className="edu-wrap">
-                      <div className="edu-name">
-                        <span>
-                          <img src={PhoneIcon} alt="Address" />
-                        </span>
-                      </div>
-                      <div className="edu-detail">
-                        <h6>Phone</h6>
-                        <p>
-                          {" "}
-                          <Link to="#">{instructor.phone}</Link>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* Right Contact Details */}
             </div>
           </div>
         </div>
