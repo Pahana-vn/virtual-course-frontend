@@ -2,7 +2,7 @@ import { Stomp } from '@stomp/stompjs';
 import React, { useEffect, useRef, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import Scrollbars from "react-custom-scrollbars-2";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SockJS from 'sockjs-client';
 
 import { fetchChatHistory, fetchInstructorInfo, fetchRecentChats, fetchStudentInfo } from "../../../services/chatService";
@@ -10,6 +10,8 @@ import StudentHeader from "../header";
 import StudentSidebar from "../sidebar";
 
 const StudentMessages = () => {
+  const navigate = useNavigate();
+
   const [visible, setVisible] = useState(false);
   const [searchChat, setSearchChat] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 992);
@@ -37,6 +39,13 @@ const StudentMessages = () => {
   const [selectedInstructorId, setSelectedInstructorId] = useState(instructorId);
 
   const stompClientRef = useRef(null);
+
+  useEffect(() => {
+    const instructorIdFromParams = parseInt(queryParams.get('instructorId'), 10);
+    if (instructorIdFromParams) {
+      setSelectedInstructorId(instructorIdFromParams);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const fetchRecentChatsData = async () => {
@@ -100,7 +109,8 @@ const StudentMessages = () => {
     const fetchChatHistoryData = async () => {
       try {
         const chatHistory = await fetchChatHistory(currentUserAccountId, selectedInstructorId);
-        const formattedMessages = chatHistory.map(m => ({
+        const sortedMessages = chatHistory.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        const formattedMessages = sortedMessages.map(m => ({
           ...m,
           senderName: m.senderAccountId === currentUserAccountId ? "You" : instructorInfo.name,
           senderAvatar: m.senderAccountId === currentUserAccountId
@@ -144,13 +154,16 @@ const StudentMessages = () => {
         console.log('Received message:', messageOutput.body);
         const msg = JSON.parse(messageOutput.body);
 
-        setMessages((prev) => [...prev, {
-          ...msg,
-          senderName: msg.senderAccountId === currentUserAccountId ? "You" : instructorInfo.name,
-          senderAvatar: msg.senderAccountId === currentUserAccountId
-            ? studentInfo.avatar
-            : instructorInfo.avatar
-        }]);
+        setMessages((prev) => {
+          const newMessages = [...prev, {
+            ...msg,
+            senderName: msg.senderAccountId === currentUserAccountId ? "You" : instructorInfo.name,
+            // senderAvatar: msg.senderAccountId === currentUserAccountId
+            //   ? studentInfo.avatar
+            //   : instructorInfo.avatar
+          }];
+          return newMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        });
       });
     }, (error) => {
       console.error('Error connecting to WebSocket:', error);
@@ -166,7 +179,7 @@ const StudentMessages = () => {
         console.error("STOMP connection is not established.");
         return;
       }
-
+  
       const chatMessageDTO = {
         senderAccountId: currentUserAccountId,
         receiverAccountId: selectedInstructorId,
@@ -174,13 +187,14 @@ const StudentMessages = () => {
         type: "CHAT",
         timestamp: new Date().toISOString(),
       };
-
+  
       try {
         console.log('Sending message:', chatMessageDTO);
         stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
-
-        setMessages((prev) => [
-          ...prev,
+  
+        // Add the new message to the state immediately
+        setMessages((prevMessages) => [
+          ...prevMessages,
           {
             ...chatMessageDTO,
             senderName: "You",
@@ -188,26 +202,25 @@ const StudentMessages = () => {
             timestamp: new Date().toISOString()
           },
         ]);
-
+  
         const timestamp = new Date().toLocaleString('vi-VN', {
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
         });
-
+  
         console.log("Gửi tin nhắn:");
         console.log(`Người gửi: Bạn (ID: ${currentUserAccountId})`);
-        console.log(`Người nhận: Học viên (ID: ${selectedInstructorId})`);
+        console.log(`Người nhận: Instructor (ID: ${selectedInstructorId})`);
         console.log(`Nội dung: ${currentMsg}`);
         console.log(`Thời gian: ${timestamp}`);
-
-        // Xóa nội dung tin nhắn sau khi gửi
+  
+        // Clear the message input
         setCurrentMsg('');
-
-        // Kiểm tra xem instructor đã có trong danh sách chat chưa
+  
+        // Check if instructor is in the list of recent chats
         const isInstructorInList = chatInstructors.some(instructor => instructor.id === selectedInstructorId);
         if (!isInstructorInList) {
-          // Nếu chưa có, thêm instructor vào danh sách
           const instructor = await fetchInstructorInfo(selectedInstructorId);
           setChatInstructors(prev => [...prev, {
             id: selectedInstructorId,
@@ -215,14 +228,21 @@ const StudentMessages = () => {
             avatar: instructor.photo,
           }]);
         }
+  
+        // Fetch chat history again to update the UI with the new message
+        await fetchChatHistory(currentUserAccountId, selectedInstructorId);
+  
       } catch (error) {
         console.error('Error sending chat message:', error);
       }
     }
   };
+  
 
   const handleInstructorClick = async (id) => {
-    setSelectedInstructorId(id);
+    navigate(`/student/student-messages?instructorId=${id}`); // Cập nhật URL
+    setSelectedInstructorId(id); // Cập nhật selectedInstructorId
+
     try {
       const chatHistory = await fetchChatHistory(currentUserAccountId, id);
       const formattedMessages = chatHistory.map(m => ({
@@ -239,7 +259,8 @@ const StudentMessages = () => {
     }
   };
 
-  // Automatically scroll to the bottom when new messages are added
+
+
   useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
@@ -349,7 +370,7 @@ const StudentMessages = () => {
                                     <li
                                       className={`user-list-item chat-user-list ${selectedInstructorId === instructor.id ? 'active' : ''}`}
                                       key={instructor.id}
-                                      onClick={() => handleInstructorClick(instructor.id)}
+                                      onClick={() => handleInstructorClick(instructor.id)} // Gọi handleInstructorClick khi bấm vào instructor
                                     >
                                       <Link to="#">
                                         <div>
@@ -480,33 +501,12 @@ const StudentMessages = () => {
                         </div>
                         <div className="chat-footer">
                           <form onSubmit={sendMessage}>
-                            {/* <div className="smile-foot">
-                              <div className="chat-action-btns">
-                                <div className="chat-action-col">
-                                  <Link
-                                    className="action-circle"
-                                    to="#"
-                                    data-bs-toggle="dropdown"
-                                  >
-                                    <i className="fa-solid fa-ellipsis-vertical" />
-                                  </Link>
-                                  <div className="dropdown-menu dropdown-menu-end">
-                                    <Link to="#" className="dropdown-item ">
-                                      <span>
-                                        <i className="bx bx-file" />
-                                      </span>
-                                      Document
-                                    </Link>
-                                  </div>
-                                </div>
-                              </div>
-                            </div> */}
                             <div className="smile-foot emoj-action-foot">
-                            {chatInstructors.map((instructor) => (
-                              <Link key={instructor.id} onClick={() => handleInstructorClick(instructor.id)} to="#" className="action-circle">
+
+                              <Link to="#" className="action-circle">
                                 <i className="bx bx-smile" />
                               </Link>
-                            ))}
+
                             </div>
                             <div className="replay-forms">
                               <input
