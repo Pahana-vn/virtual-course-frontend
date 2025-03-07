@@ -285,6 +285,12 @@ export const InstructorCourseTests = () => {
                   </button>
                 </div>
                 <div className="card-body">
+                  {tests.filter((test) => test.isFinalTest).length > 1 && (
+                    <div className="alert alert-danger" role="alert">
+                      ⚠️ You can only select ONE Final Test. Please unselect the
+                      extra Final Test(s).
+                    </div>
+                  )}
                   {!tests.some((test) => test.isFinalTest) && (
                     <div className="alert alert-warning" role="alert">
                       ⚠️ You must select at least one Final Test.
@@ -481,8 +487,8 @@ export const InstructorCourseTests = () => {
                     {currentTest.questions.map((q) => (
                       <li key={q.id}>
                         <small>
-                        <strong>({q.marks} marks)</strong> {q.content}
-                          </small>
+                          <strong>({q.marks} marks)</strong> {q.content}
+                        </small>
                         <button
                           className="btn btn-delete-article"
                           onClick={() => handleRemoveQuestion(q.id)}

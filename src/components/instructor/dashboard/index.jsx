@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { Edit } from "feather-icons-react";
 import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
 import { selectCurrentInstructor } from "../../../redux/slices/auth/authSlice";
 import {
   useGetCoursesByInstructorIdQuery,
   useGetInstructorCoursesPurchasedByStudentQuery,
+  useUpdateCourseStatusMutation,
 } from "../../../redux/slices/course/courseApiSlice";
 import { useInstructorStatisticsQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 import Footer from "../../footer";
@@ -25,14 +27,53 @@ export const Dashboard = () => {
     data: instructorCourses,
     error,
     isLoading,
-  } = useGetInstructorCoursesPurchasedByStudentQuery({ instructorId: instructorId });
+  } = useGetInstructorCoursesPurchasedByStudentQuery({
+    instructorId: instructorId,
+  });
 
-  const { data: instructorStatistics } = useInstructorStatisticsQuery({ id: instructorId });
+  const { data: instructorStatistics } = useInstructorStatisticsQuery({
+    id: instructorId,
+  });
 
-  const {
-    data: Icourses,
-  } = useGetCoursesByInstructorIdQuery({ instructorId });
+  const { data: Icourses } = useGetCoursesByInstructorIdQuery({ instructorId });
 
+  const [updateCourseStatus] = useUpdateCourseStatusMutation();
+
+  const handleStatusChange = async (course) => {
+    let newStatus = "";
+
+    if (course.status === "PUBLISHED") {
+      if (
+        !window.confirm(
+          `Are you sure you want to change ${course.titleCourse} to DRAFT?`
+        )
+      ) {
+        return;
+      }
+      newStatus = "DRAFT";
+    } else if (course.status === "DRAFT") {
+      if (
+        !window.confirm(
+          `Are you sure you want to change ${course.titleCourse} to PENDING?`
+        )
+      ) {
+        return;
+      }
+      newStatus = "PENDING";
+    } else {
+      alert(`You cannot change the status from ${course.status}.`);
+      return;
+    }
+
+    try {
+      await updateCourseStatus({ courseId: course.id, newStatus }).unwrap();
+      alert(`Course status changed to ${newStatus} successfully!`);
+      window.location.reload(); // Reload lại trang để cập nhật UI
+    } catch (error) {
+      console.error("Failed to update course status:", error);
+      alert("Failed to update course status. Please try again.");
+    }
+  };
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -47,10 +88,9 @@ export const Dashboard = () => {
 
   // Pagination state
   const itemsPerPage = 6;
-  const totalPages =
-    instructorCourses?.length
-      ? Math.ceil(instructorCourses?.length / itemsPerPage + 1)
-      : 1;
+  const totalPages = instructorCourses?.length
+    ? Math.ceil(instructorCourses?.length / itemsPerPage + 1)
+    : 1;
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -169,10 +209,15 @@ export const Dashboard = () => {
                               <div className="table-course-detail">
                                 <Link
                                   to={`/course/${course.id}/course-details`}
-                                  className="course-table-img">
+                                  className="course-table-img"
+                                >
                                   <span>
                                     <img
-                                    style={{ objectFit: 'contain',width:'110px', height: '80px' }}
+                                      style={{
+                                        objectFit: "contain",
+                                        width: "110px",
+                                        height: "80px",
+                                      }}
                                       src={
                                         course.imageCover || "default-image-url"
                                       }
@@ -181,14 +226,40 @@ export const Dashboard = () => {
                                   </span>
                                 </Link>
                                 <Link
-                                  to={`/course/${course.id}/course-details`} className="course-title d-flex align-items-center justify-content-center"
-                                  style={{}}>
+                                  to={`/course/${course.id}/course-details`}
+                                  className="course-title d-flex align-items-center justify-content-center"
+                                  style={{}}
+                                >
                                   {course.titleCourse}
                                 </Link>
                               </div>
                             </td>
                             <td>{course.students || 0}</td>
-                            <td>{course.status || "N/A"}</td>
+                            <td>
+                              <span
+                                className={`badge ${
+                                  course.status === "PUBLISHED"
+                                    ? "badge-success"
+                                    : course.status === "PENDING"
+                                    ? "badge-warning"
+                                    : "badge-primary"
+                                }`}
+                              >
+                                {course.status}
+                              </span>
+                              {course.status !== "PENDING" && (
+                                <span
+                                  className="icon-wrapper mx-2"
+                                  onClick={() => handleStatusChange(course)}
+                                  style={{
+                                    cursor: "pointer",
+                                    fontSize: "10px",
+                                  }}
+                                >
+                                  <Edit />
+                                </span>
+                              )}
+                            </td>
                             <td>
                               <Link
                                 to={`/instructor/course-test/${course.id}`}
@@ -222,7 +293,10 @@ export const Dashboard = () => {
                             <Link to={`/course/${course.id}/course-details`}>
                               <img
                                 className="img-fluid"
-                                style={{ objectFit: 'contain', height: '200px' }}
+                                style={{
+                                  objectFit: "contain",
+                                  height: "200px",
+                                }}
                                 alt={course.titleCourse}
                                 src={
                                   course.imageCover ||
@@ -231,9 +305,7 @@ export const Dashboard = () => {
                               />
                             </Link>
                             <div className="price">
-                              <h3>
-                                {formatCurrency(course.basePrice)}
-                              </h3>
+                              <h3>{formatCurrency(course.basePrice)}</h3>
                             </div>
                           </div>
                           <div className="product-content">
@@ -268,8 +340,9 @@ export const Dashboard = () => {
                               <div className="course-share d-flex align-items-center justify-content-center">
                                 <Link to="#" onClick={() => toggleClass(index)}>
                                   <i
-                                    className={`fa-regular fa-heart ${isClassAdded[index] ? "color-active" : ""
-                                      }`}
+                                    className={`fa-regular fa-heart ${
+                                      isClassAdded[index] ? "color-active" : ""
+                                    }`}
                                   />
                                 </Link>
                               </div>
@@ -286,23 +359,11 @@ export const Dashboard = () => {
                               </div>
                               <div className="course-view d-flex align-items-center">
                                 <img src={Icon2} alt="Icon" />
-                                <p>{course.duration} {course.duration === 1 ? "hr" : "hrs"}</p>
+                                <p>
+                                  {course.duration}{" "}
+                                  {course.duration === 1 ? "hr" : "hrs"}
+                                </p>
                               </div>
-                            </div>
-                            <div className="rating mb-0">
-                              {Array(5)
-                                .fill(null)
-                                .map((_, i) => (
-                                  <i
-                                    className={`fas fa-star ${i < course.rating ? "filled" : ""
-                                      } me-1`}
-                                    key={i}
-                                  />
-                                ))}
-                              <span className="d-inline-block average-rating">
-                                <span>{course.rating}</span> (
-                                {course.reviewCount})
-                              </span>
                             </div>
                           </div>
                         </div>
@@ -327,8 +388,9 @@ export const Dashboard = () => {
                       {[...Array(totalPages)].map((_, index) => (
                         <li
                           key={index}
-                          className={`page-item ${currentPage === index + 1 ? "active" : ""
-                            }`}
+                          className={`page-item ${
+                            currentPage === index + 1 ? "active" : ""
+                          }`}
                         >
                           <button
                             onClick={() => handlePageChange(index + 1)}

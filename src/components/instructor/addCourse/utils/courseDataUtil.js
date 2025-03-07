@@ -10,9 +10,7 @@ export const prepareCourseData = (courseSlice, instructor, courseId) => {
     imageCover: courseSlice.mediaInfo.imageFileName || "",
     urlVideo: courseSlice.mediaInfo.videoUrl || "",
     process: 0,
-    duration: courseId
-  ? Math.ceil(courseSlice.basicInfo.duration / 3600)
-  : Math.ceil(
+    duration: Math.ceil(
       courseSlice.curriculumInfo.sections.reduce(
         (totalDuration, section) => {
           const sectionDuration = section.lectures.reduce(

@@ -17,14 +17,11 @@ import defaultAvatar from "../../../assets/img/default-avatar.png";
 
 const InstructorProfileSettings = () => {
   const [isModalOpen, setModalOpen] = useState(false);
-  // const [selectedImage, setSelectedImage] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarFileName, setAvatarFileName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
-  // const [scale, setScale] = useState(1.2);
-  // const [isSaveDisabled, setIsSaveDisabled] = useState(false);
-  // const editorRef = useRef(null);
+  const [errors, setErrors] = useState({});
 
   const id = useSelector(selectCurrentInstructor);
 
@@ -55,7 +52,7 @@ const InstructorProfileSettings = () => {
         title: instructorProfile.title || "",
         address: instructorProfile.address || "",
         phone: instructorProfile.phone || "",
-        gender: instructorProfile.gender || "",
+        gender: instructorProfile.gender || "OTHER",
         bio: instructorProfile.bio || "",
         photo: instructorProfile.photo || "",
       });
@@ -69,6 +66,40 @@ const InstructorProfileSettings = () => {
       ...prevData,
       [name]: value,
     }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
+  const validateForm = () => {
+    let newErrors = {};
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First Name is required.";
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last Name is required.";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone Number is required.";
+    } else if (!/^\d{10,15}$/.test(formData.phone)) {
+      newErrors.phone = "Phone number must be 10-15 digits.";
+    }
+
+    if (!formData.gender) {
+      newErrors.gender = "Please select a gender.";
+    }
+
+    if (formData.bio.length > 500) {
+      newErrors.bio = "Bio must not exceed 500 characters.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSaveAvatar = async (croppedBlob) => {
@@ -91,11 +122,6 @@ const InstructorProfileSettings = () => {
       const fileName = fileUrl.split("/").pop();
       setAvatarFileName(fileName);
 
-      // setFormData((prevData) => ({
-      //   ...prevData,
-      //   photo: fileName,
-      // }));
-
       toast.success(
         'Avatar have been changed, please press "Update" to upload Avatar!'
       );
@@ -110,6 +136,10 @@ const InstructorProfileSettings = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     const updatedProfileData = { ...formData, photo: avatarFileName || instructorProfile.photo };
 
@@ -241,6 +271,7 @@ const InstructorProfileSettings = () => {
                                 value={formData.firstName}
                                 onChange={handleInputChange}
                               />
+                              {errors.firstName && <p className="text-danger">{errors.firstName}</p>}
                             </div>
                           </div>
                           <div className="col-md-6">
@@ -253,6 +284,7 @@ const InstructorProfileSettings = () => {
                                 value={formData.lastName}
                                 onChange={handleInputChange}
                               />
+                              {errors.lastName && <p className="text-danger">{errors.lastName}</p>}
                             </div>
                           </div>
                           <div className="col-md-6">
@@ -289,18 +321,24 @@ const InstructorProfileSettings = () => {
                                 value={formData.phone}
                                 onChange={handleInputChange}
                               />
+                              {errors.phone && <p className="text-danger">{errors.phone}</p>}
                             </div>
                           </div>
                           <div className="col-md-6">
                             <div className="input-block">
                               <label className="form-label">Gender</label>
-                              <input
-                                type="text"
+                              <select
                                 className="form-control"
                                 name="gender"
                                 value={formData.gender}
                                 onChange={handleInputChange}
-                              />
+                              >
+                                <option value="">Select Gender</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
+                              </select>
+                              {errors.gender && <p className="text-danger">{errors.gender}</p>}
                             </div>
                           </div>
                           <div className="col-md-12">
@@ -313,6 +351,7 @@ const InstructorProfileSettings = () => {
                                 value={formData.bio}
                                 onChange={handleInputChange}
                               />
+                              {errors.bio && <p className="text-danger">{errors.bio}</p>}
                             </div>
                           </div>
                           <div className="col-md-12">

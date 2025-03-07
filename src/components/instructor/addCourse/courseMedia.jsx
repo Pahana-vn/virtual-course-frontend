@@ -132,7 +132,7 @@ const CourseMedia = ({ prevTab1, nextTab2 }) => {
   const waitForFileReady = async (fileUrl) => {
     let isFileReady = false;
     let attempts = 0;
-    const maxAttempts = 20; // Thử tối đa 10 lần (tương đương 5 giây)
+    const maxAttempts = 30; // Thử tối đa 10 lần (tương đương 5 giây)
 
     while (!isFileReady && attempts < maxAttempts) {
       try {
