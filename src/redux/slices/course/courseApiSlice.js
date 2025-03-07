@@ -146,7 +146,7 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
           }),
       
           // New API to get total courses by instructor sorted by number of courses
-          getTotalCoursesByInstructor: builder.query({
+        getTotalCoursesByInstructor: builder.query({
             query: () => ({
               url: `/courses/count-by-instructor`,
             }),
@@ -154,6 +154,14 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
               result
                 ? [{ type: "InstructorCourses", id: "LIST" }]
                 : [{ type: "InstructorCourses", id: "LIST" }],
+        }),
+        updateCourseStatus: builder.mutation({
+            query: ({ courseId, newStatus }) => ({
+              url: `/courses/${courseId}/update-status`,
+              method: "PUT",
+              body: { status: newStatus },
+            }),
+            invalidatesTags: ["Courses"],
           }),
     })
 })
@@ -172,4 +180,5 @@ export const {
     useGetCourseDetailsByIdQuery,
     useGetTotalCoursesByCategoryQuery,
     useGetTotalCoursesByInstructorQuery,
+    useUpdateCourseStatusMutation,
 } = courseApiSlice
