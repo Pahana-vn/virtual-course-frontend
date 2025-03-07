@@ -27,7 +27,7 @@ const StudentMessages = () => {
 
   const [instructorInfo, setInstructorInfo] = useState({
     name: "Select Instructor to chat",
-    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"
+    avatar: "https://ibiettuot.com/wp-content/uploads/2021/10/avatar-mac-dinh.png"
   });
 
   const [studentInfo, setStudentInfo] = useState({
@@ -193,7 +193,7 @@ const StudentMessages = () => {
       try {
         console.log('Sending message:', chatMessageDTO);
         stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
-  
+
         // Thêm tin nhắn mới vào state
         setMessages((prevMessages) => [
           ...prevMessages,
@@ -231,9 +231,6 @@ const StudentMessages = () => {
           }]);
         }
 
-        // Fetch chat history again to update the UI with the new message
-        // await fetchChatHistory(currentUserAccountId, selectedInstructorId);
-
       } catch (error) {
         console.error('Error sending chat message:', error);
       }
@@ -241,8 +238,8 @@ const StudentMessages = () => {
   };
 
   const handleInstructorClick = async (id) => {
-    navigate(`/student/student-messages?instructorId=${id}`); // Cập nhật URL
-    setSelectedInstructorId(id); // Cập nhật state
+    navigate(`/student/student-messages?instructorId=${id}`); URL
+    setSelectedInstructorId(id);
 
     try {
       const chatHistory = await fetchChatHistory(currentUserAccountId, id);
@@ -376,7 +373,7 @@ const StudentMessages = () => {
                                           <div className="avatar avatar-online">
                                             <img
                                               src={instructor.avatar}
-                                              onError={(e) => e.target.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36xMCcz67__zewKxiZ1t5bQf1dI01lvQKsBK2nX_mzWfFerwJwZ0WcEAokPCmzPJv42g&usqp=CAU"}
+                                              onError={(e) => e.target.src = "https://ibiettuot.com/wp-content/uploads/2021/10/avatar-mac-dinh.png"}
                                               className="rounded-circle"
                                               alt="image"
                                             />
