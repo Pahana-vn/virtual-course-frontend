@@ -140,12 +140,10 @@ const StudentMessages = () => {
     stompClient.connect({}, (frame) => {
       console.log('Connected: ' + frame);
 
-      // Subscribe để nhận tin nhắn từ server
       stompClient.subscribe(`/queue/user.${currentUserAccountId}`, (messageOutput) => {
-        console.log('Received message:', messageOutput.body); // Log khi nhận tin nhắn
+        console.log('Received message:', messageOutput.body);
         const msg = JSON.parse(messageOutput.body);
 
-        // Cập nhật UI khi có tin nhắn mới
         setMessages((prev) => [...prev, {
           ...msg,
           senderName: msg.senderAccountId === currentUserAccountId ? "You" : instructorInfo.name,
@@ -164,27 +162,23 @@ const StudentMessages = () => {
   const sendMessage = async (e) => {
     e.preventDefault();
     if (currentMsg.trim() !== '' && stompClientRef.current) {
-      // Kiểm tra kết nối STOMP
       if (!stompClientRef.current.connected) {
         console.error("STOMP connection is not established.");
         return;
       }
 
-      // Tạo đối tượng tin nhắn
       const chatMessageDTO = {
         senderAccountId: currentUserAccountId,
-        receiverAccountId: selectedInstructorId, // Gửi tin nhắn đến instructor
+        receiverAccountId: selectedInstructorId,
         content: currentMsg,
         type: "CHAT",
-        timestamp: new Date().toISOString(), // Thêm timestamp
+        timestamp: new Date().toISOString(),
       };
 
       try {
-        // Gửi tin nhắn qua WebSocket
         console.log('Sending message:', chatMessageDTO);
         stompClientRef.current.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
 
-        // Cập nhật UI ngay lập tức
         setMessages((prev) => [
           ...prev,
           {
@@ -486,7 +480,7 @@ const StudentMessages = () => {
                         </div>
                         <div className="chat-footer">
                           <form onSubmit={sendMessage}>
-                            <div className="smile-foot">
+                            {/* <div className="smile-foot">
                               <div className="chat-action-btns">
                                 <div className="chat-action-col">
                                   <Link
@@ -506,11 +500,13 @@ const StudentMessages = () => {
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                             <div className="smile-foot emoj-action-foot">
-                              <Link to="#" className="action-circle">
+                            {chatInstructors.map((instructor) => (
+                              <Link key={instructor.id} onClick={() => handleInstructorClick(instructor.id)} to="#" className="action-circle">
                                 <i className="bx bx-smile" />
                               </Link>
+                            ))}
                             </div>
                             <div className="replay-forms">
                               <input
