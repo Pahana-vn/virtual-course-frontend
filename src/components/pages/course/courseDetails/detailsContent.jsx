@@ -41,7 +41,8 @@ const DetailsContent = ({ courseDetails }) => {
     () => localStorage.getItem("studentId") || ""
   );
   const formatCurrency = useCurrencyFormatter();
-
+  const storedInstructorId = localStorage.getItem("instructorId");
+  const isInstructor = storedInstructorId && storedInstructorId !== "null";
   // Derived states
   const instructorIdNumber = Number(courseDetails.instructorId);
   const durations = useLectureDurations(
@@ -386,35 +387,38 @@ const DetailsContent = ({ courseDetails }) => {
                           <h2>Price</h2>
                           <h2>{formatCurrency(courseDetails.basePrice)}</h2>
                         </div>
-                        <div className="row gx-2">
-                          <div className="col-md-6 addHeart">
-                            <button
-                              className="btn btn-wish w-100"
-                              onClick={handleAddToCart}
-                              disabled={cartLoading}
-                            >
-                              {cartLoading
-                                ? "Adding to cart..."
-                                : "Add to cart"}
-                            </button>
-                          </div>
-
-                          <div className="col-md-6 addHeart">
-                            <button
-                              className="btn btn-wish w-100"
-                              onClick={handleAddToWishlist}
-                              disabled={loading}
-                            >
-                              {loading ? "Adding..." : "Add to favorites"}
-                            </button>
-                          </div>
-                        </div>
-                        <Link
-                          to={`/checkout/${courseDetails.id}`}
-                          className="btn btn-enroll w-100"
-                        >
-                          Buy now
-                        </Link>
+                        {!isInstructor && (
+                          <>
+                            <div className="row gx-2">
+                              <div className="col-md-6 addHeart">
+                                <button
+                                  className="btn btn-wish w-100"
+                                  onClick={handleAddToCart}
+                                  disabled={cartLoading}
+                                >
+                                  {cartLoading
+                                    ? "Adding to cart..."
+                                    : "Add to cart"}
+                                </button>
+                              </div>
+                              <div className="col-md-6 addHeart">
+                                <button
+                                  className="btn btn-wish w-100"
+                                  onClick={handleAddToWishlist}
+                                  disabled={loading}
+                                >
+                                  {loading ? "Adding..." : "Add to favorites"}
+                                </button>
+                              </div>
+                              <Link
+                                to={`/checkout/${courseDetails.id}`}
+                                className="btn btn-enroll w-100"
+                              >
+                                Buy now
+                              </Link>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
