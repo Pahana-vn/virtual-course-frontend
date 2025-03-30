@@ -7,6 +7,8 @@ const FeaturedCourses = () => {
   const navigate = useNavigate();
   const { data: courses, error, isLoading } = useGetAllCoursesByStatusQuery({ status: "PUBLISHED" });
   const formatCurrency = useCurrencyFormatter();
+  const storedInstructorId = localStorage.getItem("instructorId");
+  const isInstructor = storedInstructorId && storedInstructorId !== "null";
 
   
   const handleChatClick = (instructorId) => {
@@ -122,9 +124,14 @@ const FeaturedCourses = () => {
                       </div>
                       <div className="d-flex align-items-center justify-content-between">
                         <div className="all-btn all-category d-flex align-items-center">
-                          <Link to="/checkout" className="btn btn-primary">
-                            BUY NOW
-                          </Link>
+                        {!isInstructor && (
+                            <Link
+                              to={`/checkout/${course.id}`}
+                              className="btn btn-primary"
+                            >
+                              BUY NOW
+                            </Link>
+                          )}
                         </div>
                       </div>
                     </div>

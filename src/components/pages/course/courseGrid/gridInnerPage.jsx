@@ -7,6 +7,8 @@ import { Icon1, Icon2, Messages } from "../../../imagepath";
 const GridInnerPage = ({ courses }) => {
   const formatCurrency = useCurrencyFormatter();
   const navigate = useNavigate();
+  const storedInstructorId = localStorage.getItem("instructorId");
+  const isInstructor = storedInstructorId && storedInstructorId !== "null";
 
   const handleChatClick = (instructorId) => {
     const studentId = localStorage.getItem("studentId");
@@ -21,24 +23,24 @@ const GridInnerPage = ({ courses }) => {
   return (
     <>
       <div className="row">
-      {courses.map((course) => (
-        <div key={course.id} className="col-lg-4 col-md-6 d-flex">
-          <div className="course-box course-design d-flex ">
-            <div className="product">
-              <div className="product-img">
-                <Link to={`/course-details/${course.id}`}>
-                  <img
-                    className="img-fluid"
-                    style={{ objectFit: 'contain', height: '200px' }}
-                    alt={course.titleCourse}
-                    src={course.imageCover || "/default-image.png"}
-                  />
-                </Link>
-                <div className="price">
-                  <h3>
-                  <small>{course.basePrice === 0 ? "Free" : formatCurrency(course.basePrice)}</small>
-                  </h3>
-                </div>
+        {courses.map((course) => (
+          <div key={course.id} className="col-lg-4 col-md-6 d-flex">
+            <div className="course-box course-design d-flex ">
+              <div className="product">
+                <div className="product-img">
+                  <Link to={`/course-details/${course.id}`}>
+                    <img
+                      className="img-fluid"
+                      style={{ objectFit: 'contain', height: '200px' }}
+                      alt={course.titleCourse}
+                      src={course.imageCover || "/default-image.png"}
+                    />
+                  </Link>
+                  <div className="price">
+                    <h3>
+                      <small>{course.basePrice === 0 ? "Free" : formatCurrency(course.basePrice)}</small>
+                    </h3>
+                  </div>
                 </div>
                 <div className="product-content">
                   <div className="course-group d-flex">
@@ -67,7 +69,7 @@ const GridInnerPage = ({ courses }) => {
                         </Link>
                       </div>
                     </div>
-                </div>
+                  </div>
 
                   <h3 className="course-title">
                     <Link to={`/course-details/${course.id}`}>{course.titleCourse}</Link>
@@ -84,9 +86,14 @@ const GridInnerPage = ({ courses }) => {
                     </div>
                   </div>
                   <div className="all-btn all-category d-flex align-items-center">
-                    <Link to={`/checkout/${course.id}`} className="btn btn-primary">
-                      BUY NOW
-                    </Link>
+                    {!isInstructor && (
+                      <Link
+                        to={`/checkout/${course.id}`}
+                        className="btn btn-primary"
+                      >
+                        BUY NOW
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

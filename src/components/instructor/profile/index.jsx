@@ -1,7 +1,9 @@
 import DOMPurify from "dompurify";
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import useCurrencyFormatter from "../../../hooks/useCurrencyFormatter";
+import { selectCurrentRoles } from "../../../redux/slices/auth/authSlice";
 import { useGetInstructorCoursesQuery } from "../../../redux/slices/course/courseApiSlice";
 import { useInstructorDetailsQuery } from "../../../redux/slices/instructor/instructorApiSlice";
 import Footer from "../../footer";
@@ -12,11 +14,11 @@ import {
   Icon2,
   TtlStudIcon,
 } from "../../imagepath";
-import { useSelector } from "react-redux";
-import { selectCurrentRoles } from "../../../redux/slices/auth/authSlice";
 
 export default function InstructorProfile() {
   const roles = useSelector(selectCurrentRoles);
+  const storedInstructorId = localStorage.getItem("instructorId");
+  const isInstructor = storedInstructorId && storedInstructorId !== "null";
   const formatCurrency = useCurrencyFormatter();
   const { instructorId } = useParams();
   const {
@@ -191,7 +193,7 @@ export default function InstructorProfile() {
                 <div className="card-body">
                   <h5 className="subs-title">Experience</h5>
                   {instructor.experiences &&
-                  instructor.experiences.length > 0 ? (
+                    instructor.experiences.length > 0 ? (
                     instructor.experiences.map((exp, index) => (
                       <div className="edu-wrap" key={index}>
                         <div className="edu-name">
@@ -288,12 +290,14 @@ export default function InstructorProfile() {
                                   </div>
                                 </div>
                                 <div className="all-btn all-category d-flex align-items-center">
-                                  <Link
-                                    to={`/checkout/${course.id}`}
-                                    className="btn btn-primary"
-                                  >
-                                    BUY NOW
-                                  </Link>
+                                  {!isInstructor && (
+                                    <Link
+                                      to={`/checkout/${course.id}`}
+                                      className="btn btn-primary"
+                                    >
+                                      BUY NOW
+                                    </Link>
+                                  )}
                                 </div>
                               </div>
                             </div>
